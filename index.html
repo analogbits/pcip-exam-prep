@@ -298,6 +298,7 @@
         <a href="#cheat-appendices-deepdive" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">📚 Appendices (A, C, D)</a>
         <a href="#cheat-specialized-standards" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">🛡️ Specialized Standards</a>
         <a href="#cheat-top-traps" class="px-3 py-2 bg-white rounded-xl border border-rose-200 hover:border-rose-500 text-rose-700 font-bold transition-colors">⚠️ Top 25 Exam Traps</a>
+        <a href="#cheatsheet-weak-areas-section" class="px-3 py-2 bg-rose-50 rounded-xl border border-rose-300 hover:border-rose-600 text-rose-800 font-extrabold transition-colors">⚡ Your Weak Areas</a>
       </div>
 
       <!-- 1. 48-HOUR EXAM STRATEGY -->
@@ -865,6 +866,45 @@
           <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
             <strong class="text-rose-700 font-bold">25. Transaction Approval:</strong> ONLY the Card Issuer approves or declines transactions during authorization.
           </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SECTION 8: DYNAMIC WEAK AREAS & PRIORITY REVISION -->
+      <!-- ========================================== -->
+      <section id="cheatsheet-weak-areas-section" class="space-y-4 pt-4 border-t-2 border-dashed border-slate-200">
+        <div class="bg-gradient-to-r from-rose-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-rose-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="space-y-1.5 relative z-10 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[11px] font-black uppercase tracking-wider">
+                ⚡ Adaptive Diagnostic
+              </span>
+              <span id="cheatsheet-weak-count-badge" class="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-xs font-bold border border-white/10">
+                0 Weak Areas Detected
+              </span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-black tracking-tight text-white">
+              Dynamic Weak Areas & Priority Revision
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              Real-time cheat sheet rules generated dynamically from questions you missed or found tricky in Practice drills and 75Q Mock Exams. Use this custom cram queue to eliminate mistakes before your test!
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2.5 relative z-10 self-start md:self-center">
+            <button id="cheatsheet-jump-practice-btn" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-sm flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+              <span>💡</span> <span>Practice Missed</span>
+            </button>
+            <button id="cheatsheet-clear-weak-btn" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all cursor-pointer whitespace-nowrap">
+              <span>✓</span> <span>Clear Missed</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Container dynamically populated by app.js -->
+        <div id="cheatsheet-weak-areas-container" class="space-y-4">
+          <!-- Populated by renderCheatsheetWeakAreas() -->
         </div>
       </section>
 

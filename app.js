@@ -149,6 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tabCheatsheetBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
       }
       if (viewCheatsheet) viewCheatsheet.classList.remove('hidden');
+      if (typeof renderCheatsheetWeakAreas === 'function') {
+        renderCheatsheetWeakAreas();
+      }
     } else if (tab === 'review') {
       if (tabReviewBtn) {
         tabReviewBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
@@ -1767,8 +1770,381 @@ document.addEventListener('DOMContentLoaded', () => {
       incorrectQids.clear();
       localStorage.removeItem('pcip_incorrect');
       renderReviewView();
+      if (typeof renderCheatsheetWeakAreas === 'function') {
+        renderCheatsheetWeakAreas();
+      }
+      updatePracticeStats();
     });
   }
+
+  // ---------------------------------------------------------------------
+  // SECTION 8: DYNAMIC WEAK AREAS & PRIORITY REVISION FOR MASTER CHEAT SHEET
+  // ---------------------------------------------------------------------
+  const domainRulesMap = {
+    'req 1': {
+      title: 'Req 1: Network Security Controls (NSCs)',
+      rules: [
+        'Review firewall & router configuration rule sets at least once every six months (semi-annually).',
+        'Inbound and outbound traffic must be restricted strictly to traffic necessary for the CDE; all other traffic explicitly denied.',
+        'Anti-spoofing controls must be implemented at network perimeter boundaries to detect and block forged internal source IP addresses.'
+      ]
+    },
+    'req 2': {
+      title: 'Req 2: Secure Configurations & Default Passwords',
+      rules: [
+        'Change all vendor default passwords and remove unnecessary default accounts before deploying any system component to production.',
+        'One primary function per system: Configure only one primary function per system component (or isolate using virtualization/containers).',
+        'Disable all unnecessary services, protocols, daemons, and insecure functions; document business justification for all enabled services.'
+      ]
+    },
+    'req 3': {
+      title: 'Req 3: Protect Stored Account Data & SAD',
+      rules: [
+        'SAD Storage Prohibition: Sensitive Authentication Data (full track, CVV2/CVC2/CID, PIN block) must NEVER be retained post-authorization, even if encrypted!',
+        'Render PAN unreadable anywhere stored: Strong cryptography (AES-256), keyed one-way hash, index tokens, or truncation. Masking alone does NOT satisfy storage!',
+        'Masking on Display: Maximum first 6 and last 4 digits (or BIN + last 4) may be displayed without documented business need (Req 3.3.1).',
+        'Live PAN Forbidden: Live production PANs are strictly forbidden in development, test, and staging environments (Req 6.5.3).'
+      ]
+    },
+    'req 4': {
+      title: 'Req 4: Protect Cardholder Data in Transit',
+      rules: [
+        'Strong cryptography (TLS 1.2 or TLS 1.3 with secure ciphers) is mandatory whenever cardholder data traverses open, public networks.',
+        'End-user messaging prohibition: PANs must never be sent unprotected via email, instant messaging, SMS, or chat applications.'
+      ]
+    },
+    'req 5': {
+      title: 'Req 5: Malware & Phishing Defense',
+      rules: [
+        'Req 5.4.1 Phishing: Mandates AUTOMATED TECHNICAL mechanisms (anti-spoofing SPF, DKIM, DMARC, and email filtering) to detect & defend personnel against phishing.',
+        'Administrative Training is Req 12.6.3 — do NOT confuse employee awareness training with automated 5.4.1 technical email defenses!',
+        'Anti-malware must be actively deployed on all systems commonly affected by malware; systems deemed not affected require a formal annual Targeted Risk Analysis (TRA).'
+      ]
+    },
+    'req 6': {
+      title: 'Req 6: Secure Systems & Software Development',
+      rules: [
+        'Critical Security Patches: Must be installed within 30 calendar days of vendor release (Req 6.3.3). Non-critical patches installed per TRA.',
+        'Payment Page Scripts (Req 6.4.3 & 11.6.1): Inventory, written justification, and integrity monitoring for ALL scripts executing in browser on payment pages; weekly tamper detection.',
+        'Public-Facing Web Applications: Automated technical solution (such as a WAF) required to continuously detect and prevent web-based attacks.'
+      ]
+    },
+    'req 7': {
+      title: 'Req 7: Restrict Access to Need-to-Know',
+      rules: [
+        'Principle of Least Privilege: Access must be strictly restricted to the minimum required for an individual\'s job function (Role-Based Access Control).',
+        'Default deny-all access privilege model required across all systems and user groups.'
+      ]
+    },
+    'req 8': {
+      title: 'Req 8: Identification & Authentication (MFA & Passwords)',
+      rules: [
+        'MFA Scope: MFA is mandatory for ALL individuals with non-console administrative access into CDE, AND for ALL access into the CDE (Req 8.4.2).',
+        'Password Length: Minimum 12 characters (or at least 8 if system cannot support 12 and documented via TRA), containing alphabetic and numeric characters (Req 8.3.6).',
+        'Unique IDs: Shared, generic, or group user accounts are strictly forbidden for individual accountability.'
+      ]
+    },
+    'req 9': {
+      title: 'Req 9: Physical Security of Systems & Devices',
+      rules: [
+        'Visitor logs and video surveillance camera footage must be retained for at least 90 calendar days.',
+        'POI Device Tamper Inspection: Periodically inspect Point of Interaction (POI) card-reading devices for physical tampering or unauthorized substitution.'
+      ]
+    },
+    'req 10': {
+      title: 'Req 10: Log Monitoring & NTP Time Sync',
+      rules: [
+        'Daily Log Review: Mandatory once daily for all CDE system components, servers performing security functions (firewalls, IDS/IPS, authentication/RADIUS), and critical servers.',
+        'Log Retention: Retain audit logs for at least 1 year total, with the most recent 3 months immediately accessible online.',
+        'Network Time Protocol (NTP): All system clocks must synchronize with central designated time sources to ensure chronological accuracy for forensics.'
+      ]
+    },
+    'req 11': {
+      title: 'Req 11: Security Testing & Penetration Testing',
+      rules: [
+        'External ASV Scans: Quarterly by a PCI SSC Approved Scanning Vendor; passing scan requires ZERO vulnerabilities scored CVSS 4.0 or higher.',
+        'Penetration Testing: Conducted at least annually (every 12 months) and after any significant infrastructure change; must include active exploitation.',
+        'Segmentation Testing: Merchants test annually (12 months); Service Providers must test semi-annually (every 6 months) and after changes to segmentation controls.',
+        'File Integrity Monitoring (FIM): Change-detection mechanism deployed to alert personnel to unauthorized modifications of critical system/binary files at least weekly.'
+      ]
+    },
+    'req 12': {
+      title: 'Req 12: Information Security Governance & Scoping',
+      rules: [
+        'Scope Confirmation: Merchants confirm annually (Req 12.5.2); Service Providers must confirm at least once every 6 months (semi-annually) under Req 12.5.2.1.',
+        'Incident Response Plan: Tested at least once every 12 months (annually), including simulated breach scenarios and lessons learned.',
+        'Third-Party Service Providers (TPSPs): Entity must maintain TPSP inventory, monitor PCI DSS compliance status at least annually, and execute written agreements.',
+        'Targeted Risk Analysis (TRA): Any entity-defined control frequency must be documented in a TRA reviewed at least once every 12 months.'
+      ]
+    },
+    'saq': {
+      title: 'SAQ Eligibility & Scoping Architecture',
+      rules: [
+        'SAQ A: 100% of cardholder data functions outsourced to validated third party (URL redirect or iframe). No card data touches merchant server.',
+        'SAQ A-EP: Merchant website delivers payment page, JavaScript, or uses Direct Post / APIs (merchant server impacts payment security).',
+        'SAQ C-VT: Manual keyboard entry of single card transactions into web-based virtual terminal hosted by processor, on isolated PC with no card reader.',
+        'SAQ D for Service Providers: Service providers can NEVER use SAQ A, B, or C. They must ALWAYS use SAQ D for Service Providers.',
+        'Electronic Storage Disqualification: Storing cardholder data electronically anywhere immediately disqualifies from SAQs A, B, B-IP, C-VT, C, P2PE and mandates SAQ D.'
+      ]
+    },
+    'scoping': {
+      title: 'PCI DSS Scoping & Payment Flow',
+      rules: [
+        'Authorization Decision: ONLY the Card Issuer (the consumer\'s issuing bank) has the authority to approve or decline a transaction in real-time.',
+        'Compensating Controls: Permitted ONLY for legitimate technical constraints or legal/regulatory limitations. Financial cost is NEVER an acceptable justification!',
+        'Customized Approach: Entity meets the Stated Customized Objective and documents a Targeted Risk Analysis (TRA) in Appendix D (no CCW needed).'
+      ]
+    }
+  };
+
+  window.renderCheatsheetWeakAreas = function() {
+    const cheatsheetWeakContainer = document.getElementById('cheatsheet-weak-areas-container');
+    const cheatsheetWeakCountBadge = document.getElementById('cheatsheet-weak-count-badge');
+    const cheatsheetJumpPracticeBtn = document.getElementById('cheatsheet-jump-practice-btn');
+    const cheatsheetClearWeakBtn = document.getElementById('cheatsheet-clear-weak-btn');
+
+    if (!cheatsheetWeakContainer) return;
+
+    const incorrectList = allQuestions.filter(q => incorrectQids.has(q.id));
+
+    // Connect top header buttons
+    if (cheatsheetJumpPracticeBtn) {
+      cheatsheetJumpPracticeBtn.onclick = () => window.jumpToPracticeMissed();
+    }
+    if (cheatsheetClearWeakBtn) {
+      cheatsheetClearWeakBtn.onclick = () => window.clearAllMissedFromCheatsheet();
+    }
+
+    // Zero Weak Areas State
+    if (!incorrectList.length) {
+      if (cheatsheetWeakCountBadge) {
+        cheatsheetWeakCountBadge.textContent = '0 Weak Areas (100% Mastery)';
+        cheatsheetWeakCountBadge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold';
+      }
+
+      cheatsheetWeakContainer.innerHTML = `
+        <div class="bg-white rounded-3xl p-8 sm:p-10 text-center border border-slate-200 shadow-sm space-y-4">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-3xl font-bold">
+            🏆
+          </div>
+          <div class="space-y-1">
+            <h4 class="text-lg font-black text-slate-900">Zero Weak Areas Active — 100% Mastery!</h4>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
+              You currently have 0 missed questions in your queue. As you complete questions in <strong>Practice Mode</strong> or take the <strong>75-Question Exam Simulator</strong>, any missed concepts or tricky items will automatically generate customized cheat sheet revision notes right here!
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button onclick="switchTab('practice')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm cursor-pointer">
+              💡 Open Practice Mode
+            </button>
+            <button onclick="switchTab('exam')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white transition-all shadow-sm cursor-pointer">
+              ⏱️ Launch 75Q Exam Simulator
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // Active Weak Areas State
+    if (cheatsheetWeakCountBadge) {
+      cheatsheetWeakCountBadge.textContent = `${incorrectList.length} Missed Question${incorrectList.length > 1 ? 's' : ''}`;
+      cheatsheetWeakCountBadge.className = 'px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[11px] font-bold';
+    }
+
+    // Group by category to find weak domains
+    const domainCounts = {};
+    incorrectList.forEach(q => {
+      const cat = q.category || 'General';
+      domainCounts[cat] = (domainCounts[cat] || 0) + 1;
+    });
+
+    const sortedDomains = Object.entries(domainCounts).sort((a, b) => b[1] - a[1]);
+
+    // Find relevant domain rules
+    const matchedRulesSections = [];
+    const matchedKeys = new Set();
+
+    sortedDomains.forEach(([cat]) => {
+      const lower = cat.toLowerCase();
+      Object.keys(domainRulesMap).forEach(key => {
+        if (!matchedKeys.has(key) && lower.includes(key)) {
+          matchedKeys.add(key);
+          matchedRulesSections.push(domainRulesMap[key]);
+        }
+      });
+    });
+
+    // If none matched via key substring, include general fallbacks
+    if (!matchedRulesSections.length) {
+      matchedRulesSections.push(domainRulesMap['req 3'], domainRulesMap['req 5']);
+    }
+
+    cheatsheetWeakContainer.innerHTML = `
+      <!-- Domain Diagnostic Pill Bar -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3">
+        <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
+          <span class="font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <span>🎯</span> <span>Weak Domain Diagnostics:</span>
+          </span>
+          <span class="text-slate-400 font-medium">Click any domain to drill in Practice</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          ${sortedDomains.map(([cat, count]) => `
+            <button onclick="window.jumpToPracticeDomain('${cat.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+              <span>${cat}</span>
+              <span class="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px]">${count} missed</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Priority Cram Rules Tailored to Weak Areas -->
+      <div class="bg-amber-50/70 rounded-2xl p-6 border border-amber-200/80 shadow-xs space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-800 font-black text-sm uppercase tracking-wide">
+              ⚡ Targeted Priority Rules For Your Missed Questions:
+            </span>
+          </div>
+          <span class="text-xs font-bold text-amber-700 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300">
+            High-Yield Focus
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          ${matchedRulesSections.map(sec => `
+            <div class="bg-white rounded-xl p-4 border border-amber-200/60 shadow-2xs space-y-2">
+              <h5 class="text-xs font-extrabold text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                <span>📌</span> <span>${sec.title}</span>
+              </h5>
+              <ul class="text-xs text-slate-700 space-y-1.5 pl-1 leading-relaxed">
+                ${sec.rules.map(r => `
+                  <li class="flex items-start gap-1.5">
+                    <span class="text-amber-600 font-bold shrink-0">•</span>
+                    <span>${r}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Missed Questions Instant Review Accordion -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between px-1 text-xs">
+          <span class="font-extrabold text-slate-700 uppercase tracking-wider">
+            Review Missed Questions (${incorrectList.length} total)
+          </span>
+          <span class="text-slate-400">Mark as mastered once you understand the concept</span>
+        </div>
+
+        ${incorrectList.map(q => {
+          const correctLetters = q.correct.map(idx => String.fromCharCode(65 + idx)).join(', ');
+          const correctText = q.correct.map(idx => q.options[idx]).join(' / ');
+
+          return `
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[11px] font-bold">
+                    Missed in Quiz
+                  </span>
+                  <span class="text-xs font-medium text-slate-400 font-mono">
+                    #${q.id} · ${q.category}
+                  </span>
+                </div>
+                <button onclick="window.markQuestionMasteredFromCheatsheet(${q.id})" class="px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 transition-all cursor-pointer flex items-center gap-1">
+                  <span>✓</span> <span>Mark Mastered</span>
+                </button>
+              </div>
+
+              <h4 class="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                ${q.question}
+              </h4>
+
+              <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs sm:text-sm text-emerald-950 font-medium space-y-1">
+                <span class="font-bold text-emerald-800 block text-[11px] uppercase tracking-wide">
+                  ✅ Correct Answer: Option ${correctLetters}
+                </span>
+                <p class="leading-relaxed">${correctText}</p>
+              </div>
+
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed">
+                <strong class="text-slate-900 font-bold block mb-1">Official Reasoning & Standard Reference:</strong>
+                ${q.explanation}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  };
+
+  window.jumpToPracticeMissed = function() {
+    switchTab('practice');
+    const statusSelect = document.getElementById('practice-status-filter');
+    if (statusSelect) {
+      statusSelect.value = 'incorrect';
+      practiceStatusFilter = 'incorrect';
+      localStorage.setItem('pcip_practice_status_filter', 'incorrect');
+    }
+    const searchInput = document.getElementById('search-questions');
+    if (searchInput) {
+      searchInput.value = '';
+      practiceSearch = '';
+    }
+    const catSelect = document.getElementById('category-filter');
+    if (catSelect) {
+      catSelect.value = 'all';
+      practiceFilter = 'all';
+    }
+    updatePracticeList();
+    practiceIndex = 0;
+    renderPracticeQuestion();
+  };
+
+  window.jumpToPracticeDomain = function(domainName) {
+    switchTab('practice');
+    const catSelect = document.getElementById('category-filter');
+    if (catSelect) {
+      catSelect.value = domainName;
+      practiceFilter = domainName;
+    }
+    const statusSelect = document.getElementById('practice-status-filter');
+    if (statusSelect) {
+      statusSelect.value = 'incorrect';
+      practiceStatusFilter = 'incorrect';
+      localStorage.setItem('pcip_practice_status_filter', 'incorrect');
+    }
+    updatePracticeList();
+    practiceIndex = 0;
+    renderPracticeQuestion();
+  };
+
+  window.markQuestionMasteredFromCheatsheet = function(qid) {
+    qid = Number(qid);
+    incorrectQids.delete(qid);
+    localStorage.setItem('pcip_incorrect', JSON.stringify([...incorrectQids]));
+    renderCheatsheetWeakAreas();
+    if (currentTab === 'review') renderReviewView();
+    updatePracticeStats();
+  };
+
+  window.clearAllMissedFromCheatsheet = function() {
+    if (!incorrectQids.size) {
+      alert('You have no missed questions to clear!');
+      return;
+    }
+    if (confirm(`Mark all ${incorrectQids.size} missed questions as mastered and clear your weak areas queue?`)) {
+      incorrectQids.clear();
+      localStorage.setItem('pcip_incorrect', JSON.stringify([]));
+      renderCheatsheetWeakAreas();
+      if (currentTab === 'review') renderReviewView();
+      updatePracticeStats();
+    }
+  };
 
 
   // ---------------------------------------------------------------------
@@ -2142,6 +2518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPracticeQuestion();
     if (currentTab === 'review') renderReviewView();
     if (currentTab === 'exam') renderExamView();
+    if (typeof renderCheatsheetWeakAreas === 'function') renderCheatsheetWeakAreas();
     updateSyncPill();
 
     alert(`Success! Successfully restored ${completedQids.size} completed questions and ${bookmarks.size} bookmarks. Your running score and progress are ready!`);
