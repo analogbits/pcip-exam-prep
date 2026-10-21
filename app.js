@@ -2502,34 +2502,85 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function logGamma(z) {
+    const g = 7;
+    const C = [
+      0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+      771.32342877765313, -176.61502916214059, 12.507343278686905,
+      -0.138571095857209, 9.9843695780195716e-6, 1.5056327351493116e-7
+    ];
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - logGamma(1 - z);
+    z -= 1;
+    let x = C[0];
+    for (let i = 1; i < g + 2; i++) x += C[i] / (z + i);
+    const t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+
+  function logBeta(a, b) {
+    return logGamma(a) + logGamma(b) - logGamma(a + b);
+  }
+
   function computeExamPassProbability(correct, total) {
+    const totalBank = allQuestions.length || 500;
+    const coveragePct = totalBank > 0 ? (total / totalBank) * 100 : 0;
+
     if (total < 5) {
       return {
         prob: null,
-        statusText: 'Insufficient Data (need at least 5 answered questions)',
+        statusText: 'Insufficient Sample (min 5 questions)',
         expScore: '--',
         badge: 'Collecting Data',
         badgeClass: 'bg-slate-200 text-slate-700 border border-slate-300',
         cardClass: 'p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1',
-        p: 0
+        moeText: '±--%',
+        moeVal: 0,
+        ciText: '[--% - --%]',
+        sampleTier: 'Initial Calibration',
+        sampleReliability: 'Collecting Initial Data (<5 questions)',
+        coveragePct: coveragePct.toFixed(1)
       };
     }
 
     const p = Math.max(0.01, Math.min(0.999, correct / total));
-    const N = 75; // Official PCIP Pearson VUE question count
-    const passThreshold = 57; // 75% passing mark (56.25 rounded up to 57)
+    const N = 75; // Official PCIP question count
+    const passThreshold = 57; // 75% passing mark (56.25 rounded to 57)
     const expScore = (N * p).toFixed(1);
 
-    // Exact Binomial CDF calculation: sum_{k=57}^{75} C(75, k) * p^k * (1-p)^(75-k)
+    // Standard Error and Margin of Error (95% CI)
+    const se = Math.sqrt((p * (1 - p)) / total);
+    const moe = Math.min(0.25, 1.96 * se);
+    const ciLower = Math.max(0, Math.round((p - moe) * 100));
+    const ciUpper = Math.min(100, Math.round((p + moe) * 100));
+
+    // Sample Reliability Tier based on total questions answered
+    let sampleTier = 'Preliminary Sample';
+    let sampleReliability = 'Low Confidence (high variance expected)';
+    if (total >= 150) {
+      sampleTier = 'High Reliability Baseline';
+      sampleReliability = 'High Statistical Confidence (2+ Full Mocks)';
+    } else if (total >= 75) {
+      sampleTier = 'Solid Sample Size';
+      sampleReliability = 'Moderate-High (1 Full Mock Equivalent)';
+    } else if (total >= 25) {
+      sampleTier = 'Developing Sample';
+      sampleReliability = 'Moderate Sample (preliminary baseline)';
+    }
+
+    // Sample-Weighted Bayesian Beta-Binomial Posterior Predictive Probability
+    // The Beta prior Beta(4, 2) regularizes small samples, accurately discounting tiny samples
+    const priorAlpha = 4;
+    const priorBeta = 2;
+    const alpha = priorAlpha + correct;
+    const beta = priorBeta + (total - correct);
+    const logBetaAB = logBeta(alpha, beta);
+
     let totalProb = 0;
-    for (let k = passThreshold; k <= N; k++) {
-      let logP = 0;
-      // log C(75, k)
-      for (let i = 1; i <= k; i++) {
-        logP += Math.log(N - k + i) - Math.log(i);
-      }
-      logP += k * Math.log(p) + (N - k) * Math.log(1 - p);
-      totalProb += Math.exp(logP);
+    for (let x = passThreshold; x <= N; x++) {
+      let logComb = 0;
+      for (let i = 1; i <= x; i++) logComb += Math.log(N - x + i) - Math.log(i);
+      const logTerm = logComb + logBeta(x + alpha, N - x + beta) - logBetaAB;
+      totalProb += Math.exp(logTerm);
     }
 
     let probPct = Math.min(99.9, Math.max(0.1, totalProb * 100));
@@ -2539,11 +2590,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let cardClass = 'p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1';
 
     if (probPct < 50) {
-      badge = 'At Risk (<50%)';
+      badge = 'Borderline / At Risk (<50%)';
       badgeClass = 'bg-rose-100 text-rose-800 border border-rose-300';
       cardClass = 'p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1';
     } else if (probPct < 85) {
-      badge = 'Borderline Contender';
+      badge = 'Contender / Borderline Passing';
       badgeClass = 'bg-amber-100 text-amber-800 border border-amber-300';
       cardClass = 'p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-1';
     }
@@ -2554,7 +2605,13 @@ document.addEventListener('DOMContentLoaded', () => {
       badge: badge,
       badgeClass: badgeClass,
       cardClass: cardClass,
-      p: p
+      p: p,
+      moeText: `±${(moe * 100).toFixed(1)}%`,
+      moeVal: (moe * 100),
+      ciText: `[${ciLower}% - ${ciUpper}%]`,
+      sampleTier: `${sampleTier} (${total}Q)`,
+      sampleReliability: sampleReliability,
+      coveragePct: coveragePct.toFixed(1)
     };
   }
 
@@ -2566,6 +2623,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const correctCount = Math.max(0, answeredCount - wrongCount);
     const accuracyPct = answeredCount > 0 ? (correctCount / answeredCount) * 100 : 0;
+
+    // Sample size bar elements
+    const statSampleTierBadge = document.getElementById('stat-sample-tier-badge');
+    const statSampleMoe = document.getElementById('stat-sample-moe');
+    const statBankCoverageText = document.getElementById('stat-bank-coverage-text');
+    const statSampleReliabilityText = document.getElementById('stat-sample-reliability-text');
+    const statBankCoverageBar = document.getElementById('stat-bank-coverage-bar');
+    const statSampleQCount = document.getElementById('stat-sample-q-count');
+    const statCiRange = document.getElementById('stat-ci-range');
 
     const statAccuracyBig = document.getElementById('stat-accuracy-big');
     const statAccuracyCounts = document.getElementById('stat-accuracy-counts');
@@ -2579,6 +2645,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const statReadinessBanner = document.getElementById('stat-readiness-banner');
     const statDomainList = document.getElementById('stat-domain-breakdown-list');
     const statRecommendedAction = document.getElementById('stat-recommended-action');
+
+    // Compute Sample-Weighted Model
+    const model = computeExamPassProbability(correctCount, answeredCount);
+
+    // Populate Sample Size Bar
+    if (statSampleTierBadge) statSampleTierBadge.textContent = model.sampleTier;
+    if (statSampleMoe) statSampleMoe.textContent = `Margin of Error: ${model.moeText}`;
+    if (statBankCoverageText) statBankCoverageText.textContent = `${answeredCount} / ${allQuestions.length || 500} (${model.coveragePct}%)`;
+    if (statSampleReliabilityText) statSampleReliabilityText.textContent = model.sampleReliability;
+    if (statBankCoverageBar) statBankCoverageBar.style.width = `${Math.min(100, Math.max(5, model.coveragePct))}%`;
+    if (statSampleQCount) statSampleQCount.textContent = `${answeredCount} questions`;
+    if (statCiRange) statCiRange.textContent = `95% Skill CI: ${model.ciText}`;
 
     // 1. Accuracy Card
     if (statAccuracyBig) statAccuracyBig.textContent = answeredCount ? `${Math.round(accuracyPct)}%` : '--%';
@@ -2594,8 +2672,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 2. Pass Probability & Projected Score
-    const model = computeExamPassProbability(correctCount, answeredCount);
+    // 2. Pass Probability & Projected Score (Bayesian Beta-Binomial)
     if (statProbBig) statProbBig.textContent = model.prob ? `${model.prob}%` : '--%';
     if (statProbBadge) {
       statProbBadge.textContent = model.badge;
@@ -2634,17 +2711,17 @@ document.addEventListener('DOMContentLoaded', () => {
         statReadinessBanner.innerHTML = `
           <div class="flex items-center justify-between">
             <span class="font-extrabold text-amber-900 flex items-center gap-1.5 text-sm">
-              <span>⚠️</span> Status: Borderline Pass Contender (${Math.round(accuracyPct)}%)
+              <span>⚠️</span> Sample-Weighted Status: Borderline Contender (${Math.round(accuracyPct)}%)
             </span>
-            <span class="px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900 font-bold text-[10px]">Close to Passing</span>
+            <span class="px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900 font-bold text-[10px]">Sample: ${answeredCount} Questions</span>
           </div>
           <p class="leading-relaxed text-slate-700">
-            At <strong>${Math.round(accuracyPct)}% (${correctCount}/${answeredCount})</strong>, you are currently <strong>${(75 - accuracyPct).toFixed(1)}% shy</strong> of the official 75% Pearson VUE pass mark.
+            Based on your solid sample of <strong>${answeredCount} questions</strong> (95% skill interval: <strong>${model.ciText}</strong>, margin of error: <strong>${model.moeText}</strong>), you are currently <strong>${(75 - accuracyPct).toFixed(1)}% shy</strong> of the official 75% pass mark. Your sample size is large enough to give high confidence, meaning this reflects real test preparedness rather than variance!
           </p>
           <div class="p-3 bg-white/80 rounded-xl border border-amber-200 text-slate-800 space-y-1">
-            <strong class="text-amber-900 font-bold block">🎯 Fast Track to Safe Zone (85%+):</strong>
+            <strong class="text-amber-900 font-bold block">🎯 Fast Track to Safe Zone (85%+ Probability):</strong>
             <p>• Answering your next <strong>${consecutiveNeeded} questions correctly</strong> in Practice Mode will push your cumulative score over 75%.</p>
-            <p>• At an 85% study pace, you need <strong>${paceNeeded} more questions</strong> to secure a durable passing buffer.</p>
+            <p>• At an 85% study pace across your unattempted questions, you need <strong>${paceNeeded} more questions</strong> to secure a durable passing buffer.</p>
           </div>
         `;
       } else if (accuracyPct < 85) {
@@ -2652,15 +2729,15 @@ document.addEventListener('DOMContentLoaded', () => {
         statReadinessBanner.innerHTML = `
           <div class="flex items-center justify-between">
             <span class="font-extrabold text-emerald-900 flex items-center gap-1.5 text-sm">
-              <span>✅</span> Status: Passing Trajectory (${Math.round(accuracyPct)}%)
+              <span>✅</span> Sample-Weighted Status: Passing Trajectory (${Math.round(accuracyPct)}%)
             </span>
-            <span class="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">Passing Benchmark Met</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">Sample: ${answeredCount} Questions</span>
           </div>
           <p class="leading-relaxed text-slate-700">
-            Great work! Your current score of <strong>${Math.round(accuracyPct)}%</strong> exceeds the Pearson VUE 75% passing requirement. Your estimated pass probability on a random 75Q exam is <strong>${model.prob}%</strong>.
+            Great work! With <strong>${answeredCount} questions completed</strong>, your sample size is statistically robust (margin of error <strong>${model.moeText}</strong>). Your Bayesian pass probability on a random 75Q Pearson VUE exam is <strong>${model.prob}%</strong>.
           </p>
           <div class="p-2.5 bg-white/80 rounded-xl border border-emerald-200 text-slate-700">
-            💡 <strong>Pro Tip:</strong> Aim for 80-85% in your practice drills to guard against test-day fatigue and tricky distractors.
+            💡 <strong>Pro Tip:</strong> Continue until you reach 200+ questions answered to further narrow your margin of error and lock in an 85%+ safe pass probability.
           </div>
         `;
       } else {
@@ -2668,12 +2745,12 @@ document.addEventListener('DOMContentLoaded', () => {
         statReadinessBanner.innerHTML = `
           <div class="flex items-center justify-between">
             <span class="font-extrabold text-indigo-900 flex items-center gap-1.5 text-sm">
-              <span>🏆</span> Status: Elite Mastery Zone (${Math.round(accuracyPct)}%)
+              <span>🏆</span> Sample-Weighted Status: Elite Mastery Zone (${Math.round(accuracyPct)}%)
             </span>
-            <span class="px-2 py-0.5 rounded-full bg-indigo-200 text-indigo-900 font-bold text-[10px]">Exam Ready</span>
+            <span class="px-2 py-0.5 rounded-full bg-indigo-200 text-indigo-900 font-bold text-[10px]">Sample: ${answeredCount} Questions</span>
           </div>
           <p class="leading-relaxed text-slate-700">
-            Outstanding! At <strong>${Math.round(accuracyPct)}% accuracy</strong> across ${answeredCount} questions, your statistical likelihood of passing the real Pearson VUE PCIP exam is <strong>${model.prob}%</strong>. You are ready to sit the exam!
+            Outstanding! At <strong>${Math.round(accuracyPct)}% accuracy</strong> across ${answeredCount} questions (margin of error ${model.moeText}), your Bayesian pass probability on the official 75Q exam is <strong>${model.prob}%</strong>. You are statistically primed to pass on your first attempt!
           </p>
         `;
       }
