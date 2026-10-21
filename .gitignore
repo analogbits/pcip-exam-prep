@@ -1,0 +1,7 @@
+.DS_Store
+scratch/
+current_questions.json
+*.py
+build_*.py
+add_*.py
+generate_*.py

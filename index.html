@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCIP Exam Prep Accelerator (PCI DSS v4.0.1)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center shadow-md font-black text-white text-lg">
+          PCI
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-extrabold text-base md:text-lg tracking-tight text-white">PCIP Exam Accelerator</h1>
+            <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v4.0.1 Verified</span>
+          </div>
+          <p class="text-xs text-slate-400">Payment Card Industry Professional · 2-Day High-Yield Mastery</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full">
+        <button id="tab-practice-btn" class="active-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition-all whitespace-nowrap flex items-center gap-1.5">
+          <span>💡</span> <span>Practice & Reasoning</span>
+        </button>
+        <button id="tab-exam-btn" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all whitespace-nowrap flex items-center gap-1.5">
+          <span>⏱️</span> <span>Exam Simulator (75Q)</span>
+        </button>
+        <button id="tab-flashcards-btn" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all whitespace-nowrap flex items-center gap-1.5">
+          <span>⚡</span> <span>Rapid Cram Cards</span>
+        </button>
+        <button id="tab-cheatsheet-btn" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all whitespace-nowrap flex items-center gap-1.5">
+          <span>📋</span> <span>Master Cheat Sheet</span>
+        </button>
+        <button id="tab-review-btn" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all whitespace-nowrap flex items-center gap-1.5">
+          <span>⭐️</span> <span>Weak Areas</span>
+        </button>
+        <div class="h-6 w-px bg-slate-800 hidden sm:block mx-0.5"></div>
+        <button id="backup-sync-btn" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-indigo-950 text-indigo-300 hover:text-white border border-indigo-500/30 transition-all whitespace-nowrap flex items-center gap-1.5 shadow-2xs" title="Export progress to file or import into GitHub website">
+          <span>💾</span> <span>Backup / Sync</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: PRACTICE MODE (INSTANT FEEDBACK) -->
+    <!-- ========================================== -->
+    <div id="view-practice" class="space-y-6">
+      <!-- Filter & Progress Bar -->
+      <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-3 flex-1">
+            <div class="w-full sm:w-auto">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Filter by Domain</label>
+              <select id="category-filter" class="w-full sm:w-56 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs md:text-sm text-slate-800 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <option value="all">All Domains & Categories</option>
+              </select>
+            </div>
+
+            <div class="w-full sm:w-auto">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Question Status</label>
+              <select id="practice-status-filter" class="w-full sm:w-60 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs md:text-sm text-slate-800 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <option value="unanswered">Hide Answered (Unanswered Only)</option>
+                <option value="all">All Questions (Answered & Unanswered)</option>
+                <option value="answered">Answered Questions Only</option>
+                <option value="incorrect">Incorrect / Missed Only</option>
+              </select>
+            </div>
+
+            <div class="w-full sm:w-auto flex-1 min-w-[200px]">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Search Keyword / Concept</label>
+              <input type="text" id="search-questions" placeholder="e.g. SAQ, track data, MFA, 30 days, token..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs md:text-sm text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+          </div>
+
+          <div class="text-right pl-2 border-l border-slate-100 hidden sm:block">
+            <span class="text-xs text-slate-400 uppercase font-semibold">Active Question</span>
+            <p class="text-base font-extrabold text-slate-800"><span id="practice-current-index">1</span> of <span id="practice-total-count">--</span></p>
+          </div>
+        </div>
+
+        <!-- Practice Progress & Action Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
+          <div class="flex flex-wrap items-center gap-2.5 md:gap-3">
+            <span class="text-slate-500 font-semibold">Practice Progress:</span>
+            <span class="font-extrabold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
+              <span id="practice-answered-count">0</span> / <span id="practice-total-available">500</span> Answered (<span id="practice-progress-pct">0%</span>)
+            </span>
+            <span id="practice-accuracy-badge" class="font-bold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 inline-flex items-center gap-1.5 transition-colors" title="Pearson VUE PCIP passing benchmark is 75%">
+              <span class="text-slate-500 font-medium">🎯 Running Score:</span>
+              <span id="practice-accuracy-pct" class="font-black text-slate-800">--%</span>
+              <span id="practice-accuracy-counts" class="text-xs font-semibold text-slate-500">(0 answered)</span>
+            </span>
+            <label class="inline-flex items-center gap-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 font-bold select-none bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
+              <input type="checkbox" id="practice-shuffle-toggle" class="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5">
+              <span>🔀 Shuffle Questions</span>
+            </label>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="top-practice-random-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors shadow-xs">
+              <span>🎲</span> Jump to Random
+            </button>
+            <button id="reset-practice-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors shadow-xs">
+              <span>↺</span> Reset Answers
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Card Container -->
+      <div id="practice-card-container">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: EXAM SIMULATOR -->
+    <!-- ========================================== -->
+    <div id="view-exam" class="hidden">
+      <!-- Rendered by app.js -->
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: RAPID CRAM FLASHCARDS -->
+    <!-- ========================================== -->
+    <div id="view-flashcards" class="hidden max-w-2xl mx-auto space-y-6">
+      <div class="text-center">
+        <h2 class="text-2xl font-extrabold text-slate-900">2-Day High-Speed Flashcards</h2>
+        <p class="text-sm text-slate-500 mt-1">Flip through high-yield definitions, timeframes, and standard distinctions to memorize them fast.</p>
+      </div>
+
+      <!-- Flashcard Controls: Deck Selector & Shuffle -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2">
+          <label for="flashcard-deck-select" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Deck:</label>
+          <select id="flashcard-deck-select" class="text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500">
+            <option value="core">⚡ Core Concepts Mastery (50 Cards)</option>
+            <option value="questions">📚 500 Questions Bank (Flip Q&A)</option>
+            <option value="missed">⚠️ Missed / Weak Area Cards</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="flashcard-shuffle-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+            🔀 Shuffle Deck
+          </button>
+        </div>
+      </div>
+
+      <div id="flashcard-inner" class="animate-fade-in">
+        <!-- Rendered by app.js -->
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button id="flashcard-prev-btn" class="px-5 py-2.5 rounded-xl text-sm font-semibold border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 text-slate-700">
+          ← Previous Card
+        </button>
+        <span class="text-xs font-bold text-slate-500">
+          Card <span id="flashcard-current">1</span> of <span id="flashcard-total">12</span>
+        </span>
+        <button id="flashcard-next-btn" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40">
+          Next Card →
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: 2-DAY MASTER CHEAT SHEET -->
+    <!-- ========================================== -->
+    <div id="view-cheatsheet" class="hidden space-y-8">
+      
+      <!-- Top Banner -->
+      <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 md:p-8 shadow-sm">
+        <div class="max-w-4xl">
+          <span class="px-3 py-1 bg-indigo-500/30 text-indigo-200 rounded-full text-xs font-bold uppercase tracking-wider border border-indigo-400/30">
+            Emergency 48-Hour Exam Cram Sheet · Aligned with PCI DSS v4.0.1
+          </span>
+          <h2 class="text-2xl md:text-3xl font-black mt-3">PCI DSS v4.0.1 Master Audio Knowledge Base</h2>
+          <p class="text-slate-300 text-sm md:text-base mt-2 leading-relaxed">
+            Every core concept, periodicity timeframe, SAQ rule, and exam trap synthesized for rapid memorization. Read visually or click <strong>Listen / Read Aloud</strong> to have your browser narrate the entire cheat sheet or specific sections hands-free!
+          </p>
+        </div>
+      </div>
+
+      <!-- Sticky Audio Player & Text-To-Speech Controller -->
+      <div class="sticky top-20 z-30 bg-white/95 backdrop-blur-md rounded-2xl border border-indigo-200 p-4 shadow-md space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl font-bold shadow-xs">
+              🎧
+            </div>
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900">Audio Narration Player</h3>
+              <p id="tts-status-text" class="text-xs text-slate-500">Ready to read aloud · Listen hands-free while reviewing</p>
+            </div>
+          </div>
+
+          <!-- Player Controls -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Section Selector -->
+            <select id="tts-section-select" class="text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+              <option value="all">📖 Read Entire Cheat Sheet</option>
+              <option value="cheat-48hr-strategy">⚡ 1. 48-Hour Exam Strategy</option>
+              <option value="cheat-table-frequencies">⏱️ 2. Master Periodicity & Timelines</option>
+              <option value="cheat-chd-vs-sad">💳 3. Account Data (CHD vs SAD)</option>
+              <option value="cheat-ecosystem-roles">🏛️ 4. Ecosystem & Brand Enforcement</option>
+              <option value="cheat-scoping-segmentation">🎯 5. Scoping & Segmentation</option>
+              <option value="cheat-12-requirements">📋 6. The 12 Requirements Deep-Dive</option>
+              <option value="cheat-saq-decision">🧭 7. SAQ Selection Flowchart</option>
+              <option value="cheat-appendices-deepdive">📚 8. Appendices (A1, A2, A3, C, D)</option>
+              <option value="cheat-specialized-standards">🛡️ 9. Specialized Standards (P2PE, PTS, SSF)</option>
+              <option value="cheat-top-traps">⚠️ 10. Top 25 Cardinal Exam Traps</option>
+            </select>
+
+            <!-- Speed Selector -->
+            <select id="tts-speed-select" class="text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-2.5 py-2 focus:ring-2 focus:ring-indigo-500">
+              <option value="0.9">0.9x Speed</option>
+              <option value="1.0" selected>1.0x Normal</option>
+              <option value="1.2">1.2x Fast</option>
+              <option value="1.4">1.4x Speed Cram</option>
+            </select>
+
+            <!-- Play / Pause / Stop Buttons -->
+            <button id="tts-play-btn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors">
+              <span>▶</span> Play Audio
+            </button>
+            <button id="tts-pause-btn" class="hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-colors">
+              <span>⏸</span> Pause
+            </button>
+            <button id="tts-stop-btn" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors">
+              <span>⏹</span> Stop
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div id="tts-progress-container" class="hidden w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+          <div id="tts-progress-bar" class="bg-indigo-600 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Quick Jump Anchors -->
+      <div class="flex flex-wrap gap-2 text-xs font-semibold">
+        <a href="#cheat-48hr-strategy" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">⚡ 48-Hour Strategy</a>
+        <a href="#cheat-table-frequencies" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">⏱️ Periodicity Table</a>
+        <a href="#cheat-chd-vs-sad" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">💳 CHD vs SAD Matrix</a>
+        <a href="#cheat-ecosystem-roles" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">🏛️ Ecosystem & Brands</a>
+        <a href="#cheat-scoping-segmentation" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">🎯 Scoping & Segmentation</a>
+        <a href="#cheat-12-requirements" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">📋 12 Requirements</a>
+        <a href="#cheat-saq-decision" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">🧭 SAQ Selection Tree</a>
+        <a href="#cheat-appendices-deepdive" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">📚 Appendices (A, C, D)</a>
+        <a href="#cheat-specialized-standards" class="px-3 py-2 bg-white rounded-xl border border-slate-200 hover:border-indigo-500 text-slate-700 transition-colors">🛡️ Specialized Standards</a>
+        <a href="#cheat-top-traps" class="px-3 py-2 bg-white rounded-xl border border-rose-200 hover:border-rose-500 text-rose-700 font-bold transition-colors">⚠️ Top 25 Exam Traps</a>
+      </div>
+
+      <!-- 1. 48-HOUR EXAM STRATEGY -->
+      <section id="cheat-48hr-strategy" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>⚡</span> 1. 48-Hour Exam Strategy & Priority Allocation
+          </h3>
+          <button data-target="cheat-48hr-strategy" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+        <p class="text-sm text-slate-700 leading-relaxed">
+          The PCIP exam consists of 60 to 75 multiple-choice questions administered over 90 minutes via Pearson VUE. Passing score is 75%. The vast majority of questions are standard single-choice (A, B, C, D), with occasional multi-select questions.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs md:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="font-extrabold text-indigo-700 text-sm">Day 1: Morning</span>
+            <h4 class="font-bold text-slate-900 mt-1">Foundations & Scoping</h4>
+            <p class="text-slate-600 mt-1 text-xs">Master Ecosystem roles (PCI SSC vs Brands), ACS transaction lifecycle, CDE boundary scoping, and the strict CHD vs SAD rules.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="font-extrabold text-indigo-700 text-sm">Day 1: Afternoon & Evening</span>
+            <h4 class="font-bold text-slate-900 mt-1">Requirements 1 through 12</h4>
+            <p class="text-slate-600 mt-1 text-xs">Drill Network Security Controls (Req 1-2), Encryption (Req 3-4), 30-day patching (Req 6), 12-char passwords & universal MFA (Req 8), Logging (Req 10), and Pentesting (Req 11).</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="font-extrabold text-indigo-700 text-sm">Day 2: Morning & Evening</span>
+            <h4 class="font-bold text-slate-900 mt-1">Timelines, SAQs & Simulations</h4>
+            <p class="text-slate-600 mt-1 text-xs">Memorize the Master Periodicity Table, drill the SAQ selection tree, master Appendix C vs D, and take 2 full timed 75-question mock simulations.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. HIGH-YIELD PERIODIC TIMELINES -->
+      <section id="cheat-table-frequencies" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>⏱️</span> 2. Master Periodicity & Exact Frequencies Table
+          </h3>
+          <button data-target="cheat-table-frequencies" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+        <p class="text-xs text-slate-500">Memorize these exact timeframes. Almost 20% of exam points relate directly to periodicities and numbers!</p>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs md:text-sm border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <th class="p-3 w-36">Frequency</th>
+                <th class="p-3">Required Activity & Testing Scope</th>
+                <th class="p-3 w-32">Requirement</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-800">
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">15 Minutes</td>
+                <td class="p-3">Automatic idle session lock requiring re-authentication on workstations with access to CDE.</td>
+                <td class="p-3 font-mono text-xs">Req 8.2.8</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">Daily</td>
+                <td class="p-3">Review audit logs for critical security functions (firewalls, IDS/IPS, authentication servers, servers holding CHD).</td>
+                <td class="p-3 font-mono text-xs">Req 10.4.1</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">Weekly (7 Days)</td>
+                <td class="p-3">Verify critical system and OS files using File Integrity Monitoring (FIM). Also, verify e-commerce payment page headers and scripts for tamper detection.</td>
+                <td class="p-3 font-mono text-xs">Req 11.5.2 & 11.6.1</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">30 Calendar Days</td>
+                <td class="p-3">Deploy all Critical and High-risk security patches across in-scope system components. Also, maximum ASV dispute window.</td>
+                <td class="p-3 font-mono text-xs">Req 6.3.3</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">90 Calendar Days</td>
+                <td class="p-3">Disable or delete inactive user accounts. Minimum retention for physical visitor logs and video surveillance camera footage. Rotate user passwords (unless dynamic risk-based authentication is used). Maximum validity for ASV external scan reports.</td>
+                <td class="p-3 font-mono text-xs">Req 8.2.6, 8.3.9, 9.3.4, 9.4.4</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">Quarterly (3 Months)</td>
+                <td class="p-3">Perform internal vulnerability scans (authenticated in v4.0). Perform external vulnerability scans via PCI SSC Approved Scanning Vendor (ASV). Conduct rogue wireless access point scans (WIDS/WIPS or RF sweep). Review and purge stored cardholder data exceeding retention policies.</td>
+                <td class="p-3 font-mono text-xs">Req 3.1.1, 11.2.1, 11.3.1, 11.3.2</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-amber-700">Semi-Annually (6 Months)</td>
+                <td class="p-3">Review all user accounts and access privileges (Req 7.2.4). Review firewall and NSC rulesets (Req 1.2.7). Service Provider segmentation penetration testing (Req 11.4.5). Service Provider scope confirmation and data flow verification (Req 12.5.2).</td>
+                <td class="p-3 font-mono text-xs">Req 1.2.7, 7.2.4, 11.4.5, 12.5.2</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-emerald-700">Annually (12 Months)</td>
+                <td class="p-3">Internal and external penetration testing (network and application layer). Merchant segmentation validation pentest. Merchant PCI DSS scope documentation confirmation. Information security policy review and publication. Formal risk assessment process. Employee security awareness training. Test Incident Response Plan. Monitor TPSP compliance status (collect AOCs). Review cryptographic keys and cryptoperiods.</td>
+                <td class="p-3 font-mono text-xs">Req 11.4.1, 12.1.1, 12.1.2, 12.5.2, 12.6.1, 12.8.4, 12.10.2</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-purple-700">1 Year Retention</td>
+                <td class="p-3">Retain all audit trail logs for at least 12 months, with the most recent 3 months immediately accessible online for analysis.</td>
+                <td class="p-3 font-mono text-xs">Req 10.5.1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. CHD VS SAD MATRIX -->
+      <section id="cheat-chd-vs-sad" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>💳</span> 3. Account Data: Cardholder Data (CHD) vs Sensitive Authentication Data (SAD)
+          </h3>
+          <button data-target="cheat-chd-vs-sad" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+        <p class="text-sm text-slate-700 leading-relaxed">
+          Account data is bifurcated into Cardholder Data (CHD) and Sensitive Authentication Data (SAD). Storing SAD post-authorization is the single most penalized violation in payment security!
+        </p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs md:text-sm border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <th class="p-3">Category</th>
+                <th class="p-3">Data Element</th>
+                <th class="p-3 w-32 text-center">Store Post-Auth?</th>
+                <th class="p-3">Mandatory Protection Standard</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-800">
+              <tr class="bg-emerald-50/40">
+                <td class="p-3 font-bold text-emerald-800">Cardholder Data (CHD)</td>
+                <td class="p-3 font-semibold text-slate-900">Primary Account Number (PAN)</td>
+                <td class="p-3 text-center font-bold text-emerald-700">YES</td>
+                <td class="p-3 text-xs">Must be rendered unreadable anywhere it is stored: 1) Strong cryptography (AES-128/256), 2) Keyed hash, 3) Truncation, or 4) Tokenization.</td>
+              </tr>
+              <tr class="bg-emerald-50/40">
+                <td class="p-3 font-bold text-emerald-800">Cardholder Data (CHD)</td>
+                <td class="p-3">Cardholder Name</td>
+                <td class="p-3 text-center font-bold text-emerald-700">YES</td>
+                <td class="p-3 text-xs">Must be protected in accordance with PCI DSS if stored together with the PAN.</td>
+              </tr>
+              <tr class="bg-emerald-50/40">
+                <td class="p-3 font-bold text-emerald-800">Cardholder Data (CHD)</td>
+                <td class="p-3">Expiration Date</td>
+                <td class="p-3 text-center font-bold text-emerald-700">YES</td>
+                <td class="p-3 text-xs">Must be protected in accordance with PCI DSS if stored together with the PAN.</td>
+              </tr>
+              <tr class="bg-emerald-50/40">
+                <td class="p-3 font-bold text-emerald-800">Cardholder Data (CHD)</td>
+                <td class="p-3">Service Code (3-digit magnetic stripe code)</td>
+                <td class="p-3 text-center font-bold text-emerald-700">YES</td>
+                <td class="p-3 text-xs">Must be protected in accordance with PCI DSS if stored together with the PAN.</td>
+              </tr>
+              <tr class="bg-rose-50/50">
+                <td class="p-3 font-bold text-rose-800">Sensitive Authentication Data (SAD)</td>
+                <td class="p-3 font-semibold text-slate-900">Full Magnetic Stripe Data (Track 1 / Track 2 / Chip equivalent)</td>
+                <td class="p-3 text-center font-black text-rose-700 bg-rose-100/80 rounded">NO NEVER</td>
+                <td class="p-3 text-xs text-rose-900 font-medium">CANNOT BE STORED POST-AUTHORIZATION under any circumstances, even if encrypted. Only Issuers with business justification may retain SAD.</td>
+              </tr>
+              <tr class="bg-rose-50/50">
+                <td class="p-3 font-bold text-rose-800">Sensitive Authentication Data (SAD)</td>
+                <td class="p-3 font-semibold text-slate-900">Card Verification Code (CAV2, CVC2, CVV2, CID)</td>
+                <td class="p-3 text-center font-black text-rose-700 bg-rose-100/80 rounded">NO NEVER</td>
+                <td class="p-3 text-xs text-rose-900 font-medium">CANNOT BE STORED POST-AUTHORIZATION. Storing CVV for recurring billing is strictly illegal under PCI DSS!</td>
+              </tr>
+              <tr class="bg-rose-50/50">
+                <td class="p-3 font-bold text-rose-800">Sensitive Authentication Data (SAD)</td>
+                <td class="p-3 font-semibold text-slate-900">PIN and Encrypted PIN Block</td>
+                <td class="p-3 text-center font-black text-rose-700 bg-rose-100/80 rounded">NO NEVER</td>
+                <td class="p-3 text-xs text-rose-900 font-medium">CANNOT BE STORED POST-AUTHORIZATION. Plaintext PINs must never exist outside certified PTS cryptographic hardware.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs md:text-sm text-indigo-950 space-y-1">
+          <p class="font-bold">🔑 Key Cryptographic Rules to Remember:</p>
+          <ul class="list-disc list-inside space-y-1 text-xs">
+            <li><strong>Display Masking (Req 3.3):</strong> Maximum display on screens/receipts is the first 6 (or 8) and last 4 digits (BIN + last 4). Full PAN requires documented business justification.</li>
+            <li><strong>Rendering Stored PAN Unreadable (Req 3.5):</strong> 4 methods only: 1) One-way keyed hash, 2) Truncation, 3) Tokenization, 4) Strong cryptography (AES-128/256). Base64 and ROT13 are NOT encryption.</li>
+            <li><strong>Dual Control & Split Knowledge (Req 3.6):</strong> Key management operations require 2 people (dual control) and key components divided so no single person possesses the full key (split knowledge).</li>
+            <li><strong>DEK vs KEK:</strong> Data Encryption Key (DEK) encrypts card data; Key Encrypting Key (KEK) encrypts the DEK. KEK must be at least as cryptographically strong as the DEK and stored separately.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. ECOSYSTEM ROLES & GOVERNANCE -->
+      <section id="cheat-ecosystem-roles" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>🏛️</span> 4. Payment Ecosystem Roles & Governance
+          </h3>
+          <button data-target="cheat-ecosystem-roles" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <h4 class="font-extrabold text-slate-900 text-sm">PCI SSC vs Card Brands & Acquirers</h4>
+            <ul class="space-y-1.5 text-slate-700 text-xs">
+              <li>• <strong>PCI SSC (Council):</strong> Founded by Visa, MC, Amex, Discover, JCB. Creates, publishes, and maintains standards (DSS, P2PE, SSF, PTS) and qualifies assessors (QSA, ISA, PCIP, ASV). <strong>THE COUNCIL DOES NOT ENFORCE COMPLIANCE AND LEVIES NO FINES!</strong></li>
+              <li>• <strong>Payment Card Brands:</strong> Enforce compliance, establish merchant/provider levels (Level 1-4), set submission deadlines, and assess penalties against Acquiring Banks for merchant non-compliance.</li>
+              <li>• <strong>Acquirer (Merchant's Bank):</strong> Financial institution that contracts with merchants to process cards and disburse settled funds. Acquirers pass brand penalties down to non-compliant merchants.</li>
+              <li>• <strong>Issuer (Cardholder's Bank):</strong> Bank that issues cards to consumers. <strong>ONLY THE ISSUER has the authority to approve or decline a transaction during authorization.</strong></li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <h4 class="font-extrabold text-slate-900 text-sm">Transaction Lifecycle (The ACS Cycle)</h4>
+            <ul class="space-y-1.5 text-slate-700 text-xs">
+              <li>1. <strong>Authorization:</strong> Merchant requests payment approval; Issuer validates cardholder funds/credit and returns approval or decline code.</li>
+              <li>2. <strong>Clearing:</strong> Acquirer and Issuer exchange final settlement records via the Brand payment network.</li>
+              <li>3. <strong>Settlement:</strong> Movement of funds from Issuer to Acquirer, and Acquirer deposits funds into the Merchant bank account.</li>
+              <li>• <strong>Open-Loop (4-Party):</strong> Visa & MasterCard. Separate Issuers and Acquirers participate.</li>
+              <li>• <strong>Closed-Loop (3-Party):</strong> American Express & Discover. Brand acts as both Issuer and Acquirer directly.</li>
+              <li>• <strong>Brand Programs:</strong> Visa = CISP; MasterCard = SDP; Discover = DISC; Amex = DSOP.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+          <h4 class="font-bold text-slate-900 mb-1">Assessor Qualifications & Code of Responsibility:</h4>
+          <p class="text-slate-600 leading-relaxed">
+            • <strong>QSA:</strong> Independent consultant who audits Level 1 entities and signs Reports on Compliance (ROC).<br>
+            • <strong>ISA:</strong> Internal employee trained by PCI SSC to sponsor internal compliance and perform internal assessments.<br>
+            • <strong>PCIP:</strong> Individual credential demonstrating comprehensive knowledge of PCI standards; does not sign official audit ROCs.<br>
+            • <strong>ASV:</strong> Qualified vendor certified to perform quarterly external vulnerability scans.<br>
+            • <strong>Code of Responsibility Sanctions:</strong> 1) Warning, 2) Suspension, 3) Revocation. Conflict of interest must be disclosed in writing immediately.
+          </p>
+        </div>
+      </section>
+
+      <!-- 5. SCOPING & SEGMENTATION -->
+      <section id="cheat-scoping-segmentation" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>🎯</span> 5. Scoping & Network Segmentation
+          </h3>
+          <button data-target="cheat-scoping-segmentation" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm">1. Cardholder Data Environment (CDE)</h4>
+            <p class="text-slate-600 mt-1">Systems, people, and processes that store, process, or transmit Cardholder Data (CHD) or Sensitive Authentication Data (SAD), plus any system on the same unsegmented network segment.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm">2. Connected-To Systems</h4>
+            <p class="text-slate-600 mt-1">Systems that connect directly to the CDE (e.g. administrator jump boxes, administrative workstations, backup servers, SIEM collectors). Fully in scope for all applicable requirements.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm">3. Security-Impacting Systems</h4>
+            <p class="text-slate-600 mt-1">Systems that provide security functions or whose compromise could impact CDE security (e.g., Active Directory / LDAP, NTP time servers, DNS servers, patch management systems, firewalls).</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-200 text-xs md:text-sm text-indigo-950 space-y-1.5">
+          <h4 class="font-bold">⚡ Critical Scoping Rules:</h4>
+          <ul class="list-disc list-inside space-y-1 text-xs">
+            <li><strong>Flat Network Danger:</strong> If an organization has no internal firewalls or VLAN segmentation, the entire corporate network (including HR and cafeteria PCs) is in scope for all 12 requirements!</li>
+            <li><strong>Segmentation Testing:</strong> Network segmentation is not a requirement, but a strongly recommended method to reduce scope. Segmentation controls MUST be validated via technical penetration testing: annually for merchants, semi-annually (every 6 months) for service providers.</li>
+            <li><strong>Out-of-Scope Systems:</strong> To be considered out-of-scope, a system component must have zero physical or logical access to the CDE, cannot communicate with CDE systems on any port, and must not impact CDE security.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6. THE 12 REQUIREMENTS -->
+      <section id="cheat-12-requirements" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>📋</span> 6. The 12 Requirements & 6 Overarching Goals
+          </h3>
+          <button data-target="cheat-12-requirements" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+
+        <div class="space-y-3 text-xs md:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-indigo-100 text-indigo-800 uppercase">Goal 1: Build and Maintain a Secure Network and Systems</span>
+            <div class="mt-2 space-y-1 text-slate-700 text-xs">
+              <p>• <strong>Req 1: Install and Maintain Network Security Controls (NSCs):</strong> Restrict incoming and outgoing traffic to explicitly authorized business needs (default deny all). Review rulesets every 6 months. Direct connections between Internet and CDE strictly prohibited (DMZ required).</p>
+              <p>• <strong>Req 2: Apply Secure Configurations to All System Components:</strong> Change all vendor-supplied defaults (passwords, SNMP strings) prior to deployment. Maintain documented hardening standards (CIS/NIST). One primary function per system/VM. Encrypt non-console admin access (SSH/HTTPS; Telnet/HTTP forbidden).</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-indigo-100 text-indigo-800 uppercase">Goal 2: Protect Account Data</span>
+            <div class="mt-2 space-y-1 text-slate-700 text-xs">
+              <p>• <strong>Req 3: Protect Stored Account Data:</strong> SAD (track, CVV, PIN) cannot be stored post-authorization. Render PAN unreadable using strong crypto, keyed hash, truncation, or tokenization. Mask PAN on displays (max first 6/8 and last 4). Key management dual control & split knowledge.</p>
+              <p>• <strong>Req 4: Protect Cardholder Data with Strong Cryptography During Transmission:</strong> Use strong cryptography (TLS 1.2/1.3) when transmitting PAN over open, public networks (Internet, cellular, wireless). Insecure ciphers (RC4, 3DES, SSL) prohibited. Never send cleartext PAN via email/SMS/chat.</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-indigo-100 text-indigo-800 uppercase">Goal 3: Maintain a Vulnerability Management Program</span>
+            <div class="mt-2 space-y-1 text-slate-700 text-xs">
+              <p>• <strong>Req 5: Protect All Systems and Networks from Malicious Software:</strong> Deploy anti-malware on all susceptible systems. Document Targeted Risk Analysis (TRA) for non-susceptible systems. Automatic updates and behavioral/heuristic detection required. Deploy automated anti-phishing technical mechanisms (DMARC/SPF/DKIM).</p>
+              <p>• <strong>Req 6: Develop and Maintain Secure Systems and Software:</strong> Deploy Critical/High security patches within 30 calendar days. Protect public web applications with WAF. Inventory and verify authorization/integrity for all browser scripts on payment pages (Req 6.4.3). Independent code reviews and separate dev/test/production environments (no live PAN in test!).</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-indigo-100 text-indigo-800 uppercase">Goal 4: Implement Strong Access Control Measures</span>
+            <div class="mt-2 space-y-1 text-slate-700 text-xs">
+              <p>• <strong>Req 7: Restrict Access to System Components and Cardholder Data by Business Need to Know:</strong> Role-Based Access Control (RBAC) enforcing least privilege. Review all user accounts and privileges at least every 6 months (Req 7.2.4).</p>
+              <p>• <strong>Req 8: Identify Users and Authenticate Access to System Components:</strong> Unique user ID for every individual (shared accounts banned). Minimum 12-character passwords (v4.0). Lockout after <= 10 failed attempts for >= 30 minutes. Inactive accounts disabled within 90 days. 15-minute idle screen lock. MFA mandatory for ALL access entering the CDE (Req 8.4.2).</p>
+              <p>• <strong>Req 9: Restrict Physical Access to Cardholder Data:</strong> Physical badges and escorts for visitors. Retain visitor logs and video camera footage for at least 90 days. Periodic physical inspection of POI payment devices for skimming (Req 9.5). Cross-cut shred paper media; secure wipe/degauss/shred electronic media.</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-indigo-100 text-indigo-800 uppercase">Goal 5: Regularly Monitor and Test Networks</span>
+            <div class="mt-2 space-y-1 text-slate-700 text-xs">
+              <p>• <strong>Req 10: Log and Monitor All Access to System Components and Cardholder Data:</strong> Audit log details: User, Event, Time, Status, Origin, Affected asset. Daily log reviews of critical security systems via automated SIEM. NTP time synchronization across all systems. Retain logs for 1 year total (3 months immediately accessible).</p>
+              <p>• <strong>Req 11: Test Security of Systems and Networks Regularly:</strong> Quarterly rogue wireless scans. Quarterly internal vulnerability scans (authenticated). Quarterly external scans by ASV (zero CVSS >= 4.0). Annual internal/external penetration testing (and after significant changes). Weekly FIM checks. Weekly payment page tamper checks (Req 11.6.1).</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-indigo-100 text-indigo-800 uppercase">Goal 6: Maintain an Information Security Policy</span>
+            <div class="mt-2 space-y-1 text-slate-700 text-xs">
+              <p>• <strong>Req 12: Support Information Security with Organizational Policies and Programs:</strong> Review security policy annually. Annual risk assessment. Annual scope confirmation (semi-annually for service providers). Annual security awareness training with phishing drills. TPSP written agreements and annual compliance status monitoring (AOCs). Test Incident Response Plan annually.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. SAQ DECISION TREE -->
+      <section id="cheat-saq-decision" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>🧭</span> 7. SAQ Selection Flowchart & Criteria
+          </h3>
+          <button data-target="cheat-saq-decision" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs md:text-sm border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <th class="p-3 w-36">SAQ Type</th>
+                <th class="p-3">Eligibility Requirements & Processing Channel</th>
+                <th class="p-3 w-40">Payment Architecture</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-800">
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ A</td>
+                <td class="p-3">Card-not-present (e-commerce or mail/phone) merchants who 100% outsource all payment processing to a validated PCI DSS compliant third party. No electronic cardholder data storage.</td>
+                <td class="p-3 text-xs text-slate-600">Hosted iFrame or URL Redirect</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ A-EP</td>
+                <td class="p-3">E-commerce merchants who host the checkout website that delivers payment scripts directing card data from the consumer browser to the payment processor. Merchant servers impact transaction security.</td>
+                <td class="p-3 text-xs text-slate-600">Direct Post, JavaScript API, Custom Checkout</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ B</td>
+                <td class="p-3">Brick-and-mortar merchants using standalone, dial-up payment terminals connected via traditional analog telephone lines; no electronic cardholder data storage.</td>
+                <td class="p-3 text-xs text-slate-600">Dial-up Terminal (POTS analog line)</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ B-IP</td>
+                <td class="p-3">Merchants using standalone PTS-approved point-of-interaction (POI) payment terminals connected via IP network (Ethernet/Wi-Fi); no electronic card storage.</td>
+                <td class="p-3 text-xs text-slate-600">Standalone IP-connected PTS Terminals</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ C-VT</td>
+                <td class="p-3">Merchants processing card transactions manually one-by-one via an online Virtual Terminal provided by a compliant processor, on an isolated computer with no card storage.</td>
+                <td class="p-3 text-xs text-slate-600">Web Browser Virtual Terminal</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ C</td>
+                <td class="p-3">Merchants with payment application systems (e.g. POS software on PC) connected to the Internet, with no electronic cardholder data storage.</td>
+                <td class="p-3 text-xs text-slate-600">POS Software connected to Internet</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ P2PE</td>
+                <td class="p-3">Merchants using a PCI SSC-listed, validated Point-to-Point Encryption (P2PE) hardware solution with PTS POI terminals; no electronic card storage.</td>
+                <td class="p-3 text-xs text-slate-600">Validated Hardware P2PE (~33 requirements)</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="p-3 font-bold text-indigo-700">SAQ D Merchant</td>
+                <td class="p-3">All other merchants that do not qualify for SAQs A through P2PE, including ANY merchant that stores cardholder data electronically.</td>
+                <td class="p-3 text-xs text-slate-600">Full Merchant DSS (All Reqs)</td>
+              </tr>
+              <tr class="hover:bg-rose-50/50 bg-rose-50/30">
+                <td class="p-3 font-bold text-rose-700">SAQ D Service Provider</td>
+                <td class="p-3 font-semibold text-rose-950">ALL eligible Service Providers. Service providers are NEVER eligible for SAQ A, B, or C under any circumstances!</td>
+                <td class="p-3 text-xs bg-rose-100 text-rose-800 font-bold rounded p-1">Sole SAQ for Service Providers</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 8. APPENDICES -->
+      <section id="cheat-appendices-deepdive" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>📚</span> 8. Appendices Deep-Dive (A1, A2, A3, C, D)
+          </h3>
+          <button data-target="cheat-appendices-deepdive" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <h4 class="font-extrabold text-slate-900 text-sm">Appendix A: Supplemental Validation</h4>
+            <ul class="space-y-1.5 text-slate-700 text-xs">
+              <li>• <strong>Appendix A1 (Multi-Tenant Service Providers):</strong> Applies to cloud/hosting providers. Mandates logical tenant isolation, hypervisor security, preventing cross-tenant access to data/logs, and customer penetration test rights.</li>
+              <li>• <strong>Appendix A2 (Shared Hosting Providers):</strong> Legacy shared web hosting providers must protect cardholder data and maintain isolated audit logging for each merchant.</li>
+              <li>• <strong>Appendix A3 (DESV):</strong> Designated Entities Supplemental Validation. Mandated by card brands or acquirers for entities with high breach history or systemic non-compliance. Requires formal continuous BAU compliance programs and an executive compliance officer.</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <h4 class="font-extrabold text-slate-900 text-sm">Appendix C vs Appendix D</h4>
+            <ul class="space-y-1.5 text-slate-700 text-xs">
+              <li>• <strong>Appendix C (Compensating Controls):</strong> Used when a technical or business constraint prevents meeting the Defined Requirement. <strong>Financial cost or lack of budget is NEVER accepted as a constraint!</strong> Must meet 4 tests: 1) intent/rigor, 2) offset risk, 3) above and beyond other requirements, 4) commensurate with risk. Documented on Compensating Controls Worksheet (CCW).</li>
+              <li>• <strong>Appendix D (Customized Approach):</strong> Flexible option in v4.0 for mature entities to meet the Requirement's Stated Objective using custom controls. Requires NO constraint! Mandates a documented Targeted Risk Analysis (TRA) for every custom requirement, and the Assessor designs custom audit test procedures.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. SPECIALIZED STANDARDS -->
+      <section id="cheat-specialized-standards" class="cheat-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+            <span>🛡️</span> 9. Specialized PCI Standards Quick Reference
+          </h3>
+          <button data-target="cheat-specialized-standards" class="section-audio-btn text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-extrabold text-indigo-700">PCI P2PE</span>
+            <h4 class="font-bold text-slate-900">Point-to-Point Encryption</h4>
+            <p class="text-slate-600">Hardware-to-hardware encryption from a certified PTS terminal directly to the provider's secure decryption environment. Merchant systems never see plaintext PAN, drastically reducing scope to SAQ P2PE.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-extrabold text-indigo-700">PCI PTS POI</span>
+            <h4 class="font-bold text-slate-900">PIN Transaction Security</h4>
+            <p class="text-slate-600">Hardware terminal security standard. Evaluates physical and logical tamper-resistance, cryptographic key protection, and anti-skimming controls for card readers and PIN pads.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-extrabold text-indigo-700">PCI SSF</span>
+            <h4 class="font-bold text-slate-900">Software Security Framework</h4>
+            <p class="text-slate-600">Replaced PA-DSS. Comprises: 1) Secure Software Standard (payment software technical security) and 2) Secure Software Lifecycle (Secure SLC) Standard (vendor software development processes).</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-extrabold text-indigo-700">PCI 3DS Core</span>
+            <h4 class="font-bold text-slate-900">3-D Secure Standard</h4>
+            <p class="text-slate-600">Cardholder identity authentication protocol for Card-Not-Present e-commerce transactions, enabling cardholders to authenticate with their card issuer prior to purchase authorization.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-extrabold text-indigo-700">PCI PIN</span>
+            <h4 class="font-bold text-slate-900">PIN Security Standard</h4>
+            <p class="text-slate-600">Governs the secure management, processing, and transmission of Personal Identification Numbers (PINs) at ATMs and unattended/attended POS terminals.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span class="font-extrabold text-indigo-700">PCI MPoC</span>
+            <h4 class="font-bold text-slate-900">Mobile Payments on COTS</h4>
+            <p class="text-slate-600">Standard for accepting contactless payments (Tap to Pay) and PIN entry directly on commercial off-the-shelf consumer devices (smartphones and tablets).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. TOP 25 EXAM TRAPS -->
+      <section id="cheat-top-traps" class="cheat-section bg-rose-50/40 rounded-3xl border border-rose-200 shadow-sm p-6 md:p-8 space-y-4">
+        <div class="border-b border-rose-200 pb-3 flex items-center justify-between">
+          <h3 class="text-xl font-black text-rose-950 flex items-center gap-2">
+            <span>⚠️</span> 10. Top 25 Cardinal Exam Traps & Rules
+          </h3>
+          <button data-target="cheat-top-traps" class="section-audio-btn text-xs font-bold text-rose-700 hover:text-rose-900 bg-rose-100 px-2.5 py-1 rounded-lg">
+            🔊 Listen to this section
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs leading-relaxed text-slate-800">
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">1. SAD Post-Auth:</strong> NEVER allowed post-auth under ANY circumstances, even if customer signs consent or data is encrypted! Only Issuers have an exception.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">2. Council Enforcement:</strong> The PCI SSC has ZERO enforcement power and assesses NO fines. Only Card Brands and Acquirers enforce compliance.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">3. Critical Patching:</strong> Must be deployed within 30 calendar days (1 month). Not 24 hours, not 90 days.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">4. User Access Reviews:</strong> User accounts and privileges must be reviewed at least once every 6 months (semi-annually).
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">5. Password Length:</strong> Baseline in v4.0 is 12 characters (alphanumeric), or 8 if system technical constraints are documented.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">6. Universal CDE MFA:</strong> Required for ALL users entering the CDE (Req 8.4.2), not just remote users or administrators.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">7. Account Lockout:</strong> Max 10 failed login attempts; lockout duration minimum 30 minutes.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">8. Inactive Accounts:</strong> Disabled or deleted within 90 days of inactivity.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">9. Physical Logs & CCTV:</strong> Visitor access logs and video surveillance footage must be retained for at least 90 calendar days.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">10. Audit Log Retention:</strong> Retain logs for 1 year total, with the most recent 3 months immediately accessible online.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">11. Daily Log Review:</strong> Required daily for critical security systems (NSCs, IDS, auth servers) and servers storing/processing CHD.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">12. File Integrity Monitoring:</strong> FIM must check critical files at least weekly (every 7 days).
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">13. Rogue Wireless Scans:</strong> Quarterly testing is mandatory even if company policy prohibits wireless networks!
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">14. External ASV Scans:</strong> Must be performed quarterly by an ASV. Zero vulnerabilities with CVSS >= 4.0 permitted to pass.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">15. Pentest Frequency:</strong> At least annually (12 months) and after any significant change.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">16. Service Provider Segmentation:</strong> Service providers must test segmentation controls every 6 months (merchants test annually).
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">17. Service Provider Scope:</strong> Service providers must confirm scope every 6 months (merchants confirm annually).
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">18. Service Provider SAQ:</strong> Service providers can NEVER use SAQ A, B, or C. They must use SAQ D for Service Providers.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">19. Card Data Storage:</strong> ANY electronic card storage immediately disqualifies a merchant from SAQs A, B, B-IP, C-VT, C, P2PE and mandates SAQ D.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">20. Virtual Terminal (SAQ C-VT):</strong> Manual entry of single card transactions into a browser web portal provided by processor = SAQ C-VT.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">21. Compensating Controls & Cost:</strong> Budget shortfalls or financial cost are NEVER acceptable justifications for compensating controls!
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">22. Customized Approach & TRA:</strong> Does not require a constraint, but requires a documented Targeted Risk Analysis (TRA) for every custom control.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">23. Payment Page Scripts (Req 6.4.3):</strong> Inventory, business justification, and integrity check for ALL scripts executing in browser on payment pages.
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">24. Live PAN in Dev/Test:</strong> Strictly forbidden under Requirement 6.5.3 under all circumstances!
+          </div>
+          <div class="p-3 bg-white rounded-xl border border-rose-100 shadow-xs">
+            <strong class="text-rose-700 font-bold">25. Transaction Approval:</strong> ONLY the Card Issuer approves or declines transactions during authorization.
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 5: WEAK AREAS & BOOKMARKS -->
+    <!-- ========================================== -->
+    <div id="view-review" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Your Focus Review Queue</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Targeted practice for items you found tricky or missed in mock exams.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="px-3.5 py-1.5 bg-amber-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-800">
+            ★ <span id="bookmarked-count">0</span> Bookmarked
+          </div>
+          <div class="px-3.5 py-1.5 bg-rose-50 border border-rose-200 rounded-xl text-xs font-bold text-rose-800">
+            ✕ <span id="incorrect-count">0</span> Missed in Quiz
+          </div>
+          <button id="clear-bookmarks-btn" class="text-xs text-slate-500 hover:text-slate-800 underline">Clear Bookmarks</button>
+          <button id="clear-incorrect-btn" class="text-xs text-slate-500 hover:text-slate-800 underline">Clear Missed</button>
+        </div>
+      </div>
+
+      <div id="review-items-container" class="space-y-4">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+      PCIP Exam Prep Accelerator · PCI DSS v4.0.1 Alignment · Master Practice & Simulation Tool
+    </div>
+  </footer>
+
+  <!-- Backup / Sync Modal -->
+  <div id="sync-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 md:p-8 space-y-5 animate-fade-in relative">
+      <button id="close-sync-modal-btn" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-xl font-bold p-1">✕</button>
+      
+      <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+        <div class="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-2xl font-bold">
+          💾
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900">Backup & Transfer Progress</h3>
+          <p class="text-xs text-slate-500">Transfer completed questions and scores to your GitHub Pages website</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-left">
+        <!-- Export Section -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Step 1: Save from Local</span>
+            <span id="sync-stat-pill" class="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">0 answered</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Download your progress file right now. You can load this file onto your live GitHub website to keep all answered questions, scores, and bookmarks intact!
+          </p>
+          <div class="pt-1 flex gap-2">
+            <button id="export-backup-btn" class="flex-1 py-2.5 px-3.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>📤</span> <span>Download Backup (.json)</span>
+            </button>
+            <button id="copy-backup-btn" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 transition-all cursor-pointer" title="Copy raw JSON to clipboard">
+              <span>📋</span> Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Import Section -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Step 2: Restore on GitHub Website</span>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            When you open your GitHub Pages website, open this dialog and select your downloaded backup file (or paste JSON) to restore everything instantly.
+          </p>
+          <div class="flex items-center gap-2 pt-1">
+            <label class="flex-1 py-2.5 px-3.5 rounded-xl text-xs font-bold bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 cursor-pointer text-center transition-all shadow-2xs">
+              <span>📂 Upload Backup File</span>
+              <input type="file" id="import-file-input" accept=".json,application/json" class="hidden">
+            </label>
+            <button id="import-paste-btn" class="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-sm cursor-pointer">
+              Paste JSON
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 text-center text-[11px] text-slate-400">
+        🔒 100% private: All data stays in your browser's private local storage.
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
