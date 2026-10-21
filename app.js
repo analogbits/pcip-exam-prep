@@ -208,16 +208,16 @@ document.addEventListener('DOMContentLoaded', () => {
         accPctEl.textContent = '--%';
         accPctEl.className = 'font-black text-slate-700';
         accCountsEl.textContent = '(0 answered)';
-        accBadge.className = 'font-bold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 inline-flex items-center gap-1.5 transition-colors';
+        accBadge.className = 'font-bold text-slate-600 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-900 px-2.5 py-1 rounded-lg border border-slate-200 inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer group';
       } else {
         accPctEl.textContent = `${accuracyPct}%`;
         accCountsEl.textContent = `(${correctCount}/${answeredCount} Correct)`;
         if (accuracyPct >= 75) {
           accPctEl.className = 'font-black text-emerald-800';
-          accBadge.className = 'font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-300 inline-flex items-center gap-1.5 transition-colors shadow-2xs';
+          accBadge.className = 'font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-400 px-2.5 py-1 rounded-lg border border-emerald-300 inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer group';
         } else {
           accPctEl.className = 'font-black text-amber-800';
-          accBadge.className = 'font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-300 inline-flex items-center gap-1.5 transition-colors shadow-2xs';
+          accBadge.className = 'font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 hover:border-amber-400 px-2.5 py-1 rounded-lg border border-amber-300 inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer group';
         }
       }
     }
@@ -2422,6 +2422,315 @@ document.addEventListener('DOMContentLoaded', () => {
     syncModal.addEventListener('click', (e) => {
       if (e.target === syncModal) closeSyncModal();
     });
+  }
+
+  // ---------------------------------------------------------------------
+  // PERFORMANCE ANALYTICS & EXAM PASS PROBABILITY (PSYCHOMETRIC ENGINE)
+  // ---------------------------------------------------------------------
+  const scoreAnalyticsModal = document.getElementById('score-analytics-modal');
+  const closeAnalyticsModalBtn = document.getElementById('close-analytics-modal-btn');
+  const analyticsPracticeMissedBtn = document.getElementById('analytics-practice-missed-btn');
+  const analyticsOpenTelltalesBtn = document.getElementById('analytics-open-telltales-btn');
+  const practiceAccuracyBadge = document.getElementById('practice-accuracy-badge');
+
+  function openScoreAnalyticsModal() {
+    renderScoreAnalytics();
+    if (scoreAnalyticsModal) scoreAnalyticsModal.classList.remove('hidden');
+  }
+
+  function closeScoreAnalyticsModal() {
+    if (scoreAnalyticsModal) scoreAnalyticsModal.classList.add('hidden');
+  }
+  window.closeScoreAnalyticsModal = closeScoreAnalyticsModal;
+  window.openScoreAnalyticsModal = openScoreAnalyticsModal;
+
+  if (practiceAccuracyBadge) {
+    practiceAccuracyBadge.addEventListener('click', openScoreAnalyticsModal);
+  }
+  if (closeAnalyticsModalBtn) {
+    closeAnalyticsModalBtn.addEventListener('click', closeScoreAnalyticsModal);
+  }
+  if (scoreAnalyticsModal) {
+    scoreAnalyticsModal.addEventListener('click', (e) => {
+      if (e.target === scoreAnalyticsModal) closeScoreAnalyticsModal();
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (scoreAnalyticsModal && !scoreAnalyticsModal.classList.contains('hidden')) {
+        closeScoreAnalyticsModal();
+      }
+      if (syncModal && !syncModal.classList.contains('hidden')) {
+        closeSyncModal();
+      }
+    }
+  });
+
+  if (analyticsPracticeMissedBtn) {
+    analyticsPracticeMissedBtn.addEventListener('click', () => {
+      closeScoreAnalyticsModal();
+      window.jumpToPracticeMissed();
+    });
+  }
+
+  if (analyticsOpenTelltalesBtn) {
+    analyticsOpenTelltalesBtn.addEventListener('click', () => {
+      closeScoreAnalyticsModal();
+      switchTab('telltales');
+    });
+  }
+
+  function computeExamPassProbability(correct, total) {
+    if (total < 5) {
+      return {
+        prob: null,
+        statusText: 'Insufficient Data (need at least 5 answered questions)',
+        expScore: '--',
+        badge: 'Collecting Data',
+        badgeClass: 'bg-slate-200 text-slate-700 border border-slate-300',
+        cardClass: 'p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1',
+        p: 0
+      };
+    }
+
+    const p = Math.max(0.01, Math.min(0.999, correct / total));
+    const N = 75; // Official PCIP Pearson VUE question count
+    const passThreshold = 57; // 75% passing mark (56.25 rounded up to 57)
+    const expScore = (N * p).toFixed(1);
+
+    // Exact Binomial CDF calculation: sum_{k=57}^{75} C(75, k) * p^k * (1-p)^(75-k)
+    let totalProb = 0;
+    for (let k = passThreshold; k <= N; k++) {
+      let logP = 0;
+      // log C(75, k)
+      for (let i = 1; i <= k; i++) {
+        logP += Math.log(N - k + i) - Math.log(i);
+      }
+      logP += k * Math.log(p) + (N - k) * Math.log(1 - p);
+      totalProb += Math.exp(logP);
+    }
+
+    let probPct = Math.min(99.9, Math.max(0.1, totalProb * 100));
+
+    let badge = 'Safe Pass Zone (≥85%)';
+    let badgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-300';
+    let cardClass = 'p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1';
+
+    if (probPct < 50) {
+      badge = 'At Risk (<50%)';
+      badgeClass = 'bg-rose-100 text-rose-800 border border-rose-300';
+      cardClass = 'p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1';
+    } else if (probPct < 85) {
+      badge = 'Borderline Contender';
+      badgeClass = 'bg-amber-100 text-amber-800 border border-amber-300';
+      cardClass = 'p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-1';
+    }
+
+    return {
+      prob: probPct.toFixed(1),
+      expScore: expScore,
+      badge: badge,
+      badgeClass: badgeClass,
+      cardClass: cardClass,
+      p: p
+    };
+  }
+
+  function renderScoreAnalytics() {
+    const answeredCount = completedQids.size;
+    let wrongCount = 0;
+    completedQids.forEach(qid => {
+      if (incorrectQids.has(qid)) wrongCount++;
+    });
+    const correctCount = Math.max(0, answeredCount - wrongCount);
+    const accuracyPct = answeredCount > 0 ? (correctCount / answeredCount) * 100 : 0;
+
+    const statAccuracyBig = document.getElementById('stat-accuracy-big');
+    const statAccuracyCounts = document.getElementById('stat-accuracy-counts');
+    const statAccuracySubtext = document.getElementById('stat-accuracy-subtext');
+    const statProbCard = document.getElementById('stat-prob-card');
+    const statProbBig = document.getElementById('stat-prob-big');
+    const statProbBadge = document.getElementById('stat-prob-badge');
+    const statProbSubtext = document.getElementById('stat-prob-subtext');
+    const statExpScore = document.getElementById('stat-exp-score');
+    const statExpSubtext = document.getElementById('stat-exp-subtext');
+    const statReadinessBanner = document.getElementById('stat-readiness-banner');
+    const statDomainList = document.getElementById('stat-domain-breakdown-list');
+    const statRecommendedAction = document.getElementById('stat-recommended-action');
+
+    // 1. Accuracy Card
+    if (statAccuracyBig) statAccuracyBig.textContent = answeredCount ? `${Math.round(accuracyPct)}%` : '--%';
+    if (statAccuracyCounts) statAccuracyCounts.textContent = `(${correctCount}/${answeredCount} Correct)`;
+    if (statAccuracySubtext) {
+      if (answeredCount === 0) {
+        statAccuracySubtext.textContent = 'Answer questions to generate stats';
+      } else {
+        const diff = (accuracyPct - 75).toFixed(1);
+        statAccuracySubtext.textContent = diff >= 0
+          ? `+${diff}% above Pearson VUE benchmark`
+          : `${Math.abs(diff)}% below 75% benchmark`;
+      }
+    }
+
+    // 2. Pass Probability & Projected Score
+    const model = computeExamPassProbability(correctCount, answeredCount);
+    if (statProbBig) statProbBig.textContent = model.prob ? `${model.prob}%` : '--%';
+    if (statProbBadge) {
+      statProbBadge.textContent = model.badge;
+      statProbBadge.className = `text-[10px] font-bold px-2 py-0.5 rounded-full ${model.badgeClass}`;
+    }
+    if (statProbCard) {
+      statProbCard.className = model.cardClass || 'p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-1';
+    }
+    if (statExpScore) statExpScore.textContent = `${model.expScore} / 75`;
+    if (statExpSubtext) {
+      if (answeredCount < 5) {
+        statExpSubtext.textContent = '57/75 needed to pass';
+      } else {
+        const gap = (Number(model.expScore) - 57).toFixed(1);
+        statExpSubtext.textContent = gap >= 0
+          ? `+${gap} questions cushion over 57 threshold`
+          : `${Math.abs(gap)} questions short of 57 pass mark`;
+      }
+    }
+
+    // 3. Readiness Diagnosis & Gap Analysis Banner
+    if (statReadinessBanner) {
+      if (answeredCount < 5) {
+        statReadinessBanner.className = 'p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 text-xs space-y-1.5';
+        statReadinessBanner.innerHTML = `
+          <div class="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
+            <span>ℹ️</span> Initial Calibration Phase
+          </div>
+          <p class="leading-relaxed">Answer at least 5 questions in Practice Mode or complete a mini quiz to calibrate your predictive passing model.</p>
+        `;
+      } else if (accuracyPct < 75) {
+        const consecutiveNeeded = Math.max(1, Math.ceil((0.75 * answeredCount - correctCount) / 0.25));
+        const paceNeeded = Math.max(1, Math.ceil((0.75 * answeredCount - correctCount) / 0.10));
+
+        statReadinessBanner.className = 'p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs space-y-2';
+        statReadinessBanner.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-amber-900 flex items-center gap-1.5 text-sm">
+              <span>⚠️</span> Status: Borderline Pass Contender (${Math.round(accuracyPct)}%)
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900 font-bold text-[10px]">Close to Passing</span>
+          </div>
+          <p class="leading-relaxed text-slate-700">
+            At <strong>${Math.round(accuracyPct)}% (${correctCount}/${answeredCount})</strong>, you are currently <strong>${(75 - accuracyPct).toFixed(1)}% shy</strong> of the official 75% Pearson VUE pass mark.
+          </p>
+          <div class="p-3 bg-white/80 rounded-xl border border-amber-200 text-slate-800 space-y-1">
+            <strong class="text-amber-900 font-bold block">🎯 Fast Track to Safe Zone (85%+):</strong>
+            <p>• Answering your next <strong>${consecutiveNeeded} questions correctly</strong> in Practice Mode will push your cumulative score over 75%.</p>
+            <p>• At an 85% study pace, you need <strong>${paceNeeded} more questions</strong> to secure a durable passing buffer.</p>
+          </div>
+        `;
+      } else if (accuracyPct < 85) {
+        statReadinessBanner.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs space-y-2';
+        statReadinessBanner.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-emerald-900 flex items-center gap-1.5 text-sm">
+              <span>✅</span> Status: Passing Trajectory (${Math.round(accuracyPct)}%)
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">Passing Benchmark Met</span>
+          </div>
+          <p class="leading-relaxed text-slate-700">
+            Great work! Your current score of <strong>${Math.round(accuracyPct)}%</strong> exceeds the Pearson VUE 75% passing requirement. Your estimated pass probability on a random 75Q exam is <strong>${model.prob}%</strong>.
+          </p>
+          <div class="p-2.5 bg-white/80 rounded-xl border border-emerald-200 text-slate-700">
+            💡 <strong>Pro Tip:</strong> Aim for 80-85% in your practice drills to guard against test-day fatigue and tricky distractors.
+          </div>
+        `;
+      } else {
+        statReadinessBanner.className = 'p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-950 text-xs space-y-2';
+        statReadinessBanner.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-indigo-900 flex items-center gap-1.5 text-sm">
+              <span>🏆</span> Status: Elite Mastery Zone (${Math.round(accuracyPct)}%)
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-indigo-200 text-indigo-900 font-bold text-[10px]">Exam Ready</span>
+          </div>
+          <p class="leading-relaxed text-slate-700">
+            Outstanding! At <strong>${Math.round(accuracyPct)}% accuracy</strong> across ${answeredCount} questions, your statistical likelihood of passing the real Pearson VUE PCIP exam is <strong>${model.prob}%</strong>. You are ready to sit the exam!
+          </p>
+        `;
+      }
+    }
+
+    // 4. Domain-by-Domain Diagnostic Breakdown
+    if (statDomainList) {
+      const allCategories = Array.from(new Set(allQuestions.map(q => q.category))).sort();
+      const domainStats = [];
+
+      allCategories.forEach(cat => {
+        const catQuestions = allQuestions.filter(q => q.category === cat);
+        const answeredInCat = catQuestions.filter(q => completedQids.has(q.id));
+        if (answeredInCat.length > 0) {
+          const wrongInCat = answeredInCat.filter(q => incorrectQids.has(q.id)).length;
+          const correctInCat = answeredInCat.length - wrongInCat;
+          const pct = Math.round((correctInCat / answeredInCat.length) * 100);
+          domainStats.push({
+            category: cat,
+            total: answeredInCat.length,
+            correct: correctInCat,
+            wrong: wrongInCat,
+            pct: pct
+          });
+        }
+      });
+
+      if (!domainStats.length) {
+        statDomainList.innerHTML = `
+          <div class="p-6 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-slate-200">
+            No domain history yet. Start answering practice questions to see breakdown by requirement.
+          </div>
+        `;
+      } else {
+        // Sort by accuracy ascending (lowest scoring first!)
+        domainStats.sort((a, b) => a.pct - b.pct);
+
+        statDomainList.innerHTML = domainStats.map(ds => {
+          let barBg = 'bg-emerald-500';
+
+          if (ds.pct < 60) {
+            barBg = 'bg-rose-500';
+          } else if (ds.pct < 75) {
+            barBg = 'bg-amber-500';
+          }
+
+          return `
+            <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors space-y-1.5">
+              <div class="flex items-center justify-between text-xs gap-2">
+                <span class="font-bold text-slate-800 truncate" title="${ds.category}">${ds.category}</span>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="font-extrabold ${ds.pct >= 75 ? 'text-emerald-700' : (ds.pct >= 60 ? 'text-amber-700' : 'text-rose-700')}">
+                    ${ds.pct}% (${ds.correct}/${ds.total})
+                  </span>
+                  <button onclick="window.jumpToPracticeDomain('${ds.category.replace(/'/g, "\\'")}'); closeScoreAnalyticsModal();" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white hover:bg-indigo-50 border border-slate-300 hover:border-indigo-300 text-slate-700 hover:text-indigo-600 transition-all cursor-pointer">
+                    Drill ➔
+                  </button>
+                </div>
+              </div>
+
+              <!-- Bar -->
+              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                <div class="${barBg} h-1.5 rounded-full transition-all duration-300" style="width: ${ds.pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // 5. Recommended Action
+        if (statRecommendedAction && domainStats.length > 0) {
+          const weakest = domainStats[0];
+          if (weakest.pct < 75) {
+            statRecommendedAction.innerHTML = `Your lowest scoring area is <strong>${weakest.category}</strong> (${weakest.pct}%). Drilling 10 questions here will yield your fastest score increase!`;
+          } else {
+            statRecommendedAction.textContent = 'All attempted domains are currently passing (≥75%). Take a 75Q mock exam to validate endurance!';
+          }
+        }
+      }
+    }
   }
 
   function buildBackupPayload() {

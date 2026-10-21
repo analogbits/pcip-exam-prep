@@ -133,11 +133,12 @@
             <span class="font-extrabold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
               <span id="practice-answered-count">0</span> / <span id="practice-total-available">500</span> Answered (<span id="practice-progress-pct">0%</span>)
             </span>
-            <span id="practice-accuracy-badge" class="font-bold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 inline-flex items-center gap-1.5 transition-colors" title="Pearson VUE PCIP passing benchmark is 75%">
-              <span class="text-slate-500 font-medium">🎯 Running Score:</span>
+            <button id="practice-accuracy-badge" class="font-bold text-slate-600 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-900 px-2.5 py-1 rounded-lg border border-slate-200 inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer group" title="Click to view detailed pass probability, domain breakdowns, and exam readiness stats">
+              <span class="text-slate-500 group-hover:text-indigo-600 font-medium">🎯 Running Score:</span>
               <span id="practice-accuracy-pct" class="font-black text-slate-800">--%</span>
               <span id="practice-accuracy-counts" class="text-xs font-semibold text-slate-500">(0 answered)</span>
-            </span>
+              <span class="text-[10px] font-bold text-indigo-600 bg-indigo-100 group-hover:bg-indigo-600 group-hover:text-white px-1.5 py-0.5 rounded transition-colors ml-0.5">📊 Pass Stats</span>
+            </button>
             <label class="inline-flex items-center gap-1.5 cursor-pointer text-slate-700 hover:text-indigo-600 font-bold select-none bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
               <input type="checkbox" id="practice-shuffle-toggle" class="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5">
               <span>🔀 Shuffle Questions</span>
@@ -1118,6 +1119,99 @@
 
       <div class="pt-2 text-center text-[11px] text-slate-400">
         🔒 100% private: All data stays in your browser's private local storage.
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Analytics & Pass Probability Modal -->
+  <div id="score-analytics-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 md:p-8 space-y-6 animate-fade-in relative text-left">
+      <button id="close-analytics-modal-btn" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-xl font-bold p-1 cursor-pointer">✕</button>
+
+      <!-- Modal Header -->
+      <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-2xl font-bold">
+          📊
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-lg md:text-xl font-black text-slate-900">PCIP Exam Pass Probability & Analytics</h3>
+            <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-indigo-100 text-indigo-700 uppercase">v4.0.1 Model</span>
+          </div>
+          <p class="text-xs text-slate-500">Psychometric simulation based on Pearson VUE 75-question examination benchmarks</p>
+        </div>
+      </div>
+
+      <!-- Core Stats Grid (3 Cards) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <!-- 1. Accuracy Card -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+          <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block">Running Accuracy</span>
+          <div class="flex items-baseline gap-1.5">
+            <span id="stat-accuracy-big" class="text-2xl sm:text-3xl font-black text-slate-900">--%</span>
+            <span id="stat-accuracy-counts" class="text-xs font-semibold text-slate-500">(0/0)</span>
+          </div>
+          <p id="stat-accuracy-subtext" class="text-[11px] text-slate-500 pt-1">
+            Passing benchmark is 75.0%
+          </p>
+        </div>
+
+        <!-- 2. Pass Probability Card -->
+        <div id="stat-prob-card" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-1 transition-colors">
+          <span class="text-[11px] font-extrabold text-indigo-700 uppercase tracking-wider block">Pass Probability</span>
+          <div class="flex items-baseline gap-1.5">
+            <span id="stat-prob-big" class="text-2xl sm:text-3xl font-black text-indigo-950">--%</span>
+            <span id="stat-prob-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-200/70 text-indigo-900">Calculating</span>
+          </div>
+          <p id="stat-prob-subtext" class="text-[11px] text-indigo-800/80 pt-1">
+            Likelihood of passing 75Q test today
+          </p>
+        </div>
+
+        <!-- 3. Projected 75Q Score -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+          <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block">Projected 75Q Score</span>
+          <div class="flex items-baseline gap-1.5">
+            <span id="stat-exp-score" class="text-2xl sm:text-3xl font-black text-slate-900">-- / 75</span>
+          </div>
+          <p id="stat-exp-subtext" class="text-[11px] text-slate-500 pt-1">
+            57/75 needed to pass
+          </p>
+        </div>
+      </div>
+
+      <!-- Readiness Diagnosis & Gap Analysis Banner -->
+      <div id="stat-readiness-banner" class="p-4 rounded-2xl border space-y-2">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Domain Breakdown Section -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+            <span>🎯</span> Domain-by-Domain Performance Diagnostic
+          </h4>
+          <span class="text-[11px] text-slate-400">Green = Exam Ready (≥75%)</span>
+        </div>
+        <div id="stat-domain-breakdown-list" class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Action Plan & Direct Links -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div class="text-xs text-slate-600">
+          <strong class="text-slate-900 font-bold block mb-0.5">Recommended Next Action:</strong>
+          <span id="stat-recommended-action">Focus on your lowest scoring domain to close the gap to 75%.</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="analytics-practice-missed-btn" class="px-3 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-xs cursor-pointer flex items-center gap-1">
+            <span>💡</span> <span>Practice Missed</span>
+          </button>
+          <button id="analytics-open-telltales-btn" class="px-3 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-xs cursor-pointer flex items-center gap-1">
+            <span>🔍</span> <span>Question Tell-Tales</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
