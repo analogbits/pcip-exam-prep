@@ -1,55 +1,66 @@
 # PCIP Exam Preparation Accelerator (PCI DSS v4.0.1)
 
-A complete, interactive study suite designed for rapid 2-day preparation to pass the **Payment Card Industry Professional (PCIP)** examination.
+[![Live Demo](https://img.shields.io/badge/Live%20Website-GitHub%20Pages-indigo?style=for-the-badge&logo=github)](https://analogbits.github.io/pcip-exam-prep/)
+[![Standard](https://img.shields.io/badge/PCI%20DSS-v4.0.1%20Verified-emerald?style=for-the-badge)](https://www.pcisecuritystandards.org/)
+[![Questions](https://img.shields.io/badge/Questions-500%20Unique%20Items-blue?style=for-the-badge)](https://analogbits.github.io/pcip-exam-prep/)
+[![Pass Mark](https://img.shields.io/badge/Pearson%20VUE%20Pass-75%25%20Required-amber?style=for-the-badge)](https://analogbits.github.io/pcip-exam-prep/)
 
-## 🚀 Quick Start
-
-You can open the application in several convenient ways:
-
-### Option 1: Direct File Open (Zero Setup)
-Simply open `index.html` in your web browser:
-```bash
-open /Users/michaelfitzgerald/.gemini/antigravity/scratch/pcip-study-app/index.html
-```
-
-### Option 2: Local Web Server
-Run using the included helper script:
-```bash
-cd /Users/michaelfitzgerald/.gemini/antigravity/scratch/pcip-study-app
-./start.sh
-```
-Or with Python:
-```bash
-python3 -m http.server 8080
-```
-Then navigate to `http://localhost:8080`.
+An interactive, high-yield mastery study suite designed to prepare candidates to pass the **Payment Card Industry Professional (PCIP)** examination administered via Pearson VUE under **PCI DSS v4.0.1**.
 
 ---
 
-## 🎯 Key Application Features
+## 🌐 Live Website (Zero Setup Required)
 
-1. **Practice Mode with Instant Feedback & Deep Reasoning:**
-   - Filter by domain or search for specific terms (`SAQ`, `SAD`, `MFA`, `FIM`, `30 days`, etc.).
-   - Instant visual check upon submission (green for correct, red for incorrect).
-   - Detailed official explanations referencing PCI DSS v4.0.1 requirements.
-   - Specific **Exam Tips** highlighting recurring test traps.
+Open and practice immediately in any desktop or mobile browser:
+👉 **[https://analogbits.github.io/pcip-exam-prep/](https://analogbits.github.io/pcip-exam-prep/)**
 
-2. **Exam Simulator (Pearson VUE Standard):**
-   - 75 questions randomly sampled across all domains.
-   - 90-minute countdown timer with warnings.
-   - "Mark for Review" flag and clickable question grid for quick navigation.
-   - Complete performance report with 75% pass mark, domain proficiency breakdown, and full item review.
+---
 
-3. **Rapid Cram Flashcards:**
-   - Flip cards for fast memorization of high-yield definitions, acronyms, and rules of thumb.
+## 🎯 Core Features
 
-4. **2-Day Master Cheat Sheet:**
-   - All critical audit frequencies and numbers table (Daily, Weekly, 30 days, 90 days, 6 months, Annually).
-   - Strict Cardholder Data (CHD) vs Sensitive Authentication Data (SAD) storage rules.
-   - The 12 Requirements matrix.
-   - SAQ Selection Decision Tree.
-   - Compensating Controls (Appendix C) vs Customized Approach (Appendix D / TRA).
-   - Major v4.0.1 new mandates (Req 6.4.3, Req 11.6.1, Req 8.4.2 MFA, 12-char passwords).
+### 1. 💡 Practice Mode with Instant Feedback & Deep Reasoning
+- **500 Unique Questions:** Strict Pearson VUE psychometric standard with balanced option lengths (no "longest answer is right" giveaways) and realistic technical distractors.
+- **Smart Filtering:** Automatically hides answered questions so you only practice fresh items, with filter options for specific domains, keywords, or missed questions.
+- **🎯 Live Running Score:** Continuous real-time tracking of your accuracy percentage against the official 75% Pearson VUE passing benchmark.
+- **Official References:** In-depth technical reasoning and direct references to specific PCI DSS v4.0.1 clauses and requirements.
 
-5. **Weak Area Review Queue:**
-   - Any question bookmarked or missed during mock tests is automatically recorded in your browser (`localStorage`) for focused drilling.
+### 2. ⏱️ Authentic Exam Simulator (75 Questions · 90 Minutes)
+- Exact Pearson VUE timing and question count.
+- Dynamic question grid with "Mark for Review" flag.
+- Comprehensive scoring report with domain-by-domain proficiency breakdown and full answer key review.
+
+### 3. ⚡ Rapid Cram Cards
+- High-yield flashcards for fast recall of critical acronyms, scoping rules, and standard terminology.
+
+### 4. 📋 Master Cheat Sheet with Built-in Audio Narration
+- Comprehensive reference covering all 12 Requirements, audit frequencies, SAQ Decision Trees, CHD vs. SAD storage rules, and v4.0.1 transition mandates.
+- **Audio Reader:** Built-in Web Speech synthesizer with Play, Pause, Speed adjustment, and section-by-section narration.
+
+### 5. 💾 Progress Backup & Cross-Device Sync
+- Save your answered questions, accuracy score, and bookmarks with 1-click **Export Backup (.json)**.
+- Restore your progress onto any device (desktop, laptop, tablet, phone) using **Import Backup**.
+
+---
+
+## 💻 Running Locally
+
+If you prefer to run the application offline on your local machine:
+
+### Option 1: Direct File Open
+Open `index.html` directly in your favorite browser:
+```bash
+open index.html
+```
+
+### Option 2: Local Web Server
+Start a lightweight web server with Python:
+```bash
+python3 -m http.server 8080
+```
+Then visit `http://localhost:8080` in your web browser.
+
+---
+
+## 📄 License & Attribution
+- Aligned with the official PCI SSC PCI DSS v4.0.1 standard and guidance documents.
+- Intended for educational and professional certification preparation.
