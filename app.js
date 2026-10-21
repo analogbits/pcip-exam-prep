@@ -76,12 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabFlashcardsBtn = document.getElementById('tab-flashcards-btn');
   const tabCheatsheetBtn = document.getElementById('tab-cheatsheet-btn');
   const tabReviewBtn = document.getElementById('tab-review-btn');
+  const tabTelltalesBtn = document.getElementById('tab-telltales-btn');
 
   const viewPractice = document.getElementById('view-practice');
   const viewExam = document.getElementById('view-exam');
   const viewFlashcards = document.getElementById('view-flashcards');
   const viewCheatsheet = document.getElementById('view-cheatsheet');
   const viewReview = document.getElementById('view-review');
+  const viewTelltales = document.getElementById('view-telltales');
 
   // Populate Filter Categories
   const categoryFilterSelect = document.getElementById('category-filter');
@@ -101,53 +103,75 @@ document.addEventListener('DOMContentLoaded', () => {
   // Tab Navigation Handling
   function switchTab(tab) {
     currentTab = tab;
-    [tabPracticeBtn, tabExamBtn, tabFlashcardsBtn, tabCheatsheetBtn, tabReviewBtn].forEach(btn => {
-      btn.classList.remove('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
-      btn.classList.add('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white');
+    [tabPracticeBtn, tabExamBtn, tabFlashcardsBtn, tabCheatsheetBtn, tabReviewBtn, tabTelltalesBtn].forEach(btn => {
+      if (btn) {
+        btn.classList.remove('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700', 'hover:text-white');
+      }
     });
 
-    [viewPractice, viewExam, viewFlashcards, viewCheatsheet, viewReview].forEach(v => v.classList.add('hidden'));
+    [viewPractice, viewExam, viewFlashcards, viewCheatsheet, viewReview, viewTelltales].forEach(v => {
+      if (v) v.classList.add('hidden');
+    });
     if (tab !== 'cheatsheet' && typeof stopAudioNarration === 'function') {
       stopAudioNarration();
     }
 
     if (tab === 'practice') {
       justSubmittedQid = null;
-      tabPracticeBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
-      tabPracticeBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
-      viewPractice.classList.remove('hidden');
+      if (tabPracticeBtn) {
+        tabPracticeBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
+        tabPracticeBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      }
+      if (viewPractice) viewPractice.classList.remove('hidden');
       updatePracticeList();
       if (practiceShuffle && practiceFilteredList.length > 0) {
         practiceIndex = Math.floor(Math.random() * practiceFilteredList.length);
       }
       renderPracticeQuestion();
     } else if (tab === 'exam') {
-      tabExamBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
-      tabExamBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
-      viewExam.classList.remove('hidden');
+      if (tabExamBtn) {
+        tabExamBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
+        tabExamBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      }
+      if (viewExam) viewExam.classList.remove('hidden');
       renderExamView();
     } else if (tab === 'flashcards') {
-      tabFlashcardsBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
-      tabFlashcardsBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
-      viewFlashcards.classList.remove('hidden');
+      if (tabFlashcardsBtn) {
+        tabFlashcardsBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
+        tabFlashcardsBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      }
+      if (viewFlashcards) viewFlashcards.classList.remove('hidden');
       renderFlashcard();
     } else if (tab === 'cheatsheet') {
-      tabCheatsheetBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
-      tabCheatsheetBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
-      viewCheatsheet.classList.remove('hidden');
+      if (tabCheatsheetBtn) {
+        tabCheatsheetBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
+        tabCheatsheetBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      }
+      if (viewCheatsheet) viewCheatsheet.classList.remove('hidden');
     } else if (tab === 'review') {
-      tabReviewBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
-      tabReviewBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
-      viewReview.classList.remove('hidden');
+      if (tabReviewBtn) {
+        tabReviewBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
+        tabReviewBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      }
+      if (viewReview) viewReview.classList.remove('hidden');
       renderReviewView();
+    } else if (tab === 'telltales') {
+      if (tabTelltalesBtn) {
+        tabTelltalesBtn.classList.add('active-tab', 'bg-indigo-600', 'text-white', 'shadow-sm');
+        tabTelltalesBtn.classList.remove('bg-slate-800', 'text-slate-300', 'hover:bg-slate-700');
+      }
+      if (viewTelltales) viewTelltales.classList.remove('hidden');
+      renderTelltalesView();
     }
   }
 
-  tabPracticeBtn.addEventListener('click', () => switchTab('practice'));
-  tabExamBtn.addEventListener('click', () => switchTab('exam'));
-  tabFlashcardsBtn.addEventListener('click', () => switchTab('flashcards'));
-  tabCheatsheetBtn.addEventListener('click', () => switchTab('cheatsheet'));
-  tabReviewBtn.addEventListener('click', () => switchTab('review'));
+  if (tabPracticeBtn) tabPracticeBtn.addEventListener('click', () => switchTab('practice'));
+  if (tabExamBtn) tabExamBtn.addEventListener('click', () => switchTab('exam'));
+  if (tabFlashcardsBtn) tabFlashcardsBtn.addEventListener('click', () => switchTab('flashcards'));
+  if (tabCheatsheetBtn) tabCheatsheetBtn.addEventListener('click', () => switchTab('cheatsheet'));
+  if (tabReviewBtn) tabReviewBtn.addEventListener('click', () => switchTab('review'));
+  if (tabTelltalesBtn) tabTelltalesBtn.addEventListener('click', () => switchTab('telltales'));
 
   // ---------------------------------------------------------------------
   // PRACTICE MODE (INSTANT FEEDBACK & REASONING WITH PERSISTENCE)
@@ -2155,6 +2179,655 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // ---------------------------------------------------------------------
+  // VIEW 6: QUESTION TELL-TALES & STEM DECODER (PCI DSS v4.0.1)
+  // ---------------------------------------------------------------------
+  const telltalesData = [
+    {
+      id: 1,
+      category: "verbs",
+      categoryName: "Action Verbs & Controls",
+      req: "Req 5.4.1 vs 12.6.3",
+      title: "'Detect & Defend' Phishing vs. Security Awareness Training",
+      clueKeywords: ["detect and defend", "personnel", "phishing attacks"],
+      clueExplanation: "The specific verbs 'detect and defend' test technical, automated defensive mechanisms against phishing. In contrast, stems asking to 'educate', 'train', or 'maintain awareness' test the administrative human training program under Requirement 12.6.",
+      trapDistractor: "Annual employee security awareness training presentations detailing social engineering vectors.",
+      trapReasoning: "Awareness training is a mandatory PCI DSS requirement (Req 12.6.3), so test-takers immediately recognize it as a real rule and pick it. However, training is an administrative control that does not 'detect and defend' email flow.",
+      correctAnswer: "Automated technical mechanisms (anti-spoofing protocols like SPF, DKIM, DMARC, and automated email filtering).",
+      citation: "PCI DSS v4.0.1 Req 5.4.1: Automated mechanisms are in place to detect and protect personnel against phishing attacks.",
+      stemExample: "Under PCI DSS Requirement 5.4.1, what controls must an entity implement to detect and defend personnel against phishing attacks?",
+      searchRel: "5.4.1"
+    },
+    {
+      id: 2,
+      category: "scoping",
+      categoryName: "Entity Roles & Scoping",
+      req: "Req 12.5.2 vs 12.5.2.1",
+      title: "Scope Confirmation Frequency: Merchants vs. Service Providers",
+      clueKeywords: ["Service Provider", "PCI DSS scope confirmation", "frequency"],
+      clueExplanation: "Pay immediate attention to whether the entity in the stem is specified as a 'Merchant' or a 'Service Provider'. PCI DSS v4 assigns stricter confirmation frequencies to Service Providers.",
+      trapDistractor: "At least once every 12 months (annually) and after significant business changes.",
+      trapReasoning: "Annual review is the standard requirement for Merchants under Req 12.5.2. Candidates who memorize 'annual' miss the Service Provider specific rule.",
+      correctAnswer: "At least once every six months (semi-annually) and upon significant changes to the environment.",
+      citation: "PCI DSS v4.0.1 Req 12.5.2.1: Additional requirement for service providers: PCI DSS scope is documented and confirmed at least once every six months and upon significant changes.",
+      stemExample: "Under PCI DSS Requirement 12.5.2.1, how frequently must a Third-Party Service Provider formally document and confirm their PCI DSS scope?",
+      searchRel: "12.5.2"
+    },
+    {
+      id: 3,
+      category: "data",
+      categoryName: "Data Protection & SAD",
+      req: "Req 3.2.1 - 3.2.3",
+      title: "Post-Authorization SAD Storage vs. PAN Encryption",
+      clueKeywords: ["post-authorization", "CVV / CAV2 / CID", "full track data", "PIN block"],
+      clueExplanation: "Whenever you spot the qualifier 'post-authorization' paired with Sensitive Authentication Data (SAD), the answer is absolute: NEVER store, regardless of encryption strength.",
+      trapDistractor: "Stored in a dedicated database encrypted with AES-256 with split-knowledge key custody.",
+      trapReasoning: "Item-writers describe bulletproof encryption, HSMs, and split-custody key management to tempt candidates into believing storage is permitted if secure enough.",
+      correctAnswer: "Sensitive Authentication Data (SAD) must NEVER be retained or stored after transaction authorization, even if encrypted.",
+      citation: "PCI DSS v4.0.1 Req 3.2.1: Sensitive authentication data is not retained after authorization, even if encrypted. (Exception strictly limited to documented issuers with legitimate business need under Req 3.2.2).",
+      stemExample: "A merchant processes e-commerce payments. Under Requirement 3.2.1, which security control is required for storing card verification codes (CVV2/CVC2) post-authorization?",
+      searchRel: "3.2.1"
+    },
+    {
+      id: 4,
+      category: "data",
+      categoryName: "Data Protection & SAD",
+      req: "Req 3.3.1 vs 3.5.1",
+      title: "Screen Masking vs. Database Cryptographic Storage",
+      clueKeywords: ["display", "viewing on screen / receipt", "masking", "at rest storage"],
+      clueExplanation: "Look for 'displayed' vs 'stored'. Masking applies ONLY when displaying PANs to humans. Cryptography, truncation, or one-way hashing applies to data stored at rest in databases and files.",
+      trapDistractor: "Masking the PAN to only show the first 6 and last 4 digits satisfies Requirement 3.5.1 for database storage.",
+      trapReasoning: "Candidates confuse masking (replacing digits with asterisks on a display/receipt) with truncation (permanently deleting middle digits from storage). Masking on screen does not render stored database records unreadable.",
+      correctAnswer: "Masking (first 6 / last 4 or BIN + last 4) is strictly for displays and paper receipts (Req 3.3.1). Stored PANs require strong encryption (AES-256), keyed one-way hash, index tokens, or truncation (Req 3.5.1).",
+      citation: "PCI DSS v4.0.1 Req 3.3.1 & 3.5.1: Masking PAN when displayed protects visual exposure; render PAN unreadable anywhere it is stored using cryptography.",
+      stemExample: "When customer service representatives view account details on internal portals, what is the maximum number of PAN digits that may be displayed under Requirement 3.3.1 without documented business need?",
+      searchRel: "3.3.1"
+    },
+    {
+      id: 5,
+      category: "frequencies",
+      categoryName: "Frequencies & Timeframes",
+      req: "Req 11.3.1 vs 11.3.2",
+      title: "External ASV Scans vs. Internal Vulnerability Scans",
+      clueKeywords: ["external vulnerability scan", "ASV", "clean scan", "internal scan"],
+      clueExplanation: "If the stem specifies 'external perimeter' or 'Internet-facing', the scan MUST be conducted by an Approved Scanning Vendor (ASV) and must result in a passing (clean) report with no vulnerabilities score 4.0+.",
+      trapDistractor: "Conducted quarterly by internal certified security personnel using commercially available scanning tools.",
+      trapReasoning: "Qualified internal personnel ARE permitted to run internal scans (Req 11.3.1), but external scans (Req 11.3.2) can ONLY be certified by a PCI SSC Approved Scanning Vendor.",
+      correctAnswer: "External scans must be performed at least quarterly by an Approved Scanning Vendor (ASV), resulting in an ASV-certified passing scan report.",
+      citation: "PCI DSS v4.0.1 Req 11.3.2: External vulnerability scans are performed at least once every three months by a PCI SSC Approved Scanning Vendor (ASV).",
+      stemExample: "Which entity is authorized to perform external vulnerability scans to satisfy PCI DSS Requirement 11.3.2?",
+      searchRel: "11.3.2"
+    },
+    {
+      id: 6,
+      category: "verbs",
+      categoryName: "Action Verbs & Controls",
+      req: "Req 11.4 vs 11.3",
+      title: "Penetration Testing (Exploitation) vs. Vulnerability Scanning",
+      clueKeywords: ["penetration test", "exploit vulnerabilities", "simulate attacker", "automated scan"],
+      clueExplanation: "Look for verbs of action: 'exploit', 'simulate attack', 'validate defenses' = Penetration Testing. 'Identify', 'detect missing patches', 'automated catalog' = Vulnerability Scanning.",
+      trapDistractor: "Automated monthly vulnerability scans configured with administrative credentials.",
+      trapReasoning: "Scanning identifies theoretical flaws from a database of signatures, but does not simulate an active adversary attempting to exploit them to breach the CDE.",
+      correctAnswer: "Penetration testing is an active assessment involving manual and exploitative testing to simulate real-world attacks, performed annually and after significant changes.",
+      citation: "PCI DSS v4.0.1 Req 11.4: Penetration testing methodology is implemented; external and internal pen testing performed at least once every 12 months.",
+      stemExample: "What distinguishes a penetration test under Requirement 11.4 from an automated vulnerability scan under Requirement 11.3?",
+      searchRel: "11.4"
+    },
+    {
+      id: 7,
+      category: "scoping",
+      categoryName: "Entity Roles & Scoping",
+      req: "Req 11.4.5 vs 11.4.6",
+      title: "Segmentation Testing: Merchants (Annual) vs. Service Providers (Semi-Annual)",
+      clueKeywords: ["segmentation controls", "isolation verification", "Service Provider frequency"],
+      clueExplanation: "PCI DSS tests isolation of the CDE from out-of-scope networks. Merchants test annually; Service Providers must test twice as often (every 6 months)!",
+      trapDistractor: "Every 12 months (annually) during the regular assessment window.",
+      trapReasoning: "Annual testing is correct for merchants (Req 11.4.5), so candidates reflexively pick 'every 12 months' without noticing the stem specified a service provider.",
+      correctAnswer: "Service providers must test segmentation controls at least once every six months (semi-annually) and after any change to segmentation controls (Req 11.4.6).",
+      citation: "PCI DSS v4.0.1 Req 11.4.6: If segmentation is used by a service provider, test at least once every six months and after any changes to segmentation controls/methods.",
+      stemExample: "Under Requirement 11.4.6, how often must a cloud hosting service provider validate that its network segmentation isolates customer cardholder data environments?",
+      searchRel: "11.4.6"
+    },
+    {
+      id: 8,
+      category: "frequencies",
+      categoryName: "Frequencies & Timeframes",
+      req: "Req 6.3.3",
+      title: "Critical Security Patch Timeframe: Exactly 30 Days",
+      clueKeywords: ["critical patches", "high-security vulnerabilities", "vendor release"],
+      clueExplanation: "PCI DSS sets an exact calendar deadline for critical patches: within 30 days of release. Other patches are applied based on the entity's targeted risk analysis.",
+      trapDistractor: "Immediately within 14 calendar days, or quarterly during scheduled maintenance windows.",
+      trapReasoning: "14 days sounds safely stringent, while quarterly sounds like normal IT maintenance. The exact PCI DSS standard is within one month (30 days).",
+      correctAnswer: "Critical security patches and high-risk vulnerabilities must be installed within 30 days of release.",
+      citation: "PCI DSS v4.0.1 Req 6.3.3: All system components are protected from known vulnerabilities by installing applicable security patches within 30 days of release for critical/high-risk patches.",
+      stemExample: "Under PCI DSS Requirement 6.3.3, what is the maximum timeframe permitted for deploying critical vendor-supplied security patches to CDE systems?",
+      searchRel: "6.3.3"
+    },
+    {
+      id: 9,
+      category: "verbs",
+      categoryName: "Action Verbs & Controls",
+      req: "Req 6.4.3 & 11.6.1",
+      title: "Browser-Side Payment Scripts vs. Network Perimeter WAF",
+      clueKeywords: ["consumer browser", "payment page scripts", "tampering", "Magecart"],
+      clueExplanation: "Stems referencing threats executing in the consumer's web browser (such as digital skimming, Magecart, or unauthorized script injection) test client-side script controls, NOT server-side firewalls.",
+      trapDistractor: "Deploy a Web Application Firewall (WAF) in front of the payment web servers to filter HTTP requests.",
+      trapReasoning: "A WAF inspects network traffic reaching the server; it has zero visibility into third-party JavaScript executing directly inside the user's browser DOM.",
+      correctAnswer: "Req 6.4.3 requires an inventory, written business justification, and integrity check for all scripts executing on payment pages; Req 11.6.1 mandates a tamper/change detection mechanism running at least weekly.",
+      citation: "PCI DSS v4.0.1 Req 6.4.3 & 11.6.1: Manage and ensure integrity of all scripts in consumer browsers on payment pages; detect unauthorized header and script changes.",
+      stemExample: "To protect e-commerce customers from client-side script tampering and form-jacking attacks in their web browsers, what control does Requirement 6.4.3 mandate?",
+      searchRel: "6.4.3"
+    },
+    {
+      id: 10,
+      category: "verbs",
+      categoryName: "Action Verbs & Controls",
+      req: "Req 8.4.2 & 8.4.3",
+      title: "MFA for ALL Access into CDE vs. Remote Administrative Access Only",
+      clueKeywords: ["Multi-Factor Authentication", "MFA", "access into the CDE", "console vs non-console"],
+      clueExplanation: "In legacy PCI DSS v3.2.1, MFA was primarily required for remote access into the network and non-console admin access. In v4.0.1, MFA is required for ALL access into the CDE for all personnel.",
+      trapDistractor: "MFA is only mandated for external remote network access originating outside the corporate firewall.",
+      trapReasoning: "Candidates relying on outdated study materials remember remote access. Under v4.0.1 Req 8.4.2, all individual access into the CDE requires MFA.",
+      correctAnswer: "MFA is mandatory for ALL individuals with non-console administrative access into the CDE, AND for ALL access into the CDE (Req 8.4.2).",
+      citation: "PCI DSS v4.0.1 Req 8.4.2: Multi-factor authentication (MFA) is implemented for all access into the cardholder data environment (CDE).",
+      stemExample: "Under PCI DSS v4.0.1 Requirement 8.4.2, when is multi-factor authentication (MFA) required for personnel connecting to systems in the CDE?",
+      searchRel: "8.4.2"
+    },
+    {
+      id: 11,
+      category: "assessment",
+      categoryName: "Assessment & TRA",
+      req: "Appendix B & C",
+      title: "Financial Cost / Budget Constraint vs. Valid Technical Constraint",
+      clueKeywords: ["compensating control", "justification", "budget shortfall", "cost of upgrade"],
+      clueExplanation: "Item-writers frequently present a scenario where an organization claims replacing legacy equipment is 'financially prohibitive' or 'too costly'. Financial cost is NEVER an allowable justification.",
+      trapDistractor: "The high financial expense of replacing legacy hardware constitutes a documented business constraint.",
+      trapReasoning: "Business leaders often cite budget constraints in real life, but the PCI SSC explicitly forbids financial reasons for compensating controls.",
+      correctAnswer: "Compensating controls require documented legitimate technical constraints (e.g. system incompatibility) or legal/regulatory limitations. Financial expense or inconvenience is strictly prohibited.",
+      citation: "PCI DSS v4.0.1 Appendix B & C: Financial constraints are not considered a valid reason for implementing compensating controls.",
+      stemExample: "An entity wishes to implement a compensating control because upgrading legacy POS terminals is cost-prohibitive. How should a QSA evaluate this justification?",
+      searchRel: "Compensating"
+    },
+    {
+      id: 12,
+      category: "assessment",
+      categoryName: "Assessment & TRA",
+      req: "Defined vs Customized",
+      title: "Customized Approach & TRA vs. Defined Approach & CCW",
+      clueKeywords: ["Customized Approach", "Stated Customized Objective", "Appendix D", "Compensating Control Worksheet"],
+      clueExplanation: "Distinguish between the Defined Approach (with Compensating Controls in Appendix C when constrained) and the Customized Approach (meeting the Customized Objective documented in Appendix D).",
+      trapDistractor: "Customized Approach requires filing a formal Compensating Control Worksheet (CCW) demonstrating an insurmountable technical barrier.",
+      trapReasoning: "A CCW is strictly for the Defined Approach when an entity cannot meet a requirement as stated. The Customized Approach is a forward-looking method that does not require an obstacle.",
+      correctAnswer: "The Customized Approach requires meeting the Stated Customized Objective, completing a formal Targeted Risk Analysis (TRA), and documenting the control in Appendix D for assessor evaluation.",
+      citation: "PCI DSS v4.0.1 Section 'Customized Approach': Entities meeting the Stated Customized Objective must document each customized implementation and TRA in Appendix D.",
+      stemExample: "When an organization elects to use the Customized Approach for a PCI DSS requirement, what must it document and provide to the assessor?",
+      searchRel: "Customized"
+    },
+    {
+      id: 13,
+      category: "assessment",
+      categoryName: "Assessment & TRA",
+      req: "Req 12.3.1 & 12.3.2",
+      title: "Targeted Risk Analysis (TRA) Annual Review Requirement",
+      clueKeywords: ["Targeted Risk Analysis", "TRA", "frequency determined by entity", "review cycle"],
+      clueExplanation: "Whenever a requirement states that an activity's frequency is defined by the entity (e.g. log reviews, malware scans, POI inspections), it requires a formal TRA that must be reviewed at least annually.",
+      trapDistractor: "The frequency can be set at management discretion without documented risk justification.",
+      trapReasoning: "PCI DSS v4 gives flexibility, but it is strictly conditioned on a formal, documented TRA (Req 12.3.1) reviewed at least once every 12 months.",
+      correctAnswer: "Each TRA must identify assets, threats, and risk factors, justify the chosen frequency, and be formally reviewed at least once every 12 months (annually).",
+      citation: "PCI DSS v4.0.1 Req 12.3.1: For each requirement where the frequency is determined by a targeted risk analysis, the entity documents the analysis and reviews it every 12 months.",
+      stemExample: "How often must an organization review its documented Targeted Risk Analyses (TRAs) under PCI DSS Requirement 12.3.1?",
+      searchRel: "12.3.1"
+    },
+    {
+      id: 14,
+      category: "saq",
+      categoryName: "SAQ Disqualifiers",
+      req: "SAQ A vs SAQ A-EP",
+      title: "E-commerce URL Redirect / Iframe vs. Direct Post / Merchant Script",
+      clueKeywords: ["e-commerce", "URL redirect", "iframe", "Direct Post", "merchant web server"],
+      clueExplanation: "Look at the payment page architecture: If 100% of cardholder data entry and processing is completely outsourced (URL redirect or validated iframe hosted by processor) = SAQ A. If the merchant web server delivers the form or impact payment page security = SAQ A-EP.",
+      trapDistractor: "A merchant using Direct Post (browser posts directly to gateway from merchant-delivered HTML form) qualifies for SAQ A.",
+      trapReasoning: "Because card data goes directly from browser to gateway, candidates think it is SAQ A. But because the merchant's server delivers the payment page code, it qualifies as SAQ A-EP.",
+      correctAnswer: "SAQ A: 100% card data entry outsourced (URL redirect or third-party hosted iframe). SAQ A-EP: Merchant's website hosts or impacts payment pages (Direct Post, APIs, or merchant-delivered JavaScript).",
+      citation: "PCI SSC Self-Assessment Questionnaire Instructions: SAQ A applies only when all card data functions are completely outsourced to PCI DSS validated third parties.",
+      stemExample: "An online retailer hosts its own shopping cart website and uses an API Direct-Post method where the customer enters card data into fields delivered by the merchant's server. Which SAQ applies?",
+      searchRel: "SAQ A"
+    },
+    {
+      id: 15,
+      category: "saq",
+      categoryName: "SAQ Disqualifiers",
+      req: "SAQ C-VT vs SAQ B-IP",
+      title: "Virtual Terminal (Web Portal Keyboard Entry) vs. Standalone IP Terminal",
+      clueKeywords: ["Virtual Terminal", "web browser", "single transaction manually typed", "isolated workstation"],
+      clueExplanation: "When the stem describes a keyboard operator manually entering single telephone/mail-order card transactions into a browser web portal provided by a processor, the tell-tale points directly to SAQ C-VT.",
+      trapDistractor: "SAQ B-IP or SAQ C.",
+      trapReasoning: "SAQ B-IP requires standalone PTS-approved hardware terminals connected via IP. SAQ C requires dedicated payment application systems connected to the Internet.",
+      correctAnswer: "SAQ C-VT applies strictly to manual keyboard entry of individual transactions into an online virtual terminal hosted by a PCI DSS compliant service provider, on an isolated workstation with no card reader.",
+      citation: "PCI SSC SAQ C-VT Eligibility: Merchants who manually enter transactions one at a time via keyboard into a web-based virtual terminal solution provided by a PCI DSS compliant service provider.",
+      stemExample: "A call center receives phone orders and agents type card details directly into a secure web browser portal provided by their payment processor. Which SAQ should they complete?",
+      searchRel: "SAQ C-VT"
+    },
+    {
+      id: 16,
+      category: "saq",
+      categoryName: "SAQ Disqualifiers",
+      req: "SAQ D Service Provider",
+      title: "Service Provider SAQ Mandate: NEVER Eligible for SAQ A, B, or C",
+      clueKeywords: ["Service Provider", "eligible SAQ", "self-assessment questionnaire"],
+      clueExplanation: "If the entity is explicitly identified as a 'Service Provider', they can NEVER use merchant-specific SAQs (SAQ A, B, B-IP, C, C-VT, P2PE). They must complete SAQ D for Service Providers.",
+      trapDistractor: "A hosting service provider that does not store card data is eligible to complete SAQ A.",
+      trapReasoning: "Candidates focus on 'does not store card data' and jump to SAQ A. But SAQ A is strictly for Merchants. All service providers eligible for SAQs must complete SAQ D for Service Providers.",
+      correctAnswer: "Service providers performing self-assessment must ALWAYS complete SAQ D for Service Providers. Shortened SAQs (A, B, C) are reserved exclusively for eligible merchants.",
+      citation: "PCI SSC SAQ Instructions: All service providers defined by a payment brand as eligible to complete a Self-Assessment Questionnaire must use SAQ D for Service Providers.",
+      stemExample: "Which Self-Assessment Questionnaire (SAQ) is an eligible Third-Party Service Provider permitted to complete to validate compliance?",
+      searchRel: "SAQ D"
+    },
+    {
+      id: 17,
+      category: "saq",
+      categoryName: "SAQ Disqualifiers",
+      req: "SAQ Disqualification",
+      title: "Electronic Storage of Cardholder Data Disqualifies Shorter SAQs",
+      clueKeywords: ["stores cardholder data electronically", "retains PAN on servers", "eligible SAQ"],
+      clueExplanation: "Any electronic cardholder data storage immediately disqualifies a merchant from SAQs A, B, B-IP, C, C-VT, and P2PE, forcing full SAQ D for Merchants.",
+      trapDistractor: "A merchant storing encrypted PANs in a local database can use SAQ C if an HSM manages keys.",
+      trapReasoning: "Candidates assume encryption exempts the merchant from SAQ D. In reality, electronic storage of PAN anywhere on local disks immediately mandates SAQ D.",
+      correctAnswer: "ANY electronic storage of cardholder data on local or corporate systems eliminates eligibility for shorter SAQs and mandates SAQ D for Merchants.",
+      citation: "PCI SSC SAQ Eligibility: Merchants that store cardholder data electronically must use SAQ D for Merchants.",
+      stemExample: "If a merchant stores encrypted cardholder data electronically in an on-premise database, which SAQ must they complete?",
+      searchRel: "SAQ D"
+    },
+    {
+      id: 18,
+      category: "frequencies",
+      categoryName: "Frequencies & Timeframes",
+      req: "Req 10.4.1 vs 10.4.2",
+      title: "Daily Log Reviews for CDE & Security Systems vs. Periodic TRA",
+      clueKeywords: ["log review", "daily review", "security events", "firewalls / IDS / IPS"],
+      clueExplanation: "Look at the system role: Daily log review is mandatory for all CDE components, servers performing security functions (firewalls, IDS/IPS, authentication), and critical servers. Other corporate systems are reviewed periodically per TRA.",
+      trapDistractor: "Review all logs across the entire corporate network once a week or monthly.",
+      trapReasoning: "Weekly reviews are insufficient for CDE systems and security gateways, which strictly require daily log reviews under Requirement 10.4.1.",
+      correctAnswer: "Daily log review is mandatory for: (1) all components storing/processing/transmitting CHD, (2) components performing security functions (firewalls, IDS/IPS, MFA/RADIUS), and (3) critical system components.",
+      citation: "PCI DSS v4.0.1 Req 10.4.1: Audit logs are reviewed at least once daily for systems that store, process, or transmit CHD, and systems performing security functions.",
+      stemExample: "Under PCI DSS Requirement 10.4.1, which system logs must be reviewed at least once daily?",
+      searchRel: "10.4.1"
+    },
+    {
+      id: 19,
+      category: "verbs",
+      categoryName: "Action Verbs & Controls",
+      req: "Req 10.5.1 & 11.5.2",
+      title: "File Integrity Monitoring (FIM) for Unauthorized File Tampering",
+      clueKeywords: ["unauthorized modification", "critical system files", "configuration files", "alert personnel"],
+      clueExplanation: "When the stem focuses on 'detecting unauthorized changes/modifications to critical system binaries, configurations, or application libraries and alerting personnel', the answer is FIM (change detection software).",
+      trapDistractor: "Antivirus software running real-time heuristic scans on all server partitions.",
+      trapReasoning: "Antivirus scans for malware signatures, but does not monitor legitimate configuration files or system executables for unauthorized parameter modifications.",
+      correctAnswer: "File Integrity Monitoring (FIM) or change-detection mechanisms to alert personnel to unauthorized modifications of critical files at least once weekly.",
+      citation: "PCI DSS v4.0.1 Req 11.5.2: A change-detection mechanism (such as FIM) is deployed to alert personnel to unauthorized modification of critical system files.",
+      stemExample: "Under Requirement 11.5.2, what mechanism must be deployed to monitor and alert personnel to unauthorized changes in critical operating system files?",
+      searchRel: "11.5.2"
+    },
+    {
+      id: 20,
+      category: "frequencies",
+      categoryName: "Frequencies & Timeframes",
+      req: "Req 12.10.2",
+      title: "Incident Response Plan: Tested at Least Annually",
+      clueKeywords: ["incident response plan", "test frequency", "tabletop exercise"],
+      clueExplanation: "PCI DSS tests how often emergency incident response plans are rehearsed. The minimum baseline is at least once every 12 months (annually).",
+      trapDistractor: "Tested semi-annually (every six months) or only following a confirmed data breach.",
+      trapReasoning: "Semi-annually sounds like a safe best practice, but Req 12.10.2 establishes an annual baseline.",
+      correctAnswer: "The security incident response plan must be tested at least once every 12 months (annually) and include all breach scenarios and lessons learned.",
+      citation: "PCI DSS v4.0.1 Req 12.10.2: The incident response plan is tested at least once every 12 months, including all elements defined in Req 12.10.1.",
+      stemExample: "According to Requirement 12.10.2, how frequently must an entity test its security incident response plan?",
+      searchRel: "12.10.2"
+    },
+    {
+      id: 21,
+      category: "scoping",
+      categoryName: "Entity Roles & Scoping",
+      req: "Card Processing Roles",
+      title: "Authorization Approval / Decline Decision: Card Issuer Only",
+      clueKeywords: ["authorization approval", "approves or declines", "transaction decision"],
+      clueExplanation: "Questions on payment flow test who actually makes the financial credit/funds approval decision. The answer is ALWAYS the Card Issuer (the consumer's issuing bank).",
+      trapDistractor: "The Payment Gateway, Merchant Acquirer, or Processing Switch.",
+      trapReasoning: "The gateway and acquirer facilitate and route the transaction, but they have no authority or visibility to approve credit lines or funds.",
+      correctAnswer: "ONLY the Card Issuer (Issuing Bank) possesses the authority to approve or decline an authorization request.",
+      citation: "PCI DSS Glossary & Core Payment Flow: The Issuer authorizes payment card transactions based on cardholder account status and available balance/credit.",
+      stemExample: "During an online e-commerce credit card transaction, which entity makes the final real-time decision to approve or decline the authorization request?",
+      searchRel: "Issuer"
+    },
+    {
+      id: 22,
+      category: "data",
+      categoryName: "Data Protection & SAD",
+      req: "Req 6.5.3",
+      title: "Live Production PAN in Development & Test Environments: Absolute Prohibition",
+      clueKeywords: ["production PAN", "live cardholder data", "development / test / QA", "sanitized data"],
+      clueExplanation: "Under no circumstances is live production PAN allowed in development, staging, or test environments. Even with CISO sign-off or strong encryption, it is strictly non-compliant.",
+      trapDistractor: "Permitted if the database is encrypted with AES-256 and restricted to vetted developers.",
+      trapReasoning: "Candidates believe strong controls can justify using production data for testing. PCI DSS Req 6.5.3 contains a strict, non-negotiable prohibition.",
+      correctAnswer: "Live PANs are NEVER permitted in pre-production, development, or test environments. Test data must be fictionalized, masked, or synthetic.",
+      citation: "PCI DSS v4.0.1 Req 6.5.3: Production cardholder data is not used in pre-production environments.",
+      stemExample: "A development team wants to test database performance using a copy of real customer card numbers stored in an air-gapped test lab. Under Req 6.5.3, is this permitted?",
+      searchRel: "6.5.3"
+    },
+    {
+      id: 23,
+      category: "scoping",
+      categoryName: "Entity Roles & Scoping",
+      req: "Req 12.8",
+      title: "Third-Party Service Provider (TPSP) Written Agreements & Annual Status Tracking",
+      clueKeywords: ["third-party service provider", "TPSP oversight", "written agreement", "compliance status"],
+      clueExplanation: "Outsourcing cardholder data processing does NOT outsource compliance liability. The entity must maintain an inventory, track TPSP compliance annually (AOC/ROC), and execute written agreements.",
+      trapDistractor: "Executing a contract with a PCI-compliant TPSP transfers all compliance responsibility and removes the entity from PCI DSS scope.",
+      trapReasoning: "Managers wishful-think that vendors take full responsibility. PCI DSS explicitly states the merchant retains responsibility to monitor and verify TPSP compliance.",
+      correctAnswer: "The entity must maintain a TPSP inventory, execute written agreements where TPSPs acknowledge responsibility for CHD security, and verify compliance status at least once every 12 months.",
+      citation: "PCI DSS v4.0.1 Req 12.8.2, 12.8.3, 12.8.4: Written agreements acknowledging responsibility; program to monitor TPSP compliance status at least once every 12 months.",
+      stemExample: "Under Requirement 12.8.4, what procedure must an entity implement regarding its third-party service providers (TPSPs)?",
+      searchRel: "12.8"
+    },
+    {
+      id: 24,
+      category: "saq",
+      categoryName: "SAQ Disqualifiers",
+      req: "SAQ P2PE",
+      title: "Point-to-Point Encryption: Merchant Has Zero Access to Decryption Keys",
+      clueKeywords: ["Point-to-Point Encryption", "P2PE", "decryption keys", "cleartext card data"],
+      clueExplanation: "In a validated PCI P2PE solution, the merchant has zero cryptographic keys, no access to unencrypted card data, and no decryption hardware on premises.",
+      trapDistractor: "Merchant stores decryption keys in an on-premise hardware security module (HSM) to inspect transaction payloads.",
+      trapReasoning: "If the merchant could decrypt the data, their entire network would remain inside the scope of PCI DSS! Decryption takes place solely in the validated provider's environment.",
+      correctAnswer: "In a validated PCI P2PE solution, card data is encrypted at the PTS-approved POI terminal and can ONLY be decrypted by the validated P2PE Solution Provider. The merchant never has access to keys.",
+      citation: "PCI P2PE Standard & SAQ P2PE Instructions: All decryption is performed outside the merchant environment by a PCI SSC-listed P2PE Solution Provider.",
+      stemExample: "To qualify for SAQ P2PE, where must the cryptographic decryption of encrypted cardholder data take place?",
+      searchRel: "P2PE"
+    },
+    {
+      id: 25,
+      category: "frequencies",
+      categoryName: "Frequencies & Timeframes",
+      req: "Req 8.3.5 & 8.3.6",
+      title: "PCI DSS v4.0.1 Password Length: Minimum 12 Characters (or 8 with TRA)",
+      clueKeywords: ["password length", "minimum characters", "authentication credentials", "v4.0.1 standard"],
+      clueExplanation: "PCI DSS v4.0.1 increased the minimum password length requirement from 7 characters (v3.2.1) to 12 characters (alphabetic and numeric). Stems testing this look for awareness of v4 modern standards.",
+      trapDistractor: "Minimum 7 or 8 characters containing alphanumeric characters.",
+      trapReasoning: "7 characters was the rule for over a decade in PCI DSS v3.2.1. Candidates using legacy memory will pick 7 or 8 instead of the new 12-character standard.",
+      correctAnswer: "Under PCI DSS v4.0.1 Requirement 8.3.6, passwords must be a minimum of 12 characters (or at least 8 characters if the system cannot support 12 and documented via TRA), containing both numeric and alphabetic characters.",
+      citation: "PCI DSS v4.0.1 Req 8.3.6: Passwords/passphrases have a minimum length of 12 characters (or at least 8 if system cannot support 12).",
+      stemExample: "Under PCI DSS v4.0.1 Requirement 8.3.6, what is the default minimum character length required for user account passwords?",
+      searchRel: "8.3.6"
+    }
+  ];
+
+  // Tell-Tales State
+  let telltaleSearchTerm = '';
+  let telltaleSelectedCategory = 'all';
+  let telltaleExpandedCards = new Set([1]); // Expand #1 by default
+
+  const telltaleSearchInput = document.getElementById('telltale-search-input');
+  const telltaleCountBadge = document.getElementById('telltale-count-badge');
+  const telltaleToggleAllBtn = document.getElementById('telltale-toggle-all-btn');
+  const telltalesCardsContainer = document.getElementById('telltales-cards-container');
+  const telltaleCategoryPills = document.querySelectorAll('.telltale-cat-pill');
+  const toggleTelltaleDrillBtn = document.getElementById('toggle-telltale-drill-btn');
+  const telltaleDrillContainer = document.getElementById('telltale-drill-container');
+
+  // Interactive Drill Toggle
+  if (toggleTelltaleDrillBtn && telltaleDrillContainer) {
+    toggleTelltaleDrillBtn.addEventListener('click', () => {
+      const isHidden = telltaleDrillContainer.classList.contains('hidden');
+      if (isHidden) {
+        telltaleDrillContainer.classList.remove('hidden');
+        toggleTelltaleDrillBtn.innerHTML = '<span>✕ Hide Practice Drill</span>';
+        toggleTelltaleDrillBtn.classList.replace('bg-indigo-600', 'bg-slate-700');
+      } else {
+        telltaleDrillContainer.classList.add('hidden');
+        toggleTelltaleDrillBtn.innerHTML = '<span>🎯 Practice Spotting Clues</span>';
+        toggleTelltaleDrillBtn.classList.replace('bg-slate-700', 'bg-indigo-600');
+      }
+    });
+  }
+
+  // Search Input Event
+  if (telltaleSearchInput) {
+    telltaleSearchInput.addEventListener('input', (e) => {
+      telltaleSearchTerm = (e.target.value || '').trim().toLowerCase();
+      renderTelltalesView();
+    });
+  }
+
+  // Category Filter Pills
+  if (telltaleCategoryPills) {
+    telltaleCategoryPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        telltaleCategoryPills.forEach(p => {
+          p.classList.remove('active', 'bg-indigo-600', 'text-white');
+          p.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+        });
+        pill.classList.add('active', 'bg-indigo-600', 'text-white');
+        pill.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+        telltaleSelectedCategory = pill.getAttribute('data-cat') || 'all';
+        renderTelltalesView();
+      });
+    });
+  }
+
+  // Toggle All Cards
+  if (telltaleToggleAllBtn) {
+    telltaleToggleAllBtn.addEventListener('click', () => {
+      const filtered = getFilteredTelltales();
+      if (telltaleExpandedCards.size === filtered.length) {
+        telltaleExpandedCards.clear();
+        telltaleToggleAllBtn.textContent = 'Expand All';
+      } else {
+        filtered.forEach(item => telltaleExpandedCards.add(item.id));
+        telltaleToggleAllBtn.textContent = 'Collapse All';
+      }
+      renderTelltalesView();
+    });
+  }
+
+  function getFilteredTelltales() {
+    return telltalesData.filter(item => {
+      // Category match
+      if (telltaleSelectedCategory !== 'all' && item.category !== telltaleSelectedCategory) {
+        return false;
+      }
+      // Search match
+      if (telltaleSearchTerm) {
+        const textToSearch = [
+          item.title,
+          item.req,
+          item.categoryName,
+          item.clueKeywords.join(' '),
+          item.clueExplanation,
+          item.trapDistractor,
+          item.trapReasoning,
+          item.correctAnswer,
+          item.citation,
+          item.stemExample
+        ].join(' ').toLowerCase();
+        if (!textToSearch.includes(telltaleSearchTerm)) return false;
+      }
+      return true;
+    });
+  }
+
+  // Jump from Tell-Tale Card directly to matching questions in Practice Mode
+  window.jumpToPracticeSearch = function(query) {
+    switchTab('practice');
+    const searchInput = document.getElementById('search-questions');
+    if (searchInput) {
+      searchInput.value = query;
+      practiceSearch = query.toLowerCase();
+      const statusSelect = document.getElementById('practice-status-filter');
+      if (statusSelect) {
+        statusSelect.value = 'all';
+        practiceStatusFilter = 'all';
+      }
+      updatePracticeList();
+      practiceIndex = 0;
+      renderPracticeQuestion();
+    }
+  };
+
+  function renderTelltalesView() {
+    if (!telltalesCardsContainer) return;
+    const filtered = getFilteredTelltales();
+
+    if (telltaleCountBadge) {
+      telltaleCountBadge.textContent = `${filtered.length} of ${telltalesData.length} Tell-Tales`;
+    }
+
+    if (telltaleToggleAllBtn) {
+      telltaleToggleAllBtn.textContent = (telltaleExpandedCards.size >= filtered.length && filtered.length > 0)
+        ? 'Collapse All'
+        : 'Expand All';
+    }
+
+    if (filtered.length === 0) {
+      telltalesCardsContainer.innerHTML = `
+        <div class="bg-white rounded-2xl p-12 text-center border border-slate-200 shadow-sm space-y-4">
+          <div class="text-4xl">🔍</div>
+          <h3 class="text-lg font-bold text-slate-800">No matching tell-tales found</h3>
+          <p class="text-xs text-slate-500 max-w-md mx-auto">
+            Try adjusting your search keywords (e.g. "phishing", "SAD", "service provider", "patch", "SAQ").
+          </p>
+          <button onclick="document.getElementById('telltale-search-input').value=''; telltaleSearchTerm=''; renderTelltalesView();" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer">
+            Clear Search
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    // Category styling helper
+    const getBadgeStyle = (cat) => {
+      switch (cat) {
+        case 'verbs': return 'bg-blue-50 text-blue-700 border-blue-200';
+        case 'scoping': return 'bg-purple-50 text-purple-700 border-purple-200';
+        case 'data': return 'bg-amber-50 text-amber-700 border-amber-200';
+        case 'frequencies': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        case 'saq': return 'bg-rose-50 text-rose-700 border-rose-200';
+        case 'assessment': return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+        default: return 'bg-slate-50 text-slate-700 border-slate-200';
+      }
+    };
+
+    telltalesCardsContainer.innerHTML = filtered.map(item => {
+      const isExpanded = telltaleExpandedCards.has(item.id);
+      const badgeStyle = getBadgeStyle(item.category);
+
+      return `
+        <div class="bg-white rounded-2xl border ${isExpanded ? 'border-indigo-300 ring-2 ring-indigo-50 shadow-md' : 'border-slate-200 shadow-xs hover:border-slate-300'} transition-all overflow-hidden" data-id="${item.id}">
+          <!-- Card Header & Clue Preview -->
+          <div class="p-5 sm:p-6 cursor-pointer select-none telltale-header flex flex-col md:flex-row md:items-center justify-between gap-4" onclick="toggleTelltaleCard(${item.id})">
+            <div class="space-y-2 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${badgeStyle}">
+                  ${item.categoryName}
+                </span>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+                  ${item.req}
+                </span>
+                <span class="text-xs text-slate-400 font-medium">#${item.id}</span>
+              </div>
+              <h3 class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug">
+                ${item.title}
+              </h3>
+
+              <!-- Clue Keywords Badges -->
+              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                <span class="text-xs font-bold text-indigo-600 flex items-center gap-1">
+                  <span>🔍 Stem Keywords:</span>
+                </span>
+                ${item.clueKeywords.map(kw => `
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300 font-mono">
+                    "${kw}"
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Action Button & Expand Chevron -->
+            <div class="flex items-center gap-3 self-end md:self-center">
+              <span class="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
+                ${isExpanded ? 'Collapse ▲' : 'View Decoder & Traps ▼'}
+              </span>
+              <div class="w-8 h-8 rounded-full ${isExpanded ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-sm transition-transform">
+                ${isExpanded ? '▲' : '▼'}
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Expanded Body -->
+          ${isExpanded ? `
+            <div class="px-5 pb-6 sm:px-6 pt-0 border-t border-slate-100 space-y-4 animate-fade-in">
+              <!-- Item-Writer Logic Explainer -->
+              <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                <strong class="text-indigo-950 font-bold">🧠 The Item-Writer's Mindset:</strong> ${item.clueExplanation}
+              </div>
+
+              <!-- Traps vs Correct 2-Column Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Trap Card -->
+                <div class="p-4 rounded-xl bg-rose-50/70 border border-rose-200 space-y-2">
+                  <div class="flex items-center gap-2 text-rose-800 font-extrabold text-xs uppercase tracking-wider">
+                    <span>⚠️</span> The Clever Trap Distractor
+                  </div>
+                  <p class="text-xs sm:text-sm font-semibold text-rose-950 leading-snug">
+                    ${item.trapDistractor}
+                  </p>
+                  <p class="text-[11px] text-rose-800/90 leading-relaxed border-t border-rose-200/60 pt-2">
+                    <strong>Why people guess wrong:</strong> ${item.trapReasoning}
+                  </p>
+                </div>
+
+                <!-- Correct Answer Card -->
+                <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-2">
+                  <div class="flex items-center gap-2 text-emerald-800 font-extrabold text-xs uppercase tracking-wider">
+                    <span>✅</span> What PCI DSS Actually Mandates
+                  </div>
+                  <p class="text-xs sm:text-sm font-bold text-emerald-950 leading-snug">
+                    ${item.correctAnswer}
+                  </p>
+                  <p class="text-[11px] text-emerald-800/90 leading-relaxed border-t border-emerald-200/60 pt-2">
+                    <strong>Standard Reference:</strong> ${item.citation}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Exam Stem Example & Action -->
+              <div class="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="space-y-1 flex-1">
+                  <div class="text-[11px] font-extrabold text-indigo-700 uppercase tracking-wider">
+                    Example Exam Item Stem in Action:
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-800 italic">
+                    "${item.stemExample}"
+                  </p>
+                </div>
+                <button onclick="event.stopPropagation(); jumpToPracticeSearch('${item.searchRel}')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-xs whitespace-nowrap cursor-pointer flex items-center gap-1.5 self-end sm:self-auto">
+                  <span>💡 Test This in Practice</span>
+                </button>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.toggleTelltaleCard = function(id) {
+    if (telltaleExpandedCards.has(id)) {
+      telltaleExpandedCards.delete(id);
+    } else {
+      telltaleExpandedCards.add(id);
+    }
+    renderTelltalesView();
+  };
 
   // Initial load
   updatePracticeList();
