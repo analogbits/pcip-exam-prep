@@ -2434,18 +2434,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const practiceAccuracyBadge = document.getElementById('practice-accuracy-badge');
 
   function openScoreAnalyticsModal() {
-    renderScoreAnalytics();
-    if (scoreAnalyticsModal) scoreAnalyticsModal.classList.remove('hidden');
+    try {
+      renderScoreAnalytics();
+    } catch (err) {
+      console.error('Error rendering score analytics:', err);
+    }
+    const modal = document.getElementById('score-analytics-modal') || scoreAnalyticsModal;
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
   }
 
   function closeScoreAnalyticsModal() {
-    if (scoreAnalyticsModal) scoreAnalyticsModal.classList.add('hidden');
+    const modal = document.getElementById('score-analytics-modal') || scoreAnalyticsModal;
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
   }
   window.closeScoreAnalyticsModal = closeScoreAnalyticsModal;
   window.openScoreAnalyticsModal = openScoreAnalyticsModal;
+  window.renderScoreAnalytics = renderScoreAnalytics;
+
+  // Global click delegation for maximum reliability
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.closest('#practice-accuracy-badge, #nav-analytics-btn, .open-analytics-trigger')) {
+      e.preventDefault();
+      openScoreAnalyticsModal();
+    }
+  });
 
   if (practiceAccuracyBadge) {
-    practiceAccuracyBadge.addEventListener('click', openScoreAnalyticsModal);
+    practiceAccuracyBadge.addEventListener('click', (e) => {
+      e.preventDefault();
+      openScoreAnalyticsModal();
+    });
   }
   if (closeAnalyticsModalBtn) {
     closeAnalyticsModalBtn.addEventListener('click', closeScoreAnalyticsModal);
@@ -2457,9 +2481,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      if (scoreAnalyticsModal && !scoreAnalyticsModal.classList.contains('hidden')) {
-        closeScoreAnalyticsModal();
-      }
+      closeScoreAnalyticsModal();
       if (syncModal && !syncModal.classList.contains('hidden')) {
         closeSyncModal();
       }
