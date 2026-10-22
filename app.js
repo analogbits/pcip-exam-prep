@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let bookmarks = new Set(JSON.parse(localStorage.getItem('pcip_bookmarks') || '[]'));
   let incorrectQids = new Set(JSON.parse(localStorage.getItem('pcip_incorrect') || '[]'));
+  let everIncorrectQids = new Set(JSON.parse(localStorage.getItem('pcip_ever_incorrect') || '[]'));
+  // Ensure all currently incorrect questions are cataloged in everIncorrectQids
+  incorrectQids.forEach(id => everIncorrectQids.add(Number(id)));
+  localStorage.setItem('pcip_ever_incorrect', JSON.stringify([...everIncorrectQids]));
 
   // Exam Simulator State
   let examActive = false;
@@ -291,10 +295,12 @@ document.addEventListener('DOMContentLoaded', () => {
     userAnswers = {};
     userSubmitted = {};
     incorrectQids.clear();
+    everIncorrectQids.clear();
     localStorage.removeItem('pcip_completed_qids');
     localStorage.removeItem('pcip_practice_answers');
     localStorage.removeItem('pcip_practice_submitted');
     localStorage.removeItem('pcip_incorrect');
+    localStorage.removeItem('pcip_ever_incorrect');
     practiceIndex = 0;
     updatePracticeStats();
     updatePracticeList();
@@ -563,10 +569,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!isPerfect) {
           incorrectQids.add(q.id);
+          everIncorrectQids.add(q.id);
         } else {
           incorrectQids.delete(q.id);
+          // Note: We deliberately do NOT remove from everIncorrectQids so remediated questions can be drilled separately!
         }
         localStorage.setItem('pcip_incorrect', JSON.stringify([...incorrectQids]));
+        localStorage.setItem('pcip_ever_incorrect', JSON.stringify([...everIncorrectQids]));
 
         updatePracticeStats();
         renderPracticeQuestion();
@@ -1153,11 +1162,13 @@ document.addEventListener('DOMContentLoaded', () => {
         categoryStats[q.category].correct++;
       } else {
         incorrectQids.add(q.id);
+        everIncorrectQids.add(q.id);
       }
     });
 
     saveCompletedState();
     localStorage.setItem('pcip_incorrect', JSON.stringify([...incorrectQids]));
+    localStorage.setItem('pcip_ever_incorrect', JSON.stringify([...everIncorrectQids]));
     updatePracticeStats();
 
     const pct = Math.round((correctCount / examQuestions.length) * 100);
@@ -1698,57 +1709,158 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---------------------------------------------------------------------
-  // FOCUS REVIEW / WEAK AREAS
+  // FOCUS REVIEW / WEAK AREAS & REMEDIATION QUEUE
   // ---------------------------------------------------------------------
+  let reviewFilter = 'all'; // 'all', 'remediated', 'incorrect', 'bookmarks'
+
   function renderReviewView() {
     const bookmarkedList = allQuestions.filter(q => bookmarks.has(q.id));
     const incorrectList = allQuestions.filter(q => incorrectQids.has(q.id));
+    const remediatedList = allQuestions.filter(q => everIncorrectQids.has(q.id) && !incorrectQids.has(q.id));
+    const allWeakList = allQuestions.filter(q => everIncorrectQids.has(q.id));
 
+    // Update Counter Elements in Header
     const bookmarkedCountEl = document.getElementById('bookmarked-count');
     const incorrectCountEl = document.getElementById('incorrect-count');
+    const remediatedCountEl = document.getElementById('remediated-count');
+    const totalWeakCountEl = document.getElementById('total-weak-count');
     if (bookmarkedCountEl) bookmarkedCountEl.textContent = bookmarkedList.length;
     if (incorrectCountEl) incorrectCountEl.textContent = incorrectList.length;
+    if (remediatedCountEl) remediatedCountEl.textContent = remediatedList.length;
+    if (totalWeakCountEl) totalWeakCountEl.textContent = allWeakList.length;
+
+    // Update Tab Counts
+    const tabAllWeakCount = document.getElementById('tab-all-weak-count');
+    const tabRemediatedCount = document.getElementById('tab-remediated-count');
+    const tabIncorrectCount = document.getElementById('tab-incorrect-count');
+    const tabBookmarksCount = document.getElementById('tab-bookmarks-count');
+    if (tabAllWeakCount) tabAllWeakCount.textContent = allWeakList.length;
+    if (tabRemediatedCount) tabRemediatedCount.textContent = remediatedList.length;
+    if (tabIncorrectCount) tabIncorrectCount.textContent = incorrectList.length;
+    if (tabBookmarksCount) tabBookmarksCount.textContent = bookmarkedList.length;
+
+    // Filter button styling and listeners
+    const filterBtns = {
+      'all': document.getElementById('filter-all-weak-btn'),
+      'remediated': document.getElementById('filter-remediated-btn'),
+      'incorrect': document.getElementById('filter-incorrect-btn'),
+      'bookmarks': document.getElementById('filter-bookmarks-btn')
+    };
+
+    Object.entries(filterBtns).forEach(([key, btn]) => {
+      if (!btn) return;
+      if (key === reviewFilter) {
+        btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs cursor-pointer';
+      } else {
+        btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer';
+      }
+      btn.onclick = () => {
+        reviewFilter = key;
+        renderReviewView();
+      };
+    });
 
     const listContainer = document.getElementById('review-items-container');
     if (!listContainer) return;
 
-    if (!bookmarkedList.length && !incorrectList.length) {
+    // Determine questions to show based on reviewFilter
+    let displayQuestions = [];
+    if (reviewFilter === 'remediated') {
+      displayQuestions = remediatedList;
+    } else if (reviewFilter === 'incorrect') {
+      displayQuestions = incorrectList;
+    } else if (reviewFilter === 'bookmarks') {
+      displayQuestions = bookmarkedList;
+    } else {
+      // 'all': all weak history + bookmarks
+      const combined = new Map();
+      allWeakList.forEach(q => combined.set(q.id, q));
+      bookmarkedList.forEach(q => combined.set(q.id, q));
+      displayQuestions = Array.from(combined.values());
+    }
+
+    if (!displayQuestions.length) {
+      let emptyMsg = 'No questions found in this view!';
+      let emptySub = 'As you practice questions or complete mock exams, items will automatically populate this queue.';
+      if (reviewFilter === 'remediated') {
+        emptyMsg = 'No Remediated Questions Yet';
+        emptySub = 'Questions that you answered incorrectly and subsequently changed to the correct answer will automatically appear here so you can verify long-term retention!';
+      } else if (reviewFilter === 'incorrect') {
+        emptyMsg = 'Zero Active Missed Questions';
+        emptySub = 'Great job! You have no currently unresolved missed questions.';
+      } else if (reviewFilter === 'bookmarks') {
+        emptyMsg = 'No Bookmarked Questions';
+        emptySub = 'Star questions during Practice Mode to save them here for rapid review.';
+      }
+
       listContainer.innerHTML = `
-        <div class="p-8 text-center bg-white rounded-2xl border border-slate-200">
-          <p class="text-slate-500 text-base">No bookmarked or incorrect questions yet!</p>
-          <p class="text-slate-400 text-xs mt-1">Bookmark questions in Practice Mode or take an Exam Simulation to populate your focus review queue.</p>
+        <div class="p-8 sm:p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-3xl font-bold">
+            ✨
+          </div>
+          <p class="text-slate-800 font-extrabold text-base">${emptyMsg}</p>
+          <p class="text-slate-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">${emptySub}</p>
         </div>
       `;
       return;
     }
 
-    const combinedMap = new Map();
-    incorrectList.forEach(q => combinedMap.set(q.id, { q, tag: 'Missed in Quiz' }));
-    bookmarkedList.forEach(q => combinedMap.set(q.id, { q, tag: combinedMap.has(q.id) ? 'Missed & Bookmarked' : 'Bookmarked' }));
+    listContainer.innerHTML = displayQuestions.map(q => {
+      const isIncorrect = incorrectQids.has(q.id);
+      const isRemediated = everIncorrectQids.has(q.id) && !isIncorrect;
+      const isBookmarked = bookmarks.has(q.id);
 
-    listContainer.innerHTML = Array.from(combinedMap.values()).map(({ q, tag }) => {
+      let tagBadges = [];
+      if (isRemediated) {
+        tagBadges.push(`<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1"><span>🔄</span> <span>Remediated (Originally Missed, Now Correct)</span></span>`);
+      } else if (isIncorrect) {
+        tagBadges.push(`<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1"><span>✕</span> <span>Missed in Quiz (Active)</span></span>`);
+      }
+      if (isBookmarked) {
+        tagBadges.push(`<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1"><span>★</span> <span>Bookmarked</span></span>`);
+      }
+
       const opts = q.options.map((opt, idx) => {
         const isC = q.correct.includes(idx);
         return `
-          <div class="p-2.5 rounded-lg border text-xs md:text-sm ${isC ? 'border-emerald-400 bg-emerald-50 text-emerald-900 font-medium' : 'border-slate-200 text-slate-600 bg-white'}">
-            <strong>${String.fromCharCode(65 + idx)}.</strong> ${opt} ${isC ? '✓ (Correct)' : ''}
+          <div class="p-3 rounded-xl border text-xs md:text-sm ${isC ? 'border-emerald-300 bg-emerald-50 text-emerald-950 font-medium' : 'border-slate-200 text-slate-600 bg-white'}">
+            <strong>${String.fromCharCode(65 + idx)}.</strong> ${opt} ${isC ? '<span class="text-emerald-700 font-bold ml-1">✓ (Correct Answer)</span>' : ''}
           </div>
         `;
       }).join('');
 
       return `
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <div class="flex items-center justify-between gap-3">
-            <span class="text-xs font-bold px-2.5 py-1 rounded-full ${tag.includes('Missed') ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">
-              ${tag}
-            </span>
-            <span class="text-xs text-slate-400">${q.category}</span>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+              ${tagBadges.join('')}
+              <span class="text-xs text-slate-400 font-mono font-bold">#${q.id} · ${q.category}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="window.drillSingleQuestion(${q.id})" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                <span>🔁</span> <span>Drill (Sandbox)</span>
+              </button>
+              <button onclick="window.markQuestionMasteredFromCheatsheet(${q.id})" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 transition-all cursor-pointer flex items-center gap-1" title="Mark completely mastered and remove from weak list">
+                <span>✓</span> <span>Mark Mastered</span>
+              </button>
+            </div>
           </div>
-          <h4 class="font-bold text-slate-900 text-base">${q.question}</h4>
+
+          ${isRemediated ? `
+            <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-2xl text-xs text-emerald-950 flex items-start gap-2">
+              <span class="text-sm">💡</span>
+              <div class="leading-relaxed">
+                <strong>Remediation History:</strong> You originally answered this incorrectly, and then changed it to correct. Click <strong>"Drill (Sandbox)"</strong> to re-test it with zero impact on your running stats!
+              </div>
+            </div>
+          ` : ''}
+
+          <h4 class="font-bold text-slate-900 text-sm sm:text-base leading-snug">${q.question}</h4>
           <div class="space-y-1.5">${opts}</div>
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs md:text-sm text-slate-700">
-            <p class="font-bold text-slate-900 mb-1">Reasoning & Standard Reference:</p>
-            ${q.explanation}
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs md:text-sm text-slate-700 space-y-1.5">
+            <p class="font-bold text-slate-900 mb-1">Reasoning & Standard Reference (${q.v4_ref || 'PCI DSS v4.0.1'}):</p>
+            <p class="leading-relaxed">${q.explanation}</p>
+            ${q.tip ? `<p class="mt-2 text-indigo-900 font-semibold bg-indigo-50/80 p-2.5 rounded-xl border border-indigo-100 text-xs"><span class="font-bold">🎯 Exam Trap Clue:</span> ${q.tip}</p>` : ''}
           </div>
         </div>
       `;
@@ -1758,22 +1870,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearBmBtn = document.getElementById('clear-bookmarks-btn');
   if (clearBmBtn) {
     clearBmBtn.addEventListener('click', () => {
-      bookmarks.clear();
-      localStorage.removeItem('pcip_bookmarks');
-      renderReviewView();
+      if (!bookmarks.size) {
+        alert('You have no bookmarks to clear.');
+        return;
+      }
+      if (confirm(`Clear all ${bookmarks.size} bookmarks?`)) {
+        bookmarks.clear();
+        localStorage.removeItem('pcip_bookmarks');
+        renderReviewView();
+      }
     });
   }
 
   const clearIncBtn = document.getElementById('clear-incorrect-btn');
   if (clearIncBtn) {
     clearIncBtn.addEventListener('click', () => {
-      incorrectQids.clear();
-      localStorage.removeItem('pcip_incorrect');
-      renderReviewView();
-      if (typeof renderCheatsheetWeakAreas === 'function') {
-        renderCheatsheetWeakAreas();
+      if (!incorrectQids.size) {
+        alert('You have no active missed questions to clear.');
+        return;
       }
-      updatePracticeStats();
+      if (confirm(`Clear all ${incorrectQids.size} currently missed questions?`)) {
+        incorrectQids.clear();
+        localStorage.setItem('pcip_incorrect', JSON.stringify([]));
+        renderReviewView();
+        if (typeof renderCheatsheetWeakAreas === 'function') renderCheatsheetWeakAreas();
+        updatePracticeStats();
+      }
+    });
+  }
+
+  const clearRemBtn = document.getElementById('clear-remediated-btn');
+  if (clearRemBtn) {
+    clearRemBtn.addEventListener('click', () => {
+      const remediatedIds = Array.from(everIncorrectQids).filter(id => !incorrectQids.has(id));
+      if (!remediatedIds.length) {
+        alert('You have no remediated questions to clear.');
+        return;
+      }
+      if (confirm(`Clear all ${remediatedIds.length} remediated questions from your weak areas queue?`)) {
+        remediatedIds.forEach(id => everIncorrectQids.delete(id));
+        localStorage.setItem('pcip_ever_incorrect', JSON.stringify([...everIncorrectQids]));
+        renderReviewView();
+        if (typeof renderCheatsheetWeakAreas === 'function') renderCheatsheetWeakAreas();
+      }
     });
   }
 
@@ -1906,17 +2045,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!cheatsheetWeakContainer) return;
 
     const incorrectList = allQuestions.filter(q => incorrectQids.has(q.id));
+    const remediatedList = allQuestions.filter(q => everIncorrectQids.has(q.id) && !incorrectQids.has(q.id));
+    const allWeakList = allQuestions.filter(q => everIncorrectQids.has(q.id));
 
     // Connect top header buttons
     if (cheatsheetJumpPracticeBtn) {
-      cheatsheetJumpPracticeBtn.onclick = () => window.jumpToPracticeMissed();
+      cheatsheetJumpPracticeBtn.onclick = () => window.openRemediationDrill('all');
+      cheatsheetJumpPracticeBtn.innerHTML = '<span>🔁</span> <span>Launch Isolated Drill</span>';
     }
     if (cheatsheetClearWeakBtn) {
       cheatsheetClearWeakBtn.onclick = () => window.clearAllMissedFromCheatsheet();
     }
 
     // Zero Weak Areas State
-    if (!incorrectList.length) {
+    if (!allWeakList.length) {
       if (cheatsheetWeakCountBadge) {
         cheatsheetWeakCountBadge.textContent = '0 Weak Areas (100% Mastery)';
         cheatsheetWeakCountBadge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold';
@@ -1930,7 +2072,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="space-y-1">
             <h4 class="text-lg font-black text-slate-900">Zero Weak Areas Active — 100% Mastery!</h4>
             <p class="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
-              You currently have 0 missed questions in your queue. As you complete questions in <strong>Practice Mode</strong> or take the <strong>75-Question Exam Simulator</strong>, any missed concepts or tricky items will automatically generate customized cheat sheet revision notes right here!
+              You currently have 0 missed or remediated questions in your queue. As you complete questions in <strong>Practice Mode</strong> or take the <strong>75-Question Exam Simulator</strong>, any missed concepts will automatically generate customized cheat sheet revision notes right here!
             </p>
           </div>
           <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -1948,13 +2090,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Active Weak Areas State
     if (cheatsheetWeakCountBadge) {
-      cheatsheetWeakCountBadge.textContent = `${incorrectList.length} Missed Question${incorrectList.length > 1 ? 's' : ''}`;
+      cheatsheetWeakCountBadge.textContent = `${incorrectList.length} Missed · ${remediatedList.length} Remediated`;
       cheatsheetWeakCountBadge.className = 'px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[11px] font-bold';
     }
 
-    // Group by category to find weak domains
+    // Group by category to find weak domains across all weak questions
     const domainCounts = {};
-    incorrectList.forEach(q => {
+    allWeakList.forEach(q => {
       const cat = q.category || 'General';
       domainCounts[cat] = (domainCounts[cat] || 0) + 1;
     });
@@ -1975,7 +2117,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // If none matched via key substring, include general fallbacks
     if (!matchedRulesSections.length) {
       matchedRulesSections.push(domainRulesMap['req 3'], domainRulesMap['req 5']);
     }
@@ -1987,13 +2128,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
             <span>🎯</span> <span>Weak Domain Diagnostics:</span>
           </span>
-          <span class="text-slate-400 font-medium">Click any domain to drill in Practice</span>
+          <span class="text-slate-400 font-medium">Click any domain to launch an isolated sandbox drill</span>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           ${sortedDomains.map(([cat, count]) => `
-            <button onclick="window.jumpToPracticeDomain('${cat.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+            <button onclick="window.openRemediationDrill('all')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
               <span>${cat}</span>
-              <span class="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px]">${count} missed</span>
+              <span class="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px]">${count} in weak queue</span>
             </button>
           `).join('')}
         </div>
@@ -2004,7 +2145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <span class="text-amber-800 font-black text-sm uppercase tracking-wide">
-              ⚡ Targeted Priority Rules For Your Missed Questions:
+              ⚡ Targeted Priority Rules For Your Missed & Remediated Questions:
             </span>
           </div>
           <span class="text-xs font-bold text-amber-700 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300">
@@ -2031,16 +2172,19 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
 
-      <!-- Missed Questions Instant Review Accordion -->
+      <!-- Weak Questions Instant Review List -->
       <div class="space-y-3">
         <div class="flex items-center justify-between px-1 text-xs">
           <span class="font-extrabold text-slate-700 uppercase tracking-wider">
-            Review Missed Questions (${incorrectList.length} total)
+            Weak & Remediated Queue (${allWeakList.length} total · ${remediatedList.length} corrected)
           </span>
-          <span class="text-slate-400">Mark as mastered once you understand the concept</span>
+          <button onclick="window.openRemediationDrill('all')" class="text-indigo-600 hover:text-indigo-800 font-bold underline cursor-pointer">
+            🔁 Launch Sandbox Re-Test Drill
+          </button>
         </div>
 
-        ${incorrectList.map(q => {
+        ${allWeakList.map(q => {
+          const isRemediated = !incorrectQids.has(q.id);
           const correctLetters = q.correct.map(idx => String.fromCharCode(65 + idx)).join(', ');
           const correctText = q.correct.map(idx => q.options[idx]).join(' / ');
 
@@ -2048,16 +2192,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[11px] font-bold">
-                    Missed in Quiz
+                  <span class="px-2.5 py-0.5 rounded-full ${isRemediated ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'} text-[11px] font-bold">
+                    ${isRemediated ? '🔄 Remediated (Fixed)' : '✕ Missed in Quiz'}
                   </span>
                   <span class="text-xs font-medium text-slate-400 font-mono">
                     #${q.id} · ${q.category}
                   </span>
                 </div>
-                <button onclick="window.markQuestionMasteredFromCheatsheet(${q.id})" class="px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 transition-all cursor-pointer flex items-center gap-1">
-                  <span>✓</span> <span>Mark Mastered</span>
-                </button>
+                <div class="flex items-center gap-2">
+                  <button onclick="window.drillSingleQuestion(${q.id})" class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-all cursor-pointer flex items-center gap-1">
+                    <span>🔁</span> <span>Drill (Sandbox)</span>
+                  </button>
+                  <button onclick="window.markQuestionMasteredFromCheatsheet(${q.id})" class="px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 transition-all cursor-pointer flex items-center gap-1">
+                    <span>✓</span> <span>Mark Mastered</span>
+                  </button>
+                </div>
               </div>
 
               <h4 class="text-sm sm:text-base font-bold text-slate-900 leading-snug">
@@ -2126,20 +2275,25 @@ document.addEventListener('DOMContentLoaded', () => {
   window.markQuestionMasteredFromCheatsheet = function(qid) {
     qid = Number(qid);
     incorrectQids.delete(qid);
+    everIncorrectQids.delete(qid);
     localStorage.setItem('pcip_incorrect', JSON.stringify([...incorrectQids]));
+    localStorage.setItem('pcip_ever_incorrect', JSON.stringify([...everIncorrectQids]));
     renderCheatsheetWeakAreas();
     if (currentTab === 'review') renderReviewView();
     updatePracticeStats();
   };
 
   window.clearAllMissedFromCheatsheet = function() {
-    if (!incorrectQids.size) {
-      alert('You have no missed questions to clear!');
+    const totalWeak = everIncorrectQids.size;
+    if (!totalWeak) {
+      alert('You have no weak area or missed questions to clear!');
       return;
     }
-    if (confirm(`Mark all ${incorrectQids.size} missed questions as mastered and clear your weak areas queue?`)) {
+    if (confirm(`Mark all ${totalWeak} weak/remediated questions as mastered and clear your weak areas queue?`)) {
       incorrectQids.clear();
+      everIncorrectQids.clear();
       localStorage.setItem('pcip_incorrect', JSON.stringify([]));
+      localStorage.setItem('pcip_ever_incorrect', JSON.stringify([]));
       renderCheatsheetWeakAreas();
       if (currentTab === 'review') renderReviewView();
       updatePracticeStats();
@@ -2832,6 +2986,431 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ---------------------------------------------------------------------
+  // ISOLATED REMEDIATION DRILL ENGINE (ZERO MAIN STAT IMPACT)
+  // ---------------------------------------------------------------------
+  let drillPoolType = 'all'; // 'all', 'remediated', 'missed'
+  let drillQuestions = [];
+  let drillIndex = 0;
+  let drillAnswers = {};   // qid -> array of selected indices
+  let drillSubmitted = {}; // qid -> boolean
+  let drillResults = {};   // qid -> boolean
+  let drillCorrectCount = 0;
+  let drillAnsweredCount = 0;
+
+  window.launchRemediationDrill = function(poolType) {
+    drillPoolType = poolType || 'all';
+    window.switchDrillPool(drillPoolType);
+  };
+
+  window.closeRemediationDrill = function() {
+    const modal = document.getElementById('remediation-drill-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  };
+
+  window.openRemediationDrill = function(poolType) {
+    window.launchRemediationDrill(poolType);
+    const modal = document.getElementById('remediation-drill-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    }
+  };
+
+  const remediationDrillModalEl = document.getElementById('remediation-drill-modal');
+  if (remediationDrillModalEl) {
+    remediationDrillModalEl.addEventListener('click', (e) => {
+      if (e.target === remediationDrillModalEl) window.closeRemediationDrill();
+    });
+  }
+
+  window.switchDrillPool = function(poolType) {
+    drillPoolType = poolType || 'all';
+    drillIndex = 0;
+    drillAnswers = {};
+    drillSubmitted = {};
+    drillResults = {};
+    drillCorrectCount = 0;
+    drillAnsweredCount = 0;
+
+    const missedList = allQuestions.filter(q => incorrectQids.has(q.id));
+    const remediatedList = allQuestions.filter(q => everIncorrectQids.has(q.id) && !incorrectQids.has(q.id));
+    const allWeakList = allQuestions.filter(q => everIncorrectQids.has(q.id));
+
+    // Update counts on buttons in modal
+    const countAllEl = document.getElementById('drill-count-all');
+    const countRemEl = document.getElementById('drill-count-remediated');
+    const countMissEl = document.getElementById('drill-count-missed');
+    if (countAllEl) countAllEl.textContent = allWeakList.length;
+    if (countRemEl) countRemEl.textContent = remediatedList.length;
+    if (countMissEl) countMissEl.textContent = missedList.length;
+
+    // Active button styling
+    ['all', 'remediated', 'missed'].forEach(type => {
+      const btn = document.getElementById(`drill-pool-${type}`);
+      if (btn) {
+        if (type === poolType) {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs cursor-pointer';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 cursor-pointer';
+        }
+      }
+    });
+
+    if (poolType === 'remediated') {
+      drillQuestions = [...remediatedList];
+    } else if (poolType === 'missed') {
+      drillQuestions = [...missedList];
+    } else {
+      drillQuestions = [...allWeakList];
+    }
+
+    renderDrillQuestion();
+  };
+
+  window.shuffleDrillQuestions = function() {
+    if (!drillQuestions.length) return;
+    for (let i = drillQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [drillQuestions[i], drillQuestions[j]] = [drillQuestions[j], drillQuestions[i]];
+    }
+    drillIndex = 0;
+    renderDrillQuestion();
+  };
+
+  window.drillSingleQuestion = function(qid) {
+    const q = allQuestions.find(x => x.id === Number(qid));
+    if (!q) return;
+    drillQuestions = [q];
+    drillIndex = 0;
+    drillAnswers = {};
+    drillSubmitted = {};
+    drillResults = {};
+    drillCorrectCount = 0;
+    drillAnsweredCount = 0;
+    if (typeof openRemediationDrill === 'function') {
+      openRemediationDrill('all');
+    }
+    renderDrillQuestion();
+  };
+
+  window.toggleDrillOption = function(optIdx) {
+    const q = drillQuestions[drillIndex];
+    if (!q || drillSubmitted[q.id]) return;
+
+    const isMultiple = q.correct.length > 1;
+    let sel = drillAnswers[q.id] || [];
+
+    if (isMultiple) {
+      if (sel.includes(optIdx)) {
+        sel = sel.filter(x => x !== optIdx);
+      } else {
+        sel = [...sel, optIdx];
+      }
+    } else {
+      sel = [optIdx];
+    }
+    drillAnswers[q.id] = sel;
+    renderDrillQuestion();
+  };
+
+  window.submitDrillAnswer = function() {
+    const q = drillQuestions[drillIndex];
+    if (!q) return;
+
+    const sel = drillAnswers[q.id] || [];
+    if (!sel.length) {
+      alert('Please select an option before checking your answer.');
+      return;
+    }
+
+    const correctSet = new Set(q.correct);
+    const selSet = new Set(sel);
+    const isPerfect = (correctSet.size === selSet.size) && [...correctSet].every(x => selSet.has(x));
+
+    drillSubmitted[q.id] = true;
+    drillResults[q.id] = isPerfect;
+    drillAnsweredCount++;
+    if (isPerfect) {
+      drillCorrectCount++;
+    }
+
+    renderDrillQuestion();
+  };
+
+  window.drillNext = function() {
+    if (drillIndex < drillQuestions.length - 1) {
+      drillIndex++;
+      renderDrillQuestion();
+    } else {
+      // Completed drill
+      drillIndex = drillQuestions.length;
+      renderDrillQuestion();
+    }
+  };
+
+  window.drillPrev = function() {
+    if (drillIndex > 0) {
+      drillIndex--;
+      renderDrillQuestion();
+    }
+  };
+
+  window.restartDrill = function() {
+    drillIndex = 0;
+    drillAnswers = {};
+    drillSubmitted = {};
+    drillResults = {};
+    drillCorrectCount = 0;
+    drillAnsweredCount = 0;
+    window.switchDrillPool(drillPoolType);
+  };
+
+  window.markDrillQuestionMastered = function(qid) {
+    qid = Number(qid);
+    if (!confirm(`Mark Question #${qid} as completely mastered?\n\nThis will remove it from your Weak Areas tracking queue. (Your main completed question counts remain unaffected).`)) {
+      return;
+    }
+    everIncorrectQids.delete(qid);
+    incorrectQids.delete(qid);
+    localStorage.setItem('pcip_ever_incorrect', JSON.stringify([...everIncorrectQids]));
+    localStorage.setItem('pcip_incorrect', JSON.stringify([...incorrectQids]));
+
+    // Remove from active drill pool
+    drillQuestions = drillQuestions.filter(q => q.id !== qid);
+    if (drillIndex >= drillQuestions.length) {
+      drillIndex = Math.max(0, drillQuestions.length - 1);
+    }
+    renderDrillQuestion();
+    if (currentTab === 'review') renderReviewView();
+    if (typeof renderCheatsheetWeakAreas === 'function') renderCheatsheetWeakAreas();
+  };
+
+  window.renderDrillQuestion = function() {
+    const container = document.getElementById('drill-content-area');
+    if (!container) return;
+
+    // 1. Zero Questions State
+    if (!drillQuestions.length) {
+      let title = 'No questions in this drill queue!';
+      let msg = 'Great news! You have no questions fitting this criteria.';
+      if (drillPoolType === 'remediated') {
+        title = 'No Remediated Questions Yet';
+        msg = 'Questions you originally answered incorrectly and subsequently changed to correct will appear here so you can test if you truly retained them!';
+      } else if (drillPoolType === 'missed') {
+        title = 'Zero Active Missed Questions';
+        msg = 'You currently have no unresolved missed questions from your practice quizzes!';
+      }
+
+      container.innerHTML = `
+        <div class="p-8 sm:p-12 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-4">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-3xl font-bold">
+            🎉
+          </div>
+          <div class="space-y-1">
+            <h4 class="text-base sm:text-lg font-black text-slate-900">${title}</h4>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">${msg}</p>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <button onclick="window.switchDrillPool('all')" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all cursor-pointer">
+              View All Weak Areas
+            </button>
+            <button onclick="window.closeRemediationDrill()" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">
+              Exit Drill
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // 2. Drill Completion Summary State
+    if (drillIndex >= drillQuestions.length) {
+      const accuracy = drillAnsweredCount > 0 ? Math.round((drillCorrectCount / drillAnsweredCount) * 100) : 0;
+      const passed = accuracy >= 75;
+
+      container.innerHTML = `
+        <div class="p-8 sm:p-10 text-center bg-slate-50 rounded-3xl border border-slate-200 space-y-5 animate-fade-in">
+          <div class="w-16 h-16 mx-auto rounded-3xl ${passed ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-amber-100 text-amber-700 border border-amber-300'} flex items-center justify-center text-3xl font-bold">
+            ${passed ? '🏆' : '🎯'}
+          </div>
+
+          <div class="space-y-1.5">
+            <h4 class="text-xl font-black text-slate-900">Drill Completed!</h4>
+            <p class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
+              You reviewed ${drillAnsweredCount} weak area questions in this isolated sandbox drill.
+            </p>
+          </div>
+
+          <!-- Score Card -->
+          <div class="max-w-xs mx-auto p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1">
+            <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">Sandbox Retention Score</span>
+            <div class="text-3xl font-black ${passed ? 'text-emerald-600' : 'text-amber-600'}">
+              ${accuracy}%
+            </div>
+            <p class="text-xs text-slate-500 font-medium">${drillCorrectCount} out of ${drillAnsweredCount} correct</p>
+          </div>
+
+          <!-- Zero Impact Confirmation Note -->
+          <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 max-w-md mx-auto flex items-center gap-2">
+            <span>🛡️</span>
+            <span><strong>Zero Impact Verified:</strong> Your main question running score and answered count remain completely untouched.</span>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button onclick="window.restartDrill()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm cursor-pointer">
+              🔁 Restart Drill
+            </button>
+            <button onclick="window.closeRemediationDrill()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">
+              Exit Drill
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // 3. Render Active Question in Drill
+    const q = drillQuestions[drillIndex];
+    const isSubmitted = !!drillSubmitted[q.id];
+    const userSel = drillAnswers[q.id] || [];
+    const isMultiple = q.correct.length > 1;
+    const isRemediated = everIncorrectQids.has(q.id) && !incorrectQids.has(q.id);
+
+    const drillPct = drillAnsweredCount > 0 ? Math.round((drillCorrectCount / drillAnsweredCount) * 100) : 0;
+
+    let optionsHtml = q.options.map((opt, idx) => {
+      const isSelected = userSel.includes(idx);
+      const isCorrectOption = q.correct.includes(idx);
+
+      let optionClasses = 'p-3.5 sm:p-4 rounded-2xl border text-xs sm:text-sm transition-all flex items-start gap-3 cursor-pointer ';
+      if (!isSubmitted) {
+        if (isSelected) {
+          optionClasses += 'border-indigo-600 bg-indigo-50/70 text-indigo-950 font-semibold shadow-xs';
+        } else {
+          optionClasses += 'border-slate-200 hover:border-slate-300 bg-white text-slate-800';
+        }
+      } else {
+        if (isCorrectOption) {
+          optionClasses += 'border-emerald-500 bg-emerald-50 text-emerald-950 font-bold shadow-xs';
+        } else if (isSelected && !isCorrectOption) {
+          optionClasses += 'border-rose-400 bg-rose-50 text-rose-950 font-medium';
+        } else {
+          optionClasses += 'border-slate-200 opacity-60 bg-white text-slate-500';
+        }
+      }
+
+      const letter = String.fromCharCode(65 + idx);
+      const badgeIcon = isSubmitted ? (isCorrectOption ? '✓' : (isSelected ? '✕' : letter)) : letter;
+
+      return `
+        <div onclick="window.toggleDrillOption(${idx})" class="${optionClasses}">
+          <div class="w-6 h-6 rounded-lg ${isSelected ? 'bg-indigo-600 text-white' : (isSubmitted && isCorrectOption ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700')} flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            ${badgeIcon}
+          </div>
+          <div class="flex-1 leading-snug">
+            ${opt}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Feedback Banner
+    let feedbackHtml = '';
+    if (isSubmitted) {
+      const isCorrect = !!drillResults[q.id];
+      feedbackHtml = `
+        <div class="space-y-4 animate-fade-in">
+          <div class="p-4 rounded-2xl border ${isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-rose-50 border-rose-300 text-rose-950'} space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-black text-sm flex items-center gap-2">
+                <span>${isCorrect ? '✅' : '❌'}</span>
+                <span>${isCorrect ? 'Correct! Strong retention on this concept.' : 'Missed in drill — review the standard citation below.'}</span>
+              </span>
+              <span class="text-xs font-bold font-mono px-2 py-0.5 rounded-full ${isCorrect ? 'bg-emerald-200/80 text-emerald-900' : 'bg-rose-200/80 text-rose-900'}">
+                Answer: Option ${q.correct.map(x => String.fromCharCode(65 + x)).join(', ')}
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-700 space-y-2">
+            <p class="font-bold text-slate-900 mb-1">Official Reasoning & Standard Reference (${q.v4_ref || 'PCI DSS v4.0.1'}):</p>
+            <p class="leading-relaxed">${q.explanation}</p>
+            ${q.tip ? `<div class="p-3 bg-indigo-50/80 rounded-xl border border-indigo-100 text-xs text-indigo-900"><strong class="font-bold">🎯 Exam Trap Clue:</strong> ${q.tip}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <!-- Question Progress Bar & Stats -->
+      <div class="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold font-mono">
+            Item ${drillIndex + 1} of ${drillQuestions.length}
+          </span>
+          <span class="px-2.5 py-1 rounded-xl ${isRemediated ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'} font-bold">
+            ${isRemediated ? '🔄 Remediated (Fixed)' : '✕ Missed in Quiz'}
+          </span>
+          <span class="text-slate-400 font-mono hidden sm:inline">#${q.id} · ${q.category}</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500 font-medium">Drill Score:</span>
+          <span class="font-black text-indigo-700 font-mono bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-100">
+            ${drillCorrectCount}/${drillAnsweredCount} (${drillPct}%)
+          </span>
+        </div>
+      </div>
+
+      <!-- Question Stem -->
+      <div class="space-y-2">
+        <h4 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+          ${q.question}
+        </h4>
+        ${isMultiple ? '<span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md inline-block">Select all that apply</span>' : ''}
+      </div>
+
+      <!-- Options -->
+      <div class="space-y-2.5">
+        ${optionsHtml}
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          ${drillIndex > 0 ? `
+            <button onclick="window.drillPrev()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 cursor-pointer">
+              ← Previous
+            </button>
+          ` : ''}
+          <button onclick="window.markDrillQuestionMastered(${q.id})" class="px-3 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 transition-all cursor-pointer" title="Permanently remove from weak areas queue">
+            ✓ Mark Mastered
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          ${!isSubmitted ? `
+            <button onclick="window.submitDrillAnswer()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm cursor-pointer">
+              Check Answer
+            </button>
+          ` : `
+            <button onclick="window.drillNext()" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm cursor-pointer flex items-center gap-1.5">
+              <span>${drillIndex < drillQuestions.length - 1 ? 'Next Question →' : 'Finish Drill & View Results'}</span>
+            </button>
+          `}
+        </div>
+      </div>
+
+      <!-- Feedback Area -->
+      ${feedbackHtml}
+    `;
+  };
+
   function buildBackupPayload() {
     return {
       appName: 'PCIP Exam Accelerator',
@@ -2841,6 +3420,7 @@ document.addEventListener('DOMContentLoaded', () => {
       userAnswers: userAnswers,
       userSubmitted: userSubmitted,
       incorrectQids: Array.from(incorrectQids),
+      everIncorrectQids: Array.from(everIncorrectQids),
       bookmarks: Array.from(bookmarks),
       stats: {
         totalQuestions: allQuestions.length || 500,
@@ -2909,7 +3489,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Merge incorrect
     if (Array.isArray(data.incorrectQids)) {
-      data.incorrectQids.forEach(id => incorrectQids.add(Number(id)));
+      data.incorrectQids.forEach(id => {
+        incorrectQids.add(Number(id));
+        everIncorrectQids.add(Number(id));
+      });
+    }
+
+    // Merge historically missed (ever-incorrect)
+    if (Array.isArray(data.everIncorrectQids)) {
+      data.everIncorrectQids.forEach(id => everIncorrectQids.add(Number(id)));
     }
 
     // Merge bookmarks
@@ -2919,6 +3507,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveCompletedState();
     localStorage.setItem('pcip_incorrect', JSON.stringify([...incorrectQids]));
+    localStorage.setItem('pcip_ever_incorrect', JSON.stringify([...everIncorrectQids]));
     localStorage.setItem('pcip_bookmarks', JSON.stringify([...bookmarks]));
 
     updatePracticeStats();
