@@ -301,7 +301,7 @@ var PCIP_QUESTIONS = [
     ],
     "type": "single",
     "category": "PCI DSS Scoping & Network Segmentation",
-    "explanation": "When virtualization is used in the CDE, all virtualization components\u2014including hypervisors, virtual machines, virtual switches, virtual management tools, and shared storage\u2014are considered system components and are fully in scope for PCI DSS.",
+    "explanation": "When virtualization is used in the CDE, all virtualization components—including hypervisors, virtual machines, virtual switches, virtual management tools, and shared storage—are considered system components and are fully in scope for PCI DSS.",
     "tip": "Virtualization does not eliminate scope. If a VM is in the CDE, the host hypervisor and virtual management infrastructure are also in scope.",
     "v4_ref": "PCI DSS v4.0.1 Scoping / Virtualization"
   },
@@ -1811,7 +1811,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Scope & Segmentation",
     "explanation": "Appendix A1 applies specifically to Multi-Tenant Service Providers (MTSPs) that host cardholder data or provide shared infrastructure, platforms, or applications to multiple customers. Appendix A2 addresses legacy SSL/early TLS, while Appendix A3 contains Designated Entities Supplementary Validation (DESV) requirements.",
     "tip": "Multi-tenant cloud providers hosting multiple merchants on shared hardware must comply with Appendix A1.",
@@ -1829,7 +1829,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Scope & Segmentation",
     "explanation": "Appendix A1.1.1 mandates that multi-tenant service providers isolate all customer environments from one another and isolate customer environments from the provider's own management infrastructure (management plane) to prevent cross-tenant or provider compromise.",
     "tip": "MTSPs must logically isolate customer environments from each other and from the provider's management plane.",
@@ -1847,7 +1847,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.4.7 explicitly requires multi-tenant service providers to support their customers for external penetration testing, or provide access to penetration testing evidence demonstrating that the provider's controls meet testing objectives under agreed rules of engagement. Blanket refusals violate this requirement.",
     "tip": "Requirement 11.4.7 prevents MTSPs from blocking customer penetration testing without providing compliant alternatives.",
@@ -1865,7 +1865,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Appendix A1.2.1 requires multi-tenant service providers to segregate audit logs so that each tenant can access only their own log data. Tenants must never have visibility into logs belonging to other hosted tenants or the service provider's internal management infrastructure.",
     "tip": "MTSP logging must guarantee strict tenant log segregation and prevent cross-tenant log visibility.",
@@ -1883,7 +1883,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Split knowledge means that two or more individuals possess separate key components (shares) such that no single individual knows or has access to the full plaintext key. Dual control means that the coordinated action of two or more individuals is required to perform key management tasks or activate the key.",
     "tip": "Split knowledge = no single person knows the whole key; dual control = two people required to perform the action.",
@@ -1901,7 +1901,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Under Requirements 3.6 and 3.7, any key-encrypting key (KEK) used to encrypt data-encrypting keys (DEKs) must be at least as cryptographically strong as the DEK it protects, and must be stored separately from the DEK to avoid compromise of both keys simultaneously.",
     "tip": "A KEK must always be at least as strong as the DEK it protects and stored separately.",
@@ -1919,7 +1919,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 3.7.8 mandates that cryptographic keys that have reached the end of their cryptoperiod or have been compromised are revoked and permanently destroyed. Destruction must prevent any reconstruction of the key through techniques such as zeroization in HSMs, secure cryptographic wiping, or physical destruction.",
     "tip": "Key destruction requires complete zeroization, secure erasure, or physical destruction preventing reconstruction.",
@@ -1937,7 +1937,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Multi-Factor Authentication requires using at least two different categories from: something you know (knowledge: password/passphrase), something you have (possession: hardware token/mobile authenticator app), and something you are (inherence: biometrics). Combining two factors from the same category (e.g. password + PIN, or two biometrics, or two possession tokens) does NOT satisfy MFA.",
     "tip": "MFA requires at least two DIFFERENT factor types: something you know, have, or are.",
@@ -1955,7 +1955,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.4.3 mandates that MFA systems: 1) Are not susceptible to replay attacks, 2) Do not allow factors to be bypassed, 3) Cannot be compromised by the compromise of one factor, and 4) Require successful validation of all factors prior to granting access.",
     "tip": "Requirement 8.4.3 prevents replay attacks and ensures factors cannot be bypassed or compromised sequentially.",
@@ -1973,7 +1973,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.3.4 requires limiting repeated failed login attempts by locking out the user account after not more than 10 consecutive failed attempts. The lockout duration must be at least 30 minutes or until an authorized administrator resets the account.",
     "tip": "Lockout threshold: maximum 10 attempts; lockout duration: minimum 30 minutes or until administrator release.",
@@ -1991,7 +1991,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.2.2 and 8.3.7 mandate individual accountability by strictly prohibiting shared or generic administrative credentials. They are only allowed on an exceptional basis where documented business justification exists, explicit management approval is granted, and individual identity is confirmed prior to access.",
     "tip": "Individual accountability is foundational in PCI DSS: shared and generic accounts are prohibited with very narrow exceptions.",
@@ -2009,7 +2009,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.4.1.1 mandates that service providers have processes in place to promptly detect, alert on, and respond to failures of critical security control systems (including firewalls, IDS/IPS, FIM, anti-malware, and physical access controls), and restore security operations quickly.",
     "tip": "Service providers must promptly detect, alert, and respond to failures in critical security control systems.",
@@ -2027,7 +2027,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Scope & Segmentation",
     "explanation": "Under Requirements 12.5.2 and 12.5.3, service providers must confirm PCI DSS scope and perform penetration testing of segmentation controls at least once every six months and following any significant change. In contrast, merchants perform segmentation testing annually.",
     "tip": "Service providers must confirm scope and test segmentation every 6 months; merchants test segmentation annually.",
@@ -2045,7 +2045,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.9 requires service providers to acknowledge in writing to their customers that they are responsible for the security of cardholder data the provider possesses, stores, processes, or transmits on behalf of the customer, or to the extent they impact customer CDE security.",
     "tip": "Requirement 12.9 requires service providers to provide written acknowledgment of their responsibility for cardholder data.",
@@ -2063,7 +2063,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 3.5.1.1 (an additional requirement for service providers) requires maintaining detailed documentation of the cryptographic architecture. This includes details of all algorithms, protocols, key lengths, cryptoperiods, key usage descriptions, and key inventory management.",
     "tip": "Service providers must maintain documented cryptographic architecture including algorithms, keys, and cryptoperiods.",
@@ -2081,7 +2081,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "PCI DSS Foundations & Roles",
     "explanation": "Card brand operating rules classify merchants processing over 6,000,000 transactions per year across all channels as Level 1 Merchants, requiring an annual on-site Report on Compliance (ROC) conducted by a QSA or ISA, along with quarterly ASV scans.",
     "tip": "Level 1 Merchant threshold: over 6 million transactions annually across all channels (or designated by brand/acquirer).",
@@ -2099,7 +2099,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "SAQs & Assessment Validation",
     "explanation": "Merchants processing under 6 million transactions annually are classified as Level 2, 3, or 4 by the card brands. Acquirers generally permit these merchants to validate compliance using the applicable Self-Assessment Questionnaire (such as SAQ A or SAQ A-EP) paired with quarterly ASV scans.",
     "tip": "Level 2, 3, and 4 merchants are generally eligible to validate via SAQs and quarterly ASV scans as directed by their acquirer.",
@@ -2117,7 +2117,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "PCI DSS Foundations & Roles",
     "explanation": "A Payment Card Industry Forensic Investigator (PFI) is an independent forensic investigation company formally accredited by the PCI SSC to conduct digital forensics investigations when an entity has experienced a suspected compromise of cardholder data.",
     "tip": "PFIs are specialized, PCI SSC-accredited forensic firms authorized to investigate card data breaches.",
@@ -2135,7 +2135,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Rebooting or powering off a compromised machine destroys volatile system memory (RAM), which contains critical artifacts such as running malware, active socket connections, and encryption keys. The correct procedure is to logically isolate the host from the network while maintaining power to allow volatile memory capture.",
     "tip": "Never reboot or power down a compromised server during triage; isolate from the network to preserve RAM.",
@@ -2153,7 +2153,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Other PCI Standards (P2PE, PTS, SSF, PIN)",
     "explanation": "The PCI Mobile Payments on COTS (MPoC) standard is a modular standard governing mobile payment solutions that accept contactless transactions and/or PIN entry directly on commercial off-the-shelf (COTS) devices such as consumer smartphones and tablets.",
     "tip": "MPoC governs contactless card acceptance and PIN entry directly on commercial off-the-shelf (COTS) mobile devices.",
@@ -2171,7 +2171,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Other PCI Standards (P2PE, PTS, SSF, PIN)",
     "explanation": "An Encrypting PIN Pad (EPP) is a secure, tamper-responsive hardware device certified under the PCI PTS standard to capture cardholder PINs and immediately encrypt the PIN block using strong cryptography before the data leaves the secure physical boundary.",
     "tip": "EPPs capture and immediately encrypt PIN blocks inside a tamper-resistant hardware module.",
@@ -2189,7 +2189,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 1 & 2: Network & Configurations",
     "explanation": "PCI DSS v4.0 replaced 'firewalls and routers' with 'Network Security Controls (NSCs)' to reflect modern, diverse architectures including cloud virtual networks, security groups, software-defined networks, and container network policies that perform traffic filtering beyond hardware firewalls.",
     "tip": "Network Security Controls (NSCs) includes cloud security groups, virtual firewalls, and SDN policies.",
@@ -2207,7 +2207,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 1 & 2: Network & Configurations",
     "explanation": "Requirement 1.4.2 mandates that client-based Network Security Controls (such as host-based firewalls) must be installed, operational, and configured such that they cannot be disabled by users on all mobile and employee-owned devices that connect to the CDE.",
     "tip": "Requirement 1.4.2 mandates client-based NSCs (personal/host firewalls) on mobile/remote devices connecting to the CDE.",
@@ -2225,7 +2225,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 1 & 2: Network & Configurations",
     "explanation": "Requirement 2.2.4 requires that system configuration standards define system management parameters to prevent insecure configurations, ensuring that only necessary and secure parameters are enabled, default credentials are removed, and settings are validated prior to connection to a network.",
     "tip": "System management parameters must be hardened and defined in configuration standards prior to production deployment.",
@@ -2243,7 +2243,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 3.4.2 mandates technical controls to prevent the unauthorized copying or relocation of PANs when personnel use remote access or personal devices (e.g. disabling local clipboard copy/paste, screen captures, or printing), unless explicitly approved for documented business needs.",
     "tip": "Requirement 3.4.2 requires technical controls preventing unauthorized copying or relocation of PAN during remote access.",
@@ -2261,7 +2261,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Under PCI DSS guidance for Requirement 3.5.1, storing both a truncated PAN (e.g. BIN and last four) and a hashed PAN in the same environment renders the data recoverable. An attacker can easily calculate hashes for the unknown middle digits (only 10^6 combinations) and match the stored hash, defeating the protection.",
     "tip": "Storing both hashed PAN and truncated PAN in the same environment makes the full PAN easily recoverable.",
@@ -2279,7 +2279,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 4.2.1 mandates that strong cryptography and secure transit protocols (e.g., TLS 1.2 or TLS 1.3 configured with secure cipher suites, SSH, IPsec) must be used to safeguard sensitive account data during transmission over open, public networks.",
     "tip": "Transmissions of cardholder data across open, public networks must be protected using strong cryptography.",
@@ -2297,7 +2297,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "SAST (Static Application Security Testing) evaluates uncompiled source code or compiled binary code from the inside out without executing the application, identifying security flaws early in development. DAST (Dynamic Application Security Testing) evaluates the running application from the outside in during runtime execution.",
     "tip": "SAST = white-box static code review without execution; DAST = black-box dynamic runtime testing of executing software.",
@@ -2315,7 +2315,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.4.2 mandates that for public-facing web applications, an automated technical solution (such as a Web Application Firewall) must be continually detecting and preventing web-based attacks. Under v4.0.1, automated technical solutions are required (manual application vulnerability reviews are no longer an ongoing alternative to WAFs).",
     "tip": "Requirement 6.4.2 requires an automated technical solution (such as a WAF) for public-facing web applications.",
@@ -2333,7 +2333,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.2.1 requires audit logs to record all administrative actions, including user identification and authentication actions, creation, modification, or deletion of user accounts, elevation of privileges, and any changes or stops to audit logging mechanisms.",
     "tip": "Requirement 10.2.1 requires logging all administrative actions, account provisioning, privilege changes, and log config edits.",
@@ -2351,7 +2351,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.7 requires that failures of critical security control systems and suspicious anomalies detected during log monitoring or review are investigated and addressed promptly according to documented incident response procedures.",
     "tip": "Requirement 10.7 requires prompt investigation and response when log monitoring reveals anomalies or control failures.",
@@ -2369,7 +2369,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Under Requirement 11.3.2 and the ASV Program Guide, an external scan passes only when there are no vulnerabilities present with a Common Vulnerability Scoring System (CVSS) base score of 4.0 or higher (Medium, High, Critical), and no automatic failure items (e.g., SQL injection, directory traversal, default accounts).",
     "tip": "ASV scan passing threshold: no vulnerabilities with CVSS score >= 4.0 and no automatic failure items.",
@@ -2387,7 +2387,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.4 mandates that penetration testing include both network-layer penetration testing (operating systems, network protocols, routing, firewalls) and application-layer penetration testing (APIs, web applications, business logic), covering both internal and external perimeters.",
     "tip": "Penetration testing must cover BOTH network-layer and application-layer components externally and internally.",
@@ -2405,7 +2405,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.5.1 mandates deploying a change-detection mechanism (such as File Integrity Monitoring / FIM) to alert personnel to unauthorized modifications (additions, modifications, and deletions) of critical operating system files, configuration files, and application libraries at least weekly.",
     "tip": "FIM monitors critical operating system and configuration files to detect and alert on unauthorized modifications.",
@@ -2423,7 +2423,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "SAQs & Assessment Validation",
     "explanation": "SAQ A applies to e-commerce merchants whose payment functions are completely outsourced to a PCI DSS compliant third-party payment processor, and whose website uses hosted fields or iframes to capture payment credentials directly in the consumer's browser without touching merchant servers.",
     "tip": "Hosted iframe/hosted fields checkout where merchant servers never touch card data validates using SAQ A.",
@@ -2441,7 +2441,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "SAQs & Assessment Validation",
     "explanation": "SAQ A-EP applies to e-commerce merchants whose website creates or controls the payment form and directs the consumer's browser to post cardholder data directly to the payment gateway (Direct Post or API). Because the merchant's server delivers the code generating the form, it can impact transaction security.",
     "tip": "Merchant hosts the payment form or script directing payment to third party = SAQ A-EP (e-commerce partially outsourced).",
@@ -2459,7 +2459,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "SAQs & Assessment Validation",
     "explanation": "SAQ B-IP is designed specifically for merchants processing transactions exclusively using standalone, PTS-approved Point of Interaction (POI) devices that connect to the processor via an IP network connection (Ethernet or cellular), with no electronic card data storage.",
     "tip": "Standalone PTS terminals connected via IP/Ethernet = SAQ B-IP. Dial-up standalone terminals = SAQ B.",
@@ -2477,7 +2477,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "SAQs & Assessment Validation",
     "explanation": "SAQ C-VT applies to merchants who manually enter a single transaction at a time via a keyboard into an isolated web-based virtual terminal solution hosted by a PCI DSS compliant third-party service provider, from workstations with no electronic card data storage.",
     "tip": "Manual keyboard entry into a third-party hosted virtual terminal = SAQ C-VT.",
@@ -2495,7 +2495,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Compensating Controls & v4.0 Customized Approach",
     "explanation": "Under the Defined Approach, when an entity cannot meet a requirement exactly as stated due to a legitimate technical or documented business constraint, they must complete a Compensating Controls Worksheet (CCW) under Appendix C detailing constraints, risk, compensating controls, validation, and maintenance.",
     "tip": "Defined Approach with technical constraints uses Compensating Controls Worksheet (CCW) under Appendix C.",
@@ -2513,7 +2513,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.3.1 mandates that whenever an entity defines its own frequency for a PCI DSS requirement that specifies an activity must be performed 'periodically', the entity must perform and document a formal Targeted Risk Analysis (TRA) establishing and justifying that frequency.",
     "tip": "Custom frequencies for 'periodically' performed tasks require a formal Targeted Risk Analysis (TRA) under Req 12.3.1.",
@@ -2531,7 +2531,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirements 6.4.3 (authorizing and verifying script integrity on payment pages) and 11.6.1 (detecting unauthorized changes to HTTP headers and payment page contents) were introduced specifically to combat client-side digital skimming and Magecart-style formjacking attacks that steal payment credentials directly from consumer browsers.",
     "tip": "Requirements 6.4.3 and 11.6.1 defend against client-side e-skimming (Magecart/formjacking) attacks in consumer browsers.",
@@ -2549,7 +2549,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.4.3 guidance lists Subresource Integrity (SRI) cryptographic hash attributes, Content Security Policy (CSP) directives, and automated script monitoring and integrity verification tools as valid methods to ensure payment page scripts are authorized and have not been tampered with.",
     "tip": "Script integrity under Req 6.4.3 is verified via SRI hashes, CSP headers, or automated script monitoring tools.",
@@ -2567,7 +2567,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "In an IaaS cloud model, the cloud provider secures the underlying physical data center, physical hardware, and virtualization hypervisor. The customer is responsible for everything inside their guest instance: guest OS hardening, OS patching, application security, cloud firewall rules (security groups), and IAM.",
     "tip": "In IaaS, customer controls the guest OS, patches, firewall rules (security groups), applications, and access control.",
@@ -2585,7 +2585,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.8.5 mandates that entities maintain information about which PCI DSS requirements are managed by each Third-Party Service Provider, which are managed by the entity, and which are shared responsibilities, typically formalized via a documented PCI DSS Responsibility Matrix.",
     "tip": "Requirement 12.8.5 mandates maintaining a documented PCI DSS Responsibility Matrix for all third-party service providers.",
@@ -2603,7 +2603,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 9.5.2 requires personnel with access to POI devices to be trained to: 1) Verify the identity of third-party repair personnel or technicians before granting access, 2) Be aware of suspicious behavior around devices, and 3) Report suspicious behavior and device tampering immediately.",
     "tip": "POI personnel training covers verifying technician identities, recognizing tampering/skimmers, and immediate reporting.",
@@ -2621,7 +2621,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 9.5.1 mandates maintaining an up-to-date inventory of all POI devices. The inventory must include: 1) Make and model of the device, 2) Location of the device (e.g., register number, lane, or retail store), and 3) Serial number or other unique method of device identification.",
     "tip": "POI inventory required elements: make, model, physical location, and serial number / unique ID.",
@@ -2639,7 +2639,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.3.3 strictly prohibits recording Sensitive Authentication Data (SAD) or unprotected Primary Account Numbers (PANs) in audit logs. Logging cleartext cardholder account data or authentication elements creates severe security exposure.",
     "tip": "SAD and unmasked PAN must never be written to audit logs, debug logs, or error traces under Req 10.3.3.",
@@ -2657,7 +2657,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.6 mandates time synchronization via NTP across all critical systems to ensure consistent timestamps across all logs. This is critical during forensic investigations to establish an accurate sequence of events and reconstruct the attack timeline across multiple hosts.",
     "tip": "NTP clock synchronization ensures consistent timestamps across all systems for forensic event correlation.",
@@ -2675,7 +2675,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 9.4.4 requires that physical media containing cardholder data transported outside the facility is sent via a secure courier or other delivery method that can be accurately tracked, requiring documented chain of custody and signed proof of delivery.",
     "tip": "Off-site transport of media with CHD requires secure courier, tracking, and signed confirmation of delivery.",
@@ -2693,9 +2693,9 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
-    "explanation": "Requirement 3.5.1 mandates that Primary Account Numbers (PANs) stored electronically anywhere\u2014including on backup tapes, off-site disaster recovery media, and archival media\u2014must be rendered unreadable using strong cryptography with proper key management.",
+    "explanation": "Requirement 3.5.1 mandates that Primary Account Numbers (PANs) stored electronically anywhere—including on backup tapes, off-site disaster recovery media, and archival media—must be rendered unreadable using strong cryptography with proper key management.",
     "tip": "Stored PAN on all electronic media, including backup tapes and DR archives, must be rendered unreadable using cryptography.",
     "v4_ref": "PCI DSS Req 3.5.1"
   },
@@ -2929,7 +2929,7 @@ var PCIP_QUESTIONS = [
       0
     ],
     "type": "single",
-    "explanation": "Requirement 1.2.4 mandates documented cardholder data flow diagrams showing all flows of cardholder data (CHD) across all systems, networks, and communication channels\u2014from entry points, through internal processing and storage, to egress endpoints.",
+    "explanation": "Requirement 1.2.4 mandates documented cardholder data flow diagrams showing all flows of cardholder data (CHD) across all systems, networks, and communication channels—from entry points, through internal processing and storage, to egress endpoints.",
     "tip": "Data flow diagrams must illustrate all paths and systems handling cardholder data from entry to exit.",
     "v4_ref": "PCI DSS Req 1.2.4"
   },
@@ -4243,7 +4243,7 @@ var PCIP_QUESTIONS = [
     ],
     "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
-    "explanation": "Requirement 7.2.3 mandates that access control systems must be set to 'default deny'\u2014all access is denied unless explicitly authorized.",
+    "explanation": "Requirement 7.2.3 mandates that access control systems must be set to 'default deny'—all access is denied unless explicitly authorized.",
     "tip": "Access control systems must be set to 'default deny' for all accounts and network routes.",
     "v4_ref": "PCI DSS v4.0.1 Req 7.2.3"
   },
@@ -5977,21 +5977,21 @@ var PCIP_QUESTIONS = [
   },
   {
     "id": 333,
-    "question": "What is the primary role of the Payment Card Industry Security Standards Council (PCI SSC)?",
+    "question": "Regarding PCI governance, which function is performed by the Payment Card Brands (Visa, Mastercard, Amex, Discover, JCB) rather than the PCI Security Standards Council (PCI SSC)?",
     "options": [
-      "Developing, maintaining, and publishing security standards, and qualifying assessors and training programs.",
-      "Enforcing merchant compliance mandates, tracking merchant levels, and issuing contractual non-compliance fines.",
-      "Issuing payment cards directly to consumers and managing cardholder fraud reimbursement dispute proceedings.",
-      "Operating global payment gateway clearing networks and routing financial transactions between member banks."
+      "Defining compliance validation levels, enforcing compliance mandates, and penalizing acquiring banks for merchant violations.",
+      "Developing, authoring, and maintaining the technical requirements of the PCI Data Security Standard (PCI DSS).",
+      "Administering training courses and certifying individual Payment Card Industry Professionals (PCIPs) and QSAs.",
+      "Publishing and maintaining the official lists of validated PTS devices, validated P2PE solutions, and certified QSAs."
     ],
     "correct": [
       0
     ],
     "type": "single",
     "category": "PCI DSS Foundations & Roles",
-    "explanation": "The PCI SSC is responsible for authoring, updating, and disseminating security standards (PCI DSS, PA-DSS/SSF, PTS, P2PE) and qualifying assessors (QSA, ISA, QIR, ASV, PCIP). The brands enforce compliance and assess fines.",
-    "tip": "PCI SSC creates standards and certifies assessors; Payment Brands enforce compliance and issue penalties.",
-    "v4_ref": "PCI SSC Governance"
+    "explanation": "The Payment Card Brands are responsible for establishing compliance validation tiers, enforcing compliance deadlines, and levying monetary penalties against acquiring banks. The PCI SSC manages the security standards and assessor programs, but has no legal authority to enforce compliance or collect fines.",
+    "tip": "PCI SSC = Standards & Assessor Certification. Payment Brands = Enforcement, Compliance Levels & Fines.",
+    "v4_ref": "PCI SSC Governance & Brand Roles"
   },
   {
     "id": 334,
@@ -6241,7 +6241,7 @@ var PCIP_QUESTIONS = [
     ],
     "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
-    "explanation": "Under Requirement 3.2.1, Sensitive Authentication Data (SAD)\u2014including CVV2, CVC2, CID, and CAV2\u2014must NEVER be retained after transaction authorization, even if encrypted. No customer consent or encryption allows post-authorization SAD storage for merchants.",
+    "explanation": "Under Requirement 3.2.1, Sensitive Authentication Data (SAD)—including CVV2, CVC2, CID, and CAV2—must NEVER be retained after transaction authorization, even if encrypted. No customer consent or encryption allows post-authorization SAD storage for merchants.",
     "tip": "SAD (CVV2/CVC2/PIN/track data) must NEVER be stored post-authorization, even if encrypted.",
     "v4_ref": "PCI DSS v4.0.1 Req 3.2.1"
   },
@@ -6311,7 +6311,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "A Data Encryption Key (DEK) is used to encrypt plaintext account data. A Key Encrypting Key (KEK) is a cryptographic key used to wrap and protect the DEK. The KEK must be at least as strong as the DEK.",
     "tip": "DEK encrypts data; KEK encrypts the DEK.",
@@ -6329,7 +6329,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 3.6.1.4 requires periodic key rotation at the end of the key's defined cryptoperiod (defined in accordance with industry standards like NIST SP 800-57) and immediate retirement upon suspicion of compromise.",
     "tip": "Key rotation: End of cryptoperiod OR upon suspected compromise.",
@@ -6347,7 +6347,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 4.2.1 requires strong cryptography (such as TLS 1.2/1.3, IPsec, or SSH) to protect PAN during transmission over public networks. SSL and early TLS are insecure and strictly prohibited.",
     "tip": "Transmission over public networks requires strong cryptography (e.g. TLS 1.2+).",
@@ -6365,7 +6365,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 4.2.2 explicitly prohibits transmitting unencrypted PAN via end-user messaging technologies (email, SMS, chat, instant messaging) because these channels are vulnerable to interception and storage.",
     "tip": "Unprotected PAN cannot be sent via end-user messaging (email, SMS, chat, etc.).",
@@ -6383,7 +6383,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 3 & 4: Data Protection & Encryption",
     "explanation": "Requirement 3.6.1.3 mandates that manual key management operations enforce dual control (two people must participate) and split knowledge (no individual possesses the entire key or key password).",
     "tip": "Dual control = 2 people needed; Split knowledge = no single person knows the whole key.",
@@ -6401,7 +6401,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 5.2.1 requires anti-malware on all system components commonly affected by malware. Systems claimed to be immune (e.g. Linux/mainframe) must be formally evaluated in a documented Targeted Risk Analysis (TRA).",
     "tip": "Anti-malware is required on all systems unless a TRA formally demonstrates they are not susceptible.",
@@ -6419,7 +6419,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 5.3.3 states anti-malware mechanisms must be actively running and protected against unauthorized disablement. Temporary suspension requires documented management approval.",
     "tip": "Anti-malware must be actively running and protected from user tampering/disablement.",
@@ -6437,7 +6437,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.3.1 requires an active vulnerability identification process using trusted external sources and an established risk ranking methodology to prioritize patching.",
     "tip": "Identify vulnerabilities using industry sources and assign formal risk rankings (Req 6.3.1).",
@@ -6455,7 +6455,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.3.3 explicitly requires all 'Critical' and 'High' security patches to be installed within one month (30 calendar days) of vendor release.",
     "tip": "Critical & High security patches must be installed within 30 days (Req 6.3.3).",
@@ -6473,7 +6473,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.4.2 mandates an automated technical solution (such as a WAF) to continually detect and prevent web application attacks on public-facing web applications.",
     "tip": "Public web apps require an automated detection/prevention technical solution (e.g. WAF).",
@@ -6491,7 +6491,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.4.3 was introduced in v4.0 to stop Magecart/e-skimming attacks. It requires merchants to manage, justify, and ensure the cryptographic integrity of all third-party and first-party JavaScript running on payment pages.",
     "tip": "Req 6.4.3: Inventory, business justification & integrity verification for all payment page scripts.",
@@ -6509,7 +6509,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.5.1 requires complete logical or physical separation between development/test environments and production environments to prevent untested code or compromised dev tools from affecting production.",
     "tip": "Dev and test environments must be strictly separated from production.",
@@ -6527,7 +6527,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.5.3 forbids using live production Cardholder Data or Sensitive Authentication Data in development or test environments. Test environments typically lack production-grade security.",
     "tip": "Production cardholder data and SAD are strictly forbidden in test/dev environments.",
@@ -6545,7 +6545,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.2.2 mandates annual training for developers covering secure coding techniques, common application vulnerabilities (e.g. OWASP Top 10), and authentication/data protection.",
     "tip": "Software developer secure coding training = at least once every 12 months.",
@@ -6563,7 +6563,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
     "explanation": "Requirement 6.2.3 requires independent code reviews before code is released into production, conducted by qualified individuals other than the originating author, or verified by automated static/dynamic code analysis.",
     "tip": "Code review must be performed by someone OTHER than the author, or via automated tools.",
@@ -6581,7 +6581,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 7.1 mandates restricting access to system components and cardholder data to only those individuals whose job requires such access, implementing the principle of least privilege.",
     "tip": "Access must be restricted based on need-to-know and least privilege.",
@@ -6599,7 +6599,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 7.2.4 requires that all user accounts and access privileges are reviewed at least once every six months to confirm that privileges remain aligned with current job duties and unnecessary accounts are revoked.",
     "tip": "User account and privilege review = at least once every 6 months.",
@@ -6617,7 +6617,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.2.1 requires all users to be uniquely identified. Unique user IDs ensure individual accountability and non-repudiation in audit trails.",
     "tip": "Unique user IDs are mandatory for individual accountability (Req 8.2.1).",
@@ -6635,7 +6635,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.2.4 mandates that vendor remote access accounts are enabled only during the approved maintenance window, monitored while active, and disabled immediately upon completion.",
     "tip": "Vendor remote access accounts: Enabled ONLY when needed, disabled immediately after.",
@@ -6653,7 +6653,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.2.6 requires that user accounts that have been inactive for more than 90 days are disabled or removed to prevent stale accounts from being leveraged by attackers.",
     "tip": "Inactive accounts must be disabled or removed within 90 days.",
@@ -6671,7 +6671,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.3.4 mandates that accounts must be locked out after no more than 10 consecutive failed login attempts to prevent brute-force credential guessing.",
     "tip": "Account lockout threshold = no more than 10 invalid authentication attempts.",
@@ -6689,7 +6689,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.3.5 states that the lockout duration must be at least 30 minutes, or require manual administrator intervention to unlock.",
     "tip": "Lockout duration = at least 30 minutes, or until unlocked by an administrator.",
@@ -6707,7 +6707,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "PCI DSS v4.0 increased the minimum password length to 12 characters (combining numbers and letters). If a legacy system technically cannot support 12 characters, a minimum of 8 characters is permitted.",
     "tip": "Password length in v4.0 = min 12 characters (or min 8 if system cannot support 12).",
@@ -6725,7 +6725,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.4.2 expanded MFA in v4.0: MFA is now required for ALL individuals entering the CDE, not just administrative users or remote workers.",
     "tip": "v4.0 Req 8.4.2: MFA is mandatory for ALL access into the CDE.",
@@ -6743,7 +6743,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 7 & 8: Access Control & Authentication",
     "explanation": "Requirement 8.5.1 dictates that MFA systems must enforce factor independence, prevent factor bypass, and ensure resistance to replay attacks.",
     "tip": "MFA systems must: 1) be independent, 2) prevent bypass, 3) resist replay attacks.",
@@ -6761,7 +6761,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.4.1.1 requires using automated mechanisms (such as SIEM, log analytics, or event harvesting engines) to perform daily log reviews and detect anomalies, recognizing that manual review of millions of log lines is impractical.",
     "tip": "Req 10.4.1.1: Automated log review tools (e.g. SIEM) are mandatory for daily log reviews.",
@@ -6779,7 +6779,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 9.3 requires authorizing visitors prior to entry, escorting them at all times in sensitive areas, and issuing badges that clearly distinguish visitors from full-time staff.",
     "tip": "Visitors: Pre-authorized, escorted at all times, clearly badged.",
@@ -6797,7 +6797,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirements 9.3.4 (visitor logs) and 9.4.4 (video surveillance data) mandate retention of logs and video recordings for a minimum of 90 calendar days.",
     "tip": "Visitor logs and video surveillance footage must be kept for at least 90 days.",
@@ -6815,7 +6815,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 9.5 mandates maintaining an inventory of all POI devices (model, serial number, location) and periodically inspecting them for signs of physical tampering or rogue skimmer attachments.",
     "tip": "POI devices: Maintain inventory + periodic inspections for tampering/skimming.",
@@ -6833,7 +6833,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.2.1 enumerates mandatory audit log events: user access to CHD, actions by administrative accounts, invalid login attempts, access to audit trails, and changes to logging configuration.",
     "tip": "Mandatory audit events: User access to CHD, admin actions, failed logins, log system changes.",
@@ -6851,7 +6851,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.2.2 specifies six mandatory log fields: 1) User identification, 2) Type of event, 3) Date and time, 4) Success/failure, 5) Event origination, and 6) Identity/name of affected system component or data.",
     "tip": "Log fields: User, Event, Date/Time, Success/Fail, Origin, Affected Component/Data.",
@@ -6869,7 +6869,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.4.1 requires daily review of logs for all components that perform security functions (firewalls, IDS/IPS, authentication systems) and all systems that store, process, or transmit cardholder data.",
     "tip": "Security systems & CHD servers = daily log reviews (at least once per day).",
@@ -6887,7 +6887,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.5.1 mandates retaining audit trail history for at least one year, with a minimum of the most recent three months immediately available for analysis (online or readily restorable).",
     "tip": "Audit log retention: At least 1 year total, with the last 3 months immediately available.",
@@ -6905,7 +6905,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.6 requires time synchronization technology (e.g. NTP) so that log timestamps across firewalls, servers, and switches can be accurately correlated during breach investigations.",
     "tip": "Time synchronization ensures log timestamps can be correlated during forensic investigations.",
@@ -6923,7 +6923,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 9 & 10: Physical & Logging",
     "explanation": "Requirement 10.5 requires securing audit trails to prevent alteration or deletion. Controls include centralized logging, read-only permissions, and cryptographic hashing/file integrity monitoring.",
     "tip": "Log security: Read-only access, offload to centralized servers, FIM to detect tampering.",
@@ -6931,20 +6931,20 @@ var PCIP_QUESTIONS = [
   },
   {
     "id": 386,
-    "question": "Under Requirement 11.2.1, how frequently must an entity test for the presence of unauthorized (rogue) wireless access points?",
+    "question": "Under Requirement 11.2.1, how does a corporate policy strictly prohibiting the deployment of wireless networks affect the requirement to test for unauthorized (rogue) wireless access points?",
     "options": [
-      "At least once every 30 calendar days.",
-      "At least once every 6 months (biannual).",
-      "At least once every 12 months (annual).",
-      "At least once every 3 months (quarter)."
+      "The entity is exempt from testing because an administrative policy legally and operationally forbids all wireless devices.",
+      "Testing for unauthorized wireless access points remains mandatory at least once every three months, even if wireless is forbidden.",
+      "The entity only needs to test for rogue wireless access points once annually during the comprehensive penetration test.",
+      "Testing is required only if an employee or visitor formally requests guest Wi-Fi access on an internal corporate VLAN."
     ],
     "correct": [
-      3
+      1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
-    "explanation": "Requirement 11.2.1 mandates testing for unauthorized (rogue) wireless access points at least once every three months (quarterly), using automated wireless intrusion detection/prevention systems (WIDS/WIPS) or physical site sweeps.",
-    "tip": "Rogue wireless testing = at least quarterly (every 3 months).",
+    "explanation": "Requirement 11.2.1 explicitly states that testing for unauthorized (rogue) wireless access points must be performed at least once every three months across all locations, even when a corporate policy strictly prohibits wireless technology. Rogue devices can be plugged in by unauthorized personnel or attackers regardless of written policy.",
+    "tip": "Exam Trap: A policy forbidding wireless NEVER exempts an entity from quarterly rogue wireless testing!",
     "v4_ref": "PCI DSS v4.0.1 Req 11.2.1"
   },
   {
@@ -6959,7 +6959,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.3.1 requires internal vulnerability scans at least quarterly and after any significant changes to the environment, performed by qualified internal staff or a third party.",
     "tip": "Internal vulnerability scans: At least quarterly + after significant changes; by qualified personnel.",
@@ -6977,7 +6977,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "PCI DSS v4.0 Requirement 11.3.1.2 introduced a requirement for authenticated internal vulnerability scanning to ensure deep visibility into unpatched software, misconfigurations, and local flaws.",
     "tip": "PCI DSS v4.0 Req 11.3.1.2 requires internal scans to be AUTHENTICATED.",
@@ -6995,7 +6995,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.3.2 mandates that external vulnerability scans must be performed at least quarterly by an Approved Scanning Vendor (ASV) qualified by the PCI SSC.",
     "tip": "External vulnerability scans must be conducted by an Approved Scanning Vendor (ASV).",
@@ -7013,7 +7013,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Under ASV Program Guidelines, a passing scan requires that no vulnerabilities with a CVSS base score of 4.0 or higher exist, and all components pass with no automatic failure conditions.",
     "tip": "ASV passing score: Zero vulnerabilities with CVSS >= 4.0 and no auto-fails.",
@@ -7031,7 +7031,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.4.3.1 requires penetration testing at the application layer to validate defenses against application-specific vulnerabilities (e.g., OWASP Top 10 vulnerabilities, injection, broken access control) in bespoke software.",
     "tip": "Application penetration testing must cover OWASP/6.2.4 application-layer attack vectors.",
@@ -7049,7 +7049,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.4.4 mandates that all identified vulnerabilities are remediated and the penetration test is repeated to confirm that vulnerabilities have been successfully resolved.",
     "tip": "Pentest findings require mandatory remediation AND re-testing validation.",
@@ -7067,7 +7067,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.5.2 requires that change detection mechanisms (such as FIM tools) perform file comparisons on critical system files, configuration files, and content files at least weekly.",
     "tip": "FIM file comparisons must occur at least weekly.",
@@ -7085,7 +7085,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 11.6.1 requires deploying tamper-detection mechanisms on payment pages to alert personnel to unauthorized modifications (e.g. malicious script injections, altered form actions) at least weekly.",
     "tip": "Req 11.6.1 = Weekly tamper/change monitoring on payment page scripts & headers.",
@@ -7103,7 +7103,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Vulnerability scanning identifies potential known vulnerabilities using automated tools. Penetration testing goes further: a skilled tester actively attempts to exploit vulnerabilities to determine if unauthorized access can be gained.",
     "tip": "Scanning identifies weaknesses; Penetration testing actively attempts exploitation.",
@@ -7121,7 +7121,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.1.1 requires that the information security policy is published, disseminated to all relevant personnel, and reviewed at least once every 12 months.",
     "tip": "Security policy review = at least annually (every 12 months).",
@@ -7139,7 +7139,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       2
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.1.2 requires an annual formal risk assessment process that identifies critical assets, threats, and vulnerabilities.",
     "tip": "Formal risk assessment = at least annually.",
@@ -7157,7 +7157,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       3
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.6.1 requires security awareness training upon hire and at least once every 12 months thereafter, with content updated to address emerging threats.",
     "tip": "Security awareness training: Upon hire + at least annually.",
@@ -7175,7 +7175,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       0
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.6.3 emphasizes training personnel on detecting social engineering techniques, specifically including phishing and spear phishing, which represent primary initial access vectors.",
     "tip": "Req 12.6.3 explicitly mandates phishing & social engineering awareness training.",
@@ -7193,7 +7193,7 @@ var PCIP_QUESTIONS = [
     "correct": [
       1
     ],
-    "type": "multiple_choice",
+    "type": "single",
     "category": "Req 11 & 12: Testing, Monitoring & Policy",
     "explanation": "Requirement 12.8.2 requires written agreements where service providers formally acknowledge responsibility for securing cardholder data entrusted to them.",
     "tip": "Req 12.8.2: Written TPSP acknowledgment of card data security responsibility is mandatory.",
@@ -7412,7 +7412,7 @@ var PCIP_QUESTIONS = [
     "type": "single",
     "category": "SAQs & Assessment Validation",
     "explanation": "Service providers are never eligible to complete merchant-specific SAQs (such as SAQ A, B, B-IP, C, C-VT, or P2PE). They must complete SAQ D for Service Providers or undergo an on-site assessment resulting in a Report on Compliance (ROC).",
-    "tip": "Service providers can NEVER use SAQ A, B, or C\u2014they must use SAQ D for Service Providers or a ROC.",
+    "tip": "Service providers can NEVER use SAQ A, B, or C—they must use SAQ D for Service Providers or a ROC.",
     "v4_ref": "PCI DSS v4.0.1 SAQ Instructions and Guidelines"
   },
   {
@@ -8707,7 +8707,7 @@ var PCIP_QUESTIONS = [
     ],
     "type": "single",
     "category": "Req 5 & 6: Vulnerability & Secure Systems",
-    "explanation": "Requirement 5.3.2 requires anti-malware mechanisms to employ advanced detection techniques\u2014such as heuristic analysis, behavioral monitoring, or machine learning\u2014to detect and protect against evolving and zero-day malware threats.",
+    "explanation": "Requirement 5.3.2 requires anti-malware mechanisms to employ advanced detection techniques—such as heuristic analysis, behavioral monitoring, or machine learning—to detect and protect against evolving and zero-day malware threats.",
     "tip": "Req 5.3.2 mandates advanced techniques (heuristics/behavioral/ML) for evolving and zero-day threats.",
     "v4_ref": "PCI DSS v4.0.1 Req 5.3.2"
   },
