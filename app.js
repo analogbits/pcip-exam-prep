@@ -14,6 +14,54 @@ document.addEventListener('DOMContentLoaded', () => {
     return [];
   }
 
+  // Canonical Domain Taxonomy & Stratified Testing Quotas
+  const CANONICAL_DOMAINS = [
+    'Req 1 & 2: Network & Hardening',
+    'Req 3 & 4: Data Protection & Crypto',
+    'Req 5 & 6: Malware & Secure Systems',
+    'Req 7 & 8: Access Control & MFA',
+    'Req 9 & 10: Physical & Logging',
+    'Req 11 & 12: Testing, Monitoring & Policy',
+    'PCI Foundations & Brand Roles',
+    'Scoping & Network Segmentation',
+    'Compensating Controls & TRA',
+    'SAQs & Assessment Validation',
+    'Other Standards (PTS, P2PE, SSF)',
+    'CHD vs SAD & Account Data'
+  ];
+
+  const DOMAIN_EXAM_QUOTAS_75 = {
+    'Req 1 & 2: Network & Hardening': 7,
+    'Req 3 & 4: Data Protection & Crypto': 8,
+    'Req 5 & 6: Malware & Secure Systems': 7,
+    'Req 7 & 8: Access Control & MFA': 8,
+    'Req 9 & 10: Physical & Logging': 9,
+    'Req 11 & 12: Testing, Monitoring & Policy': 12,
+    'PCI Foundations & Brand Roles': 8,
+    'Scoping & Network Segmentation': 5,
+    'Compensating Controls & TRA': 3,
+    'SAQs & Assessment Validation': 4,
+    'Other Standards (PTS, P2PE, SSF)': 2,
+    'CHD vs SAD & Account Data': 2
+  };
+
+  function getCanonicalDomain(cat) {
+    if (!cat) return 'General';
+    if (cat.includes('CHD') || cat.includes('SAD')) return 'CHD vs SAD & Account Data';
+    if (cat.includes('Foundations') || cat.includes('Roles')) return 'PCI Foundations & Brand Roles';
+    if (cat.includes('Scope') || cat.includes('Scoping') || cat.includes('Segmentation')) return 'Scoping & Network Segmentation';
+    if (cat.includes('Req 1 & 2') || cat.includes('Req 1 &amp; 2')) return 'Req 1 & 2: Network & Hardening';
+    if (cat.includes('Req 3 & 4') || cat.includes('Req 3 &amp; 4')) return 'Req 3 & 4: Data Protection & Crypto';
+    if (cat.includes('Req 5 & 6') || cat.includes('Req 5 &amp; 6')) return 'Req 5 & 6: Malware & Secure Systems';
+    if (cat.includes('Req 7 & 8') || cat.includes('Req 7 &amp; 8')) return 'Req 7 & 8: Access Control & MFA';
+    if (cat.includes('Req 9 & 10') || cat.includes('Req 9 &amp; 10')) return 'Req 9 & 10: Physical & Logging';
+    if (cat.includes('Req 11 & 12') || cat.includes('Req 11 &amp; 12')) return 'Req 11 & 12: Testing, Monitoring & Policy';
+    if (cat.includes('Compensating') || cat.includes('Customized')) return 'Compensating Controls & TRA';
+    if (cat.includes('SAQ')) return 'SAQs & Assessment Validation';
+    if (cat.includes('Other') || cat.includes('P2PE') || cat.includes('PTS')) return 'Other Standards (PTS, P2PE, SSF)';
+    return cat;
+  }
+
   // State
   let allQuestions = getQuestions();
   let currentTab = 'practice';
@@ -230,7 +278,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function updatePracticeList() {
     if (!allQuestions.length) allQuestions = getQuestions();
     practiceFilteredList = allQuestions.filter(q => {
-      const matchCat = (practiceFilter === 'all') || (q.category === practiceFilter);
+      const matchCat = (practiceFilter === 'all') || 
+                       (q.category === practiceFilter) || 
+                       (getCanonicalDomain(q.category) === practiceFilter);
       const matchSearch = !practiceSearch || 
         q.question.toLowerCase().includes(practiceSearch.toLowerCase()) || 
         q.explanation.toLowerCase().includes(practiceSearch.toLowerCase());
@@ -243,11 +293,41 @@ document.addEventListener('DOMContentLoaded', () => {
         matchStatus = isCompleted;
       } else if (practiceStatusFilter === 'incorrect') {
         matchStatus = incorrectQids.has(q.id);
+      } else if (practiceStatusFilter === 'equalize') {
+        matchStatus = true;
       }
       return matchCat && matchSearch && matchStatus;
     });
 
-    if (practiceShuffle) {
+    if (practiceStatusFilter === 'equalize') {
+      // Calculate coverage per canonical domain
+      const domainCoverage = {};
+      CANONICAL_DOMAINS.forEach(dom => {
+        domainCoverage[dom] = { total: 0, completed: 0 };
+      });
+      allQuestions.forEach(q => {
+        const dom = getCanonicalDomain(q.category);
+        if (!domainCoverage[dom]) domainCoverage[dom] = { total: 0, completed: 0 };
+        domainCoverage[dom].total++;
+        if (completedQids.has(q.id)) domainCoverage[dom].completed++;
+      });
+
+      // Sort practice list:
+      // 1. Unanswered questions before answered questions
+      // 2. Domains with lowest curriculum coverage percentage first
+      // 3. Pseudo-random interleave within same domain
+      practiceFilteredList.sort((a, b) => {
+        const aCompleted = completedQids.has(a.id);
+        const bCompleted = completedQids.has(b.id);
+        if (aCompleted !== bCompleted) return aCompleted ? 1 : -1;
+        const domA = getCanonicalDomain(a.category);
+        const domB = getCanonicalDomain(b.category);
+        const covA = (domainCoverage[domA]?.completed || 0) / (domainCoverage[domA]?.total || 1);
+        const covB = (domainCoverage[domB]?.completed || 0) / (domainCoverage[domB]?.total || 1);
+        if (covA !== covB) return covA - covB;
+        return ((a.id * 31) % 103) - ((b.id * 31) % 103);
+      });
+    } else if (practiceShuffle) {
       // Fisher-Yates shuffle for practice list
       for (let i = practiceFilteredList.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -473,13 +553,18 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = `
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
               ${q.category}
             </span>
             <span class="px-2.5 py-1 rounded-full text-xs font-medium ${q.type === 'multiple' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600'}">
               ${q.type === 'multiple' ? 'Select All That Apply' : 'Single Correct Answer'}
             </span>
+            ${practiceStatusFilter === 'equalize' ? `
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
+                <span>⚡</span> <span>Equalizing Under-Tested Domain</span>
+              </span>
+            ` : ''}
           </div>
           <button id="bookmark-btn" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${isBookmarked ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}">
             <span>${isBookmarked ? '★' : '☆'}</span>
@@ -728,6 +813,86 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------------------------------------------------------------------
   // EXAM SIMULATOR (75 QUESTIONS, 90 MINUTES, PEARSON VUE FORMAT)
   // ---------------------------------------------------------------------
+  function buildStratifiedExamPool(count = 75) {
+    if (!allQuestions.length) allQuestions = getQuestions();
+    const pool = [];
+    const usedIds = new Set();
+
+    // Group questions by canonical domain
+    const domainBuckets = {};
+    CANONICAL_DOMAINS.forEach(dom => {
+      domainBuckets[dom] = { fresh: [], completed: [] };
+    });
+
+    allQuestions.forEach(q => {
+      const dom = getCanonicalDomain(q.category);
+      if (!domainBuckets[dom]) {
+        domainBuckets[dom] = { fresh: [], completed: [] };
+      }
+      if (completedQids.has(q.id)) {
+        domainBuckets[dom].completed.push(q);
+      } else {
+        domainBuckets[dom].fresh.push(q);
+      }
+    });
+
+    // Stratified domain draw based on official PCIP domain weights
+    const is75 = (count === 75);
+    CANONICAL_DOMAINS.forEach(dom => {
+      const b = domainBuckets[dom];
+      if (!b) return;
+      let quota = DOMAIN_EXAM_QUOTAS_75[dom] || 6;
+      if (!is75) {
+        quota = Math.max(1, Math.round(quota * count / 75));
+      }
+
+      const freshShuffled = [...b.fresh].sort(() => 0.5 - Math.random());
+      const compShuffled = [...b.completed].sort(() => 0.5 - Math.random());
+
+      let taken = 0;
+      // 1. Draw fresh questions first to maximize curriculum coverage
+      for (const q of freshShuffled) {
+        if (taken < quota && !usedIds.has(q.id)) {
+          pool.push(q);
+          usedIds.add(q.id);
+          taken++;
+        }
+      }
+      // 2. Fill remainder with completed questions from the same domain
+      for (const q of compShuffled) {
+        if (taken < quota && !usedIds.has(q.id)) {
+          pool.push(q);
+          usedIds.add(q.id);
+          taken++;
+        }
+      }
+    });
+
+    // If pool has fewer than count (e.g. edge cases), fill with remaining questions
+    if (pool.length < count) {
+      const remainingFresh = allQuestions.filter(q => !usedIds.has(q.id) && !completedQids.has(q.id)).sort(() => 0.5 - Math.random());
+      const remainingComp = allQuestions.filter(q => !usedIds.has(q.id)).sort(() => 0.5 - Math.random());
+      const leftovers = [...remainingFresh, ...remainingComp];
+      for (const q of leftovers) {
+        if (pool.length >= count) break;
+        if (!usedIds.has(q.id)) {
+          pool.push(q);
+          usedIds.add(q.id);
+        }
+      }
+    }
+
+    const finalPool = pool.slice(0, count);
+
+    // Shuffle final pool so questions from different domains appear mixed naturally
+    for (let i = finalPool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [finalPool[i], finalPool[j]] = [finalPool[j], finalPool[i]];
+    }
+
+    return finalPool;
+  }
+
   function startExam(count = 75) {
     if (!allQuestions.length) allQuestions = getQuestions();
     if (!allQuestions.length) {
@@ -735,26 +900,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Filter to questions that have NOT been completed in either Practice or previous Exams
-    let freshQuestions = allQuestions.filter(q => !completedQids.has(q.id));
-    let poolForExam = [];
-
-    if (freshQuestions.length >= count) {
-      const shuffled = [...freshQuestions].sort(() => 0.5 - Math.random());
-      poolForExam = shuffled.slice(0, count);
-    } else if (freshQuestions.length > 0) {
-      // Use all remaining fresh questions, then draw remaining needed from completed pool
-      const shuffledFresh = [...freshQuestions].sort(() => 0.5 - Math.random());
-      const remainingNeeded = count - freshQuestions.length;
-      const completedPool = allQuestions.filter(q => completedQids.has(q.id)).sort(() => 0.5 - Math.random());
-      poolForExam = [...shuffledFresh, ...completedPool.slice(0, remainingNeeded)].sort(() => 0.5 - Math.random());
-    } else {
-      // All 500 questions completed! Draw from all 500
-      const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-      poolForExam = shuffled.slice(0, Math.min(count, shuffled.length));
-    }
-
-    examQuestions = poolForExam;
+    // Stratified Proportional Sampling across all 11-12 domains
+    examQuestions = buildStratifiedExamPool(count);
     examAnswers = {};
     examMarked = new Set();
     examCurrentIndex = 0;
@@ -837,13 +984,18 @@ document.addEventListener('DOMContentLoaded', () => {
           Simulate the official Pearson VUE Payment Card Industry Professional (PCIP v4.0.1) exam format under authentic timed conditions.
         </p>
 
-        <!-- Live Pool Counter & Reset Option -->
-        <div class="mb-6 p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
-          <div class="flex items-center gap-2 text-left">
-            <span class="text-lg">🎯</span>
+        <!-- Live Pool Counter & Stratified Proportional Sampling Status -->
+        <div class="mb-6 p-4 rounded-2xl bg-indigo-50/90 border border-indigo-200 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm shadow-xs">
+          <div class="flex items-center gap-2.5 text-left">
+            <span class="text-xl">⚖️</span>
             <div>
-              <p class="font-extrabold text-indigo-950">Exam Question Pool Status:</p>
-              <p class="text-indigo-700 font-bold">${allQuestions.filter(q => !completedQids.has(q.id)).length} Fresh / Unanswered Questions Available <span class="text-slate-500 font-normal">(${completedQids.size} completed across Practice/Exam)</span></p>
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="font-extrabold text-indigo-950">Stratified Proportional Sampling: Active</p>
+                <span class="px-2 py-0.5 text-[10px] font-extrabold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200">11-Domain Balanced</span>
+              </div>
+              <p class="text-indigo-700 text-xs font-semibold mt-0.5">
+                ${allQuestions.filter(q => !completedQids.has(q.id)).length} fresh questions available • Every exam draws balanced quotas across all domains so your testing is never lopsided!
+              </p>
             </div>
           </div>
           ${completedQids.size > 0 ? `
@@ -2254,18 +2406,46 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPracticeQuestion();
   };
 
-  window.jumpToPracticeDomain = function(domainName) {
+  window.activateEqualizerMode = function() {
     switchTab('practice');
     const catSelect = document.getElementById('category-filter');
     if (catSelect) {
-      catSelect.value = domainName;
-      practiceFilter = domainName;
+      catSelect.value = 'all';
+      practiceFilter = 'all';
     }
     const statusSelect = document.getElementById('practice-status-filter');
     if (statusSelect) {
-      statusSelect.value = 'incorrect';
-      practiceStatusFilter = 'incorrect';
-      localStorage.setItem('pcip_practice_status_filter', 'incorrect');
+      statusSelect.value = 'equalize';
+      practiceStatusFilter = 'equalize';
+      localStorage.setItem('pcip_practice_status_filter', 'equalize');
+    }
+    updatePracticeList();
+    practiceIndex = 0;
+    renderPracticeQuestion();
+  };
+
+  window.jumpToPracticeDomain = function(domainName, filterStatus = 'unanswered') {
+    switchTab('practice');
+    const catSelect = document.getElementById('category-filter');
+    if (catSelect) {
+      let found = false;
+      for (let i = 0; i < catSelect.options.length; i++) {
+        if (catSelect.options[i].value === domainName || getCanonicalDomain(catSelect.options[i].value) === domainName) {
+          catSelect.selectedIndex = i;
+          practiceFilter = catSelect.options[i].value;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        practiceFilter = domainName;
+      }
+    }
+    const statusSelect = document.getElementById('practice-status-filter');
+    if (statusSelect) {
+      statusSelect.value = filterStatus;
+      practiceStatusFilter = filterStatus;
+      localStorage.setItem('pcip_practice_status_filter', filterStatus);
     }
     updatePracticeList();
     practiceIndex = 0;
@@ -2610,6 +2790,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.closeScoreAnalyticsModal = closeScoreAnalyticsModal;
   window.openScoreAnalyticsModal = openScoreAnalyticsModal;
   window.renderScoreAnalytics = renderScoreAnalytics;
+  window.buildStratifiedExamPool = buildStratifiedExamPool;
+  window.startExam = startExam;
 
   // Global click delegation for maximum reliability
   document.addEventListener('click', (e) => {
@@ -2910,77 +3092,120 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 4. Domain-by-Domain Diagnostic Breakdown
+    // 4. Domain-by-Domain Diagnostic Breakdown (12 Canonical Domains)
     if (statDomainList) {
-      const allCategories = Array.from(new Set(allQuestions.map(q => q.category))).sort();
       const domainStats = [];
+      let underTestedCount = 0;
+      let reviewNeededCount = 0;
 
-      allCategories.forEach(cat => {
-        const catQuestions = allQuestions.filter(q => q.category === cat);
-        const answeredInCat = catQuestions.filter(q => completedQids.has(q.id));
-        if (answeredInCat.length > 0) {
-          const wrongInCat = answeredInCat.filter(q => incorrectQids.has(q.id)).length;
-          const correctInCat = answeredInCat.length - wrongInCat;
-          const pct = Math.round((correctInCat / answeredInCat.length) * 100);
-          domainStats.push({
-            category: cat,
-            total: answeredInCat.length,
-            correct: correctInCat,
-            wrong: wrongInCat,
-            pct: pct
-          });
+      CANONICAL_DOMAINS.forEach(dom => {
+        const domQuestions = allQuestions.filter(q => getCanonicalDomain(q.category) === dom);
+        const answeredInDom = domQuestions.filter(q => completedQids.has(q.id));
+        const wrongInDom = answeredInDom.filter(q => incorrectQids.has(q.id)).length;
+        const correctInDom = answeredInDom.length - wrongInDom;
+        const accPct = answeredInDom.length > 0 ? Math.round((correctInDom / answeredInDom.length) * 100) : 0;
+        const covPct = domQuestions.length > 0 ? Math.round((answeredInDom.length / domQuestions.length) * 100) : 0;
+
+        let statusText = '🟢 Proficient';
+        let statusBadgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        if (answeredInDom.length === 0) {
+          statusText = '⚪ Not Started';
+          statusBadgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
+          underTestedCount++;
+        } else if (accPct < 80) {
+          statusText = '🔴 Review & Drill';
+          statusBadgeClass = 'bg-rose-100 text-rose-800 border-rose-200';
+          reviewNeededCount++;
+          if (covPct < 45) underTestedCount++;
+        } else if (covPct < 45) {
+          statusText = '🟡 Under-Tested';
+          statusBadgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
+          underTestedCount++;
         }
+
+        domainStats.push({
+          domain: dom,
+          total: domQuestions.length,
+          answered: answeredInDom.length,
+          correct: correctInDom,
+          wrong: wrongInDom,
+          accPct: accPct,
+          covPct: covPct,
+          statusText: statusText,
+          statusBadgeClass: statusBadgeClass
+        });
       });
 
-      if (!domainStats.length) {
-        statDomainList.innerHTML = `
-          <div class="p-6 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-slate-200">
-            No domain history yet. Start answering practice questions to see breakdown by requirement.
+      // Sort by coverage percentage ascending (least-tested domains first)
+      domainStats.sort((a, b) => a.covPct - b.covPct);
+
+      const headerSummaryHtml = `
+        <div class="p-3.5 bg-indigo-50/80 border border-indigo-200 rounded-2xl mb-3 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+          <div>
+            <span class="font-extrabold text-indigo-950 flex items-center gap-1.5 text-xs">
+              <span>⚖️</span> Curriculum Balance Diagnostic
+            </span>
+            <span class="text-indigo-800 text-[11px] block mt-0.5">
+              <strong>${underTestedCount} of 12 domains</strong> are under-tested (&lt;45% coverage). Stratified sampling active in Mock Exams!
+            </span>
           </div>
-        `;
-      } else {
-        // Sort by accuracy ascending (lowest scoring first!)
-        domainStats.sort((a, b) => a.pct - b.pct);
+          <button onclick="activateEqualizerMode(); closeScoreAnalyticsModal();" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 transition-all shadow-xs cursor-pointer flex items-center gap-1">
+            <span>⚡</span> <span>Equalize in Practice</span>
+          </button>
+        </div>
+      `;
 
-        statDomainList.innerHTML = domainStats.map(ds => {
-          let barBg = 'bg-emerald-500';
+      statDomainList.innerHTML = headerSummaryHtml + domainStats.map(ds => {
+        let accBarColor = ds.accPct >= 80 ? 'bg-emerald-500' : (ds.accPct >= 65 ? 'bg-amber-500' : 'bg-rose-500');
+        if (ds.answered === 0) accBarColor = 'bg-slate-300';
 
-          if (ds.pct < 60) {
-            barBg = 'bg-rose-500';
-          } else if (ds.pct < 75) {
-            barBg = 'bg-amber-500';
-          }
-
-          return `
-            <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors space-y-1.5">
-              <div class="flex items-center justify-between text-xs gap-2">
-                <span class="font-bold text-slate-800 truncate" title="${ds.category}">${ds.category}</span>
-                <div class="flex items-center gap-2 shrink-0">
-                  <span class="font-extrabold ${ds.pct >= 75 ? 'text-emerald-700' : (ds.pct >= 60 ? 'text-amber-700' : 'text-rose-700')}">
-                    ${ds.pct}% (${ds.correct}/${ds.total})
-                  </span>
-                  <button onclick="window.jumpToPracticeDomain('${ds.category.replace(/'/g, "\\'")}'); closeScoreAnalyticsModal();" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white hover:bg-indigo-50 border border-slate-300 hover:border-indigo-300 text-slate-700 hover:text-indigo-600 transition-all cursor-pointer">
-                    Drill ➔
-                  </button>
-                </div>
+        return `
+          <div class="p-3.5 bg-slate-50 hover:bg-slate-100/80 rounded-2xl border border-slate-200 transition-colors space-y-2 text-left">
+            <div class="flex flex-wrap items-start justify-between text-xs gap-2">
+              <div>
+                <span class="font-extrabold text-slate-900 block" title="${ds.domain}">${ds.domain}</span>
+                <span class="text-[11px] text-slate-500 font-medium">Bank: ${ds.total} Qs • Answered: ${ds.answered} (${ds.covPct}%) • Accuracy: ${ds.answered > 0 ? ds.accPct + '%' : 'N/A'}</span>
               </div>
-
-              <!-- Bar -->
-              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                <div class="${barBg} h-1.5 rounded-full transition-all duration-300" style="width: ${ds.pct}%"></div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${ds.statusBadgeClass}">
+                  ${ds.statusText}
+                </span>
+                <button onclick="window.jumpToPracticeDomain('${ds.domain.replace(/'/g, "\\'")}', 'unanswered'); closeScoreAnalyticsModal();" class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white hover:bg-indigo-50 border border-slate-300 hover:border-indigo-300 text-indigo-700 transition-all cursor-pointer shadow-2xs">
+                  Drill ➔
+                </button>
               </div>
             </div>
-          `;
-        }).join('');
 
-        // 5. Recommended Action
-        if (statRecommendedAction && domainStats.length > 0) {
-          const weakest = domainStats[0];
-          if (weakest.pct < 75) {
-            statRecommendedAction.innerHTML = `Your lowest scoring area is <strong>${weakest.category}</strong> (${weakest.pct}%). Drilling 10 questions here will yield your fastest score increase!`;
-          } else {
-            statRecommendedAction.textContent = 'All attempted domains are currently passing (≥75%). Take a 75Q mock exam to validate endurance!';
-          }
+            <!-- Two Progress Meters: Coverage & Accuracy -->
+            <div class="space-y-1 pt-0.5">
+              <div class="flex justify-between text-[10px] text-slate-500 font-semibold">
+                <span>Coverage: ${ds.covPct}% (${ds.answered}/${ds.total})</span>
+                <span>Accuracy: ${ds.answered > 0 ? ds.accPct + '%' : 'N/A'} (${ds.correct}/${ds.answered})</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden" title="Coverage: ${ds.covPct}%">
+                  <div class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300" style="width: ${ds.covPct}%"></div>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden" title="Accuracy: ${ds.accPct}%">
+                  <div class="${accBarColor} h-1.5 rounded-full transition-all duration-300" style="width: ${ds.accPct}%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 5. Recommended Action
+      if (statRecommendedAction && domainStats.length > 0) {
+        const weakestByAcc = [...domainStats].filter(d => d.answered > 0).sort((a, b) => a.accPct - b.accPct)[0];
+        const leastCovered = [...domainStats].sort((a, b) => a.covPct - b.covPct)[0];
+
+        if (weakestByAcc && weakestByAcc.accPct < 80) {
+          statRecommendedAction.innerHTML = `Your lowest scoring area is <strong>${weakestByAcc.domain}</strong> (${weakestByAcc.accPct}%). Drilling 10 questions here will yield your fastest score increase!`;
+        } else if (leastCovered && leastCovered.covPct < 45) {
+          statRecommendedAction.innerHTML = `Your least covered area is <strong>${leastCovered.domain}</strong> (${leastCovered.covPct}% coverage). Use <strong>Equalize Domains</strong> to test this area!`;
+        } else {
+          statRecommendedAction.textContent = 'All attempted domains are proficient (≥80% accuracy). Take a 75Q mock exam to validate timed endurance!';
         }
       }
     }
