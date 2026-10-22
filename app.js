@@ -137,18 +137,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const viewReview = document.getElementById('view-review');
   const viewTelltales = document.getElementById('view-telltales');
 
-  // Populate Filter Categories
+  // Populate Filter Categories with live outstanding counts
   const categoryFilterSelect = document.getElementById('category-filter');
   function populateCategories() {
     if (!categoryFilterSelect) return;
+    const currentVal = categoryFilterSelect.value || practiceFilter || 'all';
     const cats = Array.from(new Set(allQuestions.map(q => q.category))).sort();
-    categoryFilterSelect.innerHTML = '<option value="all">All Domains & Categories</option>';
+    const totalOutstanding = allQuestions.filter(q => !completedQids.has(q.id)).length;
+    
+    categoryFilterSelect.innerHTML = `<option value="all">All Domains & Categories (${totalOutstanding} outstanding)</option>`;
     cats.forEach(cat => {
+      const catOutstanding = allQuestions.filter(q => q.category === cat && !completedQids.has(q.id)).length;
       const opt = document.createElement('option');
       opt.value = cat;
-      opt.textContent = cat;
+      opt.textContent = `${cat} (${catOutstanding} outstanding)`;
       categoryFilterSelect.appendChild(opt);
     });
+
+    if (currentVal && Array.from(categoryFilterSelect.options).some(o => o.value === currentVal)) {
+      categoryFilterSelect.value = currentVal;
+    }
   }
   populateCategories();
 
@@ -273,6 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
+    // Update category dropdown with live outstanding counts
+    populateCategories();
   }
 
   function updatePracticeList() {
@@ -550,12 +560,16 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
+    const catOutstanding = allQuestions.filter(x => x.category === q.category && !completedQids.has(x.id)).length;
+    const catTotal = allQuestions.filter(x => x.category === q.category).length;
+
     container.innerHTML = `
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-              ${q.category}
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center gap-1.5" title="${catOutstanding} outstanding of ${catTotal} total questions in this category">
+              <span>${q.category}</span>
+              <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${catOutstanding === 0 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'}">${catOutstanding} left</span>
             </span>
             <span class="px-2.5 py-1 rounded-full text-xs font-medium ${q.type === 'multiple' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600'}">
               ${q.type === 'multiple' ? 'Select All That Apply' : 'Single Correct Answer'}
