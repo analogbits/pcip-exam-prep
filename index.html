@@ -58,20 +58,25 @@
       }
     }
     function openRemediationDrill(poolType) {
-      if (typeof window.launchRemediationDrill === 'function') {
-        window.launchRemediationDrill(poolType);
-      }
-      var modal = document.getElementById('remediation-drill-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
+      if (typeof window.openRemediationDrill === 'function') {
+        window.openRemediationDrill(poolType || 'all');
+      } else {
+        var modal = document.getElementById('remediation-drill-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.style.display = 'flex';
+        }
       }
     }
     function closeRemediationDrill() {
-      var modal = document.getElementById('remediation-drill-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
+      if (typeof window.closeRemediationDrill === 'function') {
+        window.closeRemediationDrill();
+      } else {
+        var modal = document.getElementById('remediation-drill-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.style.display = 'none';
+        }
       }
     }
   </script>
@@ -1345,6 +1350,8 @@
         </div>
       </div>
     </div>
+  </div>
+
   <!-- ========================================== -->
   <!-- ISOLATED REMEDIATION DRILL MODAL (ZERO STAT IMPACT) -->
   <!-- ========================================== -->
@@ -1398,6 +1405,6 @@
 
   <!-- Scripts -->
   <script src="questions.js?v=4.1.0"></script>
-  <script src="app.js?v=4.3.0"></script>
+  <script src="app.js?v=4.4.0"></script>
 </body>
 </html>

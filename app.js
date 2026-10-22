@@ -3027,6 +3027,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Global click delegation for Launch Isolated Drill buttons
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.closest('#launch-isolated-drill-btn, #launch-drill-btn, .launch-drill-trigger')) {
+      e.preventDefault();
+      window.openRemediationDrill('all');
+    }
+  });
+
   window.switchDrillPool = function(poolType) {
     drillPoolType = poolType || 'all';
     drillIndex = 0;
@@ -3091,8 +3099,11 @@ document.addEventListener('DOMContentLoaded', () => {
     drillResults = {};
     drillCorrectCount = 0;
     drillAnsweredCount = 0;
-    if (typeof openRemediationDrill === 'function') {
-      openRemediationDrill('all');
+
+    const modal = document.getElementById('remediation-drill-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
     }
     renderDrillQuestion();
   };
