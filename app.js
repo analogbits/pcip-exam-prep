@@ -305,11 +305,45 @@ document.addEventListener('DOMContentLoaded', () => {
         matchStatus = incorrectQids.has(q.id);
       } else if (practiceStatusFilter === 'equalize') {
         matchStatus = true;
+      } else if (practiceStatusFilter === 'retake') {
+        const cat = q.category || '';
+        const qText = q.question.toLowerCase();
+        const isRetakeTarget = (
+          cat.includes('SAQ') || 
+          cat.includes('Scope') || 
+          cat.includes('Compensating') ||
+          cat.includes('Req') ||
+          q.id >= 501 || 
+          qText.includes('pcip') || 
+          qText.includes('cpe') || 
+          qText.includes('qualification')
+        );
+        matchStatus = isRetakeTarget;
       }
       return matchCat && matchSearch && matchStatus;
     });
 
-    if (practiceStatusFilter === 'equalize') {
+    if (practiceStatusFilter === 'retake') {
+      // Prioritize the 4 weak areas:
+      // 1. New targeted questions (IDs >= 501)
+      // 2. Uncompleted questions
+      // 3. Questions currently marked incorrect
+      practiceFilteredList.sort((a, b) => {
+        const aNew = a.id >= 501 ? 1 : 0;
+        const bNew = b.id >= 501 ? 1 : 0;
+        if (aNew !== bNew) return bNew - aNew;
+
+        const aCompleted = completedQids.has(a.id);
+        const bCompleted = completedQids.has(b.id);
+        if (aCompleted !== bCompleted) return aCompleted ? 1 : -1;
+
+        const aMissed = incorrectQids.has(a.id);
+        const bMissed = incorrectQids.has(b.id);
+        if (aMissed !== bMissed) return aMissed ? -1 : 1;
+
+        return a.id - b.id;
+      });
+    } else if (practiceStatusFilter === 'equalize') {
       // Calculate coverage per canonical domain
       const domainCoverage = {};
       CANONICAL_DOMAINS.forEach(dom => {
@@ -577,6 +611,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ${practiceStatusFilter === 'equalize' ? `
               <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
                 <span>⚡</span> <span>Equalizing Under-Tested Domain</span>
+              </span>
+            ` : ''}
+            ${practiceStatusFilter === 'retake' ? `
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-900 border border-rose-300 flex items-center gap-1">
+                <span>🎯</span> <span>Retake Priority Weakness Target</span>
               </span>
             ` : ''}
           </div>
@@ -2432,6 +2471,29 @@ document.addEventListener('DOMContentLoaded', () => {
       statusSelect.value = 'equalize';
       practiceStatusFilter = 'equalize';
       localStorage.setItem('pcip_practice_status_filter', 'equalize');
+    }
+    updatePracticeList();
+    practiceIndex = 0;
+    renderPracticeQuestion();
+  };
+
+  window.activateRetakeMode = function() {
+    switchTab('practice');
+    const catSelect = document.getElementById('category-filter');
+    if (catSelect) {
+      catSelect.value = 'all';
+      practiceFilter = 'all';
+    }
+    const statusSelect = document.getElementById('practice-status-filter');
+    if (statusSelect) {
+      statusSelect.value = 'retake';
+      practiceStatusFilter = 'retake';
+      localStorage.setItem('pcip_practice_status_filter', 'retake');
+    }
+    const searchInput = document.getElementById('search-questions');
+    if (searchInput) {
+      searchInput.value = '';
+      practiceSearch = '';
     }
     updatePracticeList();
     practiceIndex = 0;

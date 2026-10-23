@@ -84,6 +84,11 @@
         window.activateEqualizerMode();
       }
     }
+    function activateRetakeMode() {
+      if (typeof window.activateRetakeMode === 'function') {
+        window.activateRetakeMode();
+      }
+    }
   </script>
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
@@ -157,6 +162,7 @@
               <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Question Status</label>
               <select id="practice-status-filter" class="w-full sm:w-60 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs md:text-sm text-slate-800 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 <option value="unanswered">Hide Answered (Unanswered Only)</option>
+                <option value="retake">🎯 Retake Priority Drill (SAQs, Scope, Reqs, PCIP)</option>
                 <option value="equalize">⚡ Equalize Under-Tested Domains (Priority)</option>
                 <option value="all">All Questions (Answered & Unanswered)</option>
                 <option value="answered">Answered Questions Only</option>
@@ -196,6 +202,9 @@
           </div>
 
           <div class="flex items-center gap-2">
+            <button id="quick-retake-btn" type="button" onclick="activateRetakeMode()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold border border-rose-300 bg-rose-50 text-rose-900 hover:bg-rose-100 transition-colors shadow-xs cursor-pointer" title="Directly drill the exact 4 weak areas from your official score report (SAQs, Scope, Reqs & PCIP)">
+              <span>🎯</span> Retake Priority Drill
+            </button>
             <button id="quick-equalize-btn" type="button" onclick="activateEqualizerMode()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold border border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 transition-colors shadow-xs cursor-pointer" title="Automatically prioritize questions from your least-tested domains">
               <span>⚡</span> Equalize Domains
             </button>
@@ -1285,6 +1294,40 @@
           <span>🔬 <strong>Sample-Weighted Bayesian Model:</strong> Small sample sizes (&lt;30 questions) carry a high uncertainty penalty. Your sample of <strong id="stat-sample-q-count">0 questions</strong> directly calibrates probability accuracy.</span>
           <span id="stat-ci-range" class="font-mono text-cyan-300 font-bold">95% Skill CI: [--% - --%]</span>
         </div>
+      </div>
+
+      <!-- Official Exam Retake Gap Analysis Callout -->
+      <div class="p-4 rounded-2xl bg-gradient-to-r from-rose-50 via-amber-50 to-rose-50 border border-rose-200 text-xs text-rose-950 space-y-2.5 shadow-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full font-black bg-rose-200 text-rose-900 text-[10px] uppercase tracking-wider">Official Exam Result Diagnostic</span>
+            <span class="font-extrabold text-slate-800 text-xs">Target: 75% Overall Benchmark</span>
+          </div>
+          <button onclick="activateRetakeMode(); closeScoreAnalyticsModal();" class="px-3 py-1 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[11px] transition-all shadow-xs cursor-pointer">
+            🎯 Launch Retake Priority Drill
+          </button>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
+          <div class="p-2.5 rounded-xl bg-white border border-rose-200">
+            <span class="text-slate-500 block">The 12 Requirements</span>
+            <strong class="text-rose-700 font-black text-sm">60%</strong> <span class="text-[10px] text-rose-600 font-semibold">(Primary Gap)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white border border-rose-200">
+            <span class="text-slate-500 block">SAQ Reporting</span>
+            <strong class="text-rose-700 font-black text-sm">57%</strong> <span class="text-[10px] text-rose-600 font-semibold">(Primary Gap)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white border border-rose-200">
+            <span class="text-slate-500 block">PCI DSS Overview</span>
+            <strong class="text-rose-700 font-black text-sm">50%</strong> <span class="text-[10px] text-rose-600 font-semibold">(Primary Gap)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white border border-amber-200">
+            <span class="text-slate-500 block">PCIP Welcome</span>
+            <strong class="text-amber-700 font-black text-sm">66%</strong> <span class="text-[10px] text-amber-600 font-semibold">(Need 1-2 Qs)</span>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-600 leading-relaxed">
+          <strong>Mastered Strengths:</strong> Reporting Fundamentals (100%), PCI Standard Overview (80%), PCI Essentials (80%). You only need <strong>9 more questions correct</strong> to pass the official examination.
+        </p>
       </div>
 
       <!-- Core Stats Grid (3 Cards) -->

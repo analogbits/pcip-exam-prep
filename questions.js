@@ -8998,6 +8998,726 @@ var PCIP_QUESTIONS = [
     "explanation": "Requirement 9.5.1 mandates periodic physical inspection of POI devices (especially unattended terminals like automated fuel dispensers and ATMs) to detect tampering (e.g., overlay skimmers, fake keypads, hidden eavesdropping wires) or substitution (broken tamper seals or swapped serial numbers).",
     "tip": "Unattended POI terminals require regular physical inspection for tamper & skimmer overlays.",
     "v4_ref": "PCI DSS v4.0.1 Req 9.5.1"
+  },
+{
+    "id": 501,
+    "question": "What is the official term and Continuing Professional Education (CPE) requirement for maintaining the Payment Card Industry Professional (PCIP) qualification?",
+    "options": [
+      "A 1-year term requiring 20 CPE hours annually submitted to the acquiring bank",
+      "A 3-year term requiring a total of 40 CPE hours and an annual maintenance fee",
+      "A 5-year term requiring 120 CPE hours and a mandatory formal audit submission",
+      "A lifetime qualification requiring no CPEs once the initial examination is passed"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "The PCIP credential is valid for a three-year period. To maintain active standing, credential holders must earn and submit 40 CPE hours over the three-year term, comply with the PCI SSC Code of Professional Responsibility, and pay the annual qualification maintenance fee.",
+    "tip": "Remember: 3-year term, 40 total CPEs. Individual credential.",
+    "v4_ref": "PCI SSC PCIP Qualification Program Guide"
+  },
+  {
+    "id": 502,
+    "question": "If an individual who holds an active PCIP qualification changes employers, what is the status of their PCIP credential?",
+    "options": [
+      "The credential is tied to the employer and immediately terminates upon departure",
+      "The credential remains with the individual and stays valid for its full term, provided renewal requirements are met",
+      "The individual must re-register, pay the initial fee, and re-sit the proctored exam within 30 days",
+      "The previous employer retains the PCIP license and may reassign it to another employee"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "The PCIP qualification belongs strictly to the individual, not the sponsoring company or employer. It stays with the individual across career and employment transitions, provided they maintain their CPEs and administrative renewals.",
+    "tip": "PCIP belongs to the INDIVIDUAL; ISA and QSA belong to/require the sponsoring COMPANY.",
+    "v4_ref": "PCI SSC PCIP Program Terms"
+  },
+  {
+    "id": 503,
+    "question": "Which of the following activities is a qualified PCIP explicitly NOT authorized to perform on behalf of an entity?",
+    "options": [
+      "Advising internal business units on PCI DSS v4.0 scoping, network segmentation, and control remediation",
+      "Serving as the primary internal liaison during an external QSA assessment",
+      "Formally signing off on a Report on Compliance (ROC) or Attestation of Compliance (AOC) as an independent external assessor",
+      "Assisting internal project teams in evaluating third-party service providers (TPSPs)"
+    ],
+    "correct": [
+      2
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "A PCIP is an educational qualification certifying knowledge of PCI standards. A PCIP cannot sign an official ROC or AOC as an independent assessor; only certified QSAs (or ISAs for their sponsoring employer) have the authority to execute official compliance attestations.",
+    "tip": "PCIP = Internal SME & Advisor. Only QSA/ISA can sign formal ROC/AOC assessment reports.",
+    "v4_ref": "PCI SSC Qualification Framework"
+  },
+  {
+    "id": 504,
+    "question": "Under the PCI SSC Code of Professional Responsibility, what is a PCIP required to do if corporate leadership requests that they sign or endorse an assessment document that conceals known security non-conformities?",
+    "options": [
+      "Sign the document with a confidential disclaimer attached to their personal personnel file",
+      "Comply with management directives under employer indemnity provisions",
+      "Refuse to certify or endorse any false, misleading, or deceptive statement and maintain professional integrity",
+      "Immediately submit a formal penalty assessment to the card brands without notifying management"
+    ],
+    "correct": [
+      2
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "The PCI SSC Code of Professional Responsibility mandates that qualified individuals uphold high ethical standards, never knowingly participate in misleading disclosures, and refuse to endorse false compliance claims or omit known security defects.",
+    "tip": "Code of Responsibility: Strict integrity, never conceal defects or sign false statements.",
+    "v4_ref": "PCI SSC Code of Professional Responsibility"
+  },
+  {
+    "id": 505,
+    "question": "What is the key structural distinction between the Payment Card Industry Professional (PCIP) and the Internal Security Assessor (ISA) credentials?",
+    "options": [
+      "PCIP requires a computer science degree; ISA requires law enforcement experience",
+      "ISA is company-sponsored and authorizes internal assessment sign-off for that company; PCIP is an individual portable credential that does not confer assessment sign-off authority",
+      "PCIP applies only to e-commerce merchants; ISA applies only to financial institution issuers",
+      "ISA credentials never expire; PCIP credentials must be renewed every calendar quarter"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "ISA requires formal corporate sponsorship by an eligible entity and authorizes the employee to perform formal internal assessments (and sign internal ROCs) for their employer. PCIP is an individual credential certifying knowledge, which does not confer formal assessor signing authority.",
+    "tip": "ISA = Company sponsored + internal audit authority. PCIP = Personal + knowledge mastery.",
+    "v4_ref": "PCI SSC Credential Comparison Guide"
+  },
+  {
+    "id": 506,
+    "question": "If an individual lets their PCIP credential lapse beyond the allowable grace period without submitting required CPEs, what action is required to regain active status?",
+    "options": [
+      "Submit an appeal letter and pay a nominal late fee without testing",
+      "Re-register for the program, pay the full qualification fee, and pass the proctored examination again",
+      "Complete 10 hours of brand webinars within 60 days",
+      "Obtain an endorsement letter from an active QSA Principal"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "If a PCIP credential expires and surpasses the allowable grace window, the individual's certification is revoked. To regain certified status, the candidate must apply as a new applicant, pay the enrollment fee, and pass the proctored exam.",
+    "tip": "Lapsed beyond grace period = Complete retake of registration and exam.",
+    "v4_ref": "PCI SSC PCIP Recertification Policy"
+  },
+  {
+    "id": 507,
+    "question": "Does having a qualified PCIP on staff permit an enterprise to reduce its official PCI DSS merchant validation level (e.g., from Level 1 to Level 2)?",
+    "options": [
+      "Yes, payment brands grant an automatic one-level reduction for every certified PCIP employed",
+      "Yes, provided the PCIP conducts monthly internal vulnerability scans",
+      "No, merchant validation levels are set strictly by payment brand rules based on annual transaction volume",
+      "Yes, but only if the PCIP is employed directly within the corporate internal audit group"
+    ],
+    "correct": [
+      2
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "Merchant validation levels (Level 1, 2, 3, 4) are determined strictly by individual payment card brand programs (Visa, Mastercard, etc.) based on transaction volume and risk profile. Employing a PCIP does not change brand-mandated validation tiers.",
+    "tip": "Brand rules determine merchant levels strictly by volume; staff credentials don't change volume tiers.",
+    "v4_ref": "PCI DSS Foundations & Brand Rules"
+  },
+  {
+    "id": 508,
+    "question": "How long must an active PCIP retain physical or electronic documentation supporting their earned Continuing Professional Education (CPE) hours in case of a PCI SSC audit?",
+    "options": [
+      "Documentation is not retained once submitted to the web portal",
+      "At least 12 months after the completion of the three-year credential term",
+      "At least 7 years in hard-copy notarized form",
+      "Until the conclusion of the next monthly billing cycle"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "PCIP holders are subject to random CPE audits by the PCI SSC. Candidates must maintain documentation (certificates, course syllabi, attendance confirmations) for at least 12 months following the conclusion of each three-year credential term.",
+    "tip": "Retain CPE evidence for 12 months post-term for potential random PCI SSC audits.",
+    "v4_ref": "PCI SSC CPE Policy Guide"
+  },
+  {
+    "id": 509,
+    "question": "Which of the following is considered a core ethical breach under the PCI SSC Code of Professional Responsibility for any credentialed practitioner?",
+    "options": [
+      "Recommending an open-source firewall instead of a commercial vendor solution",
+      "Engaging in a conflict of interest, such as auditing a security architecture that they personally designed and deployed, without disclosure",
+      "Advising a business unit to implement multi-factor authentication on all administrative endpoints",
+      "Participating in public cybersecurity conferences as an unpaid speaker"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "Under the Code of Professional Responsibility, credential holders must avoid undisclosed conflicts of interest. Auditing one's own implementation or having financial interests in evaluated products without disclosure compromises objectivity.",
+    "tip": "Self-auditing without disclosure = Classic conflict of interest violation.",
+    "v4_ref": "PCI SSC Code of Professional Responsibility"
+  },
+  {
+    "id": 510,
+    "question": "What is the primary objective of the PCI Security Standards Council (PCI SSC) compared to the individual Payment Card Brands?",
+    "options": [
+      "PCI SSC imposes fines and legal sanctions; brands author the security standards",
+      "PCI SSC manages and publishes the security standards; payment card brands govern merchant compliance programs and enforce penalties",
+      "PCI SSC operates the point-of-sale hardware terminals; brands run the acquiring banks",
+      "PCI SSC provides merchant merchant accounts; brands provide telecommunication links"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "The PCI SSC is the neutral standards body that drafts, updates, and maintains the technical standards (PCI DSS, SSF, P2PE, PTS). The payment brands (Visa, Mastercard, Amex, Discover, JCB) manage compliance mandates, enforce deadlines, and levy financial penalties.",
+    "tip": "Council = Writes standards. Brands = Enforce compliance & levy fines.",
+    "v4_ref": "PCI DSS v4.0.1 Introduction"
+  },
+  {
+    "id": 511,
+    "question": "An e-commerce merchant outsources all card processing to a PCI DSS compliant payment gateway. When consumers check out, the credit card input fields are rendered inside an inline frame (iframe) hosted by the gateway. The merchant server never captures or processes card data. Which SAQ applies?",
+    "options": [
+      "SAQ A-EP",
+      "SAQ A",
+      "SAQ B-IP",
+      "SAQ C-VT"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "SAQ A is for card-not-present (e-commerce or mail/telephone order) merchants who have entirely outsourced all cardholder data handling to PCI DSS compliant third-party gateways. Both URL redirection and iframes qualify for SAQ A because the card data input fields are served directly from the gateway's CDE.",
+    "tip": "Iframe or URL Redirect = SAQ A. (Direct Post or API = SAQ A-EP).",
+    "v4_ref": "PCI DSS v4.0.1 SAQ Instructions and Guidelines"
+  },
+  {
+    "id": 512,
+    "question": "Under PCI DSS v4.0, which two technical requirements were newly added to SAQ A to address modern e-commerce web threats like Magecart and formjacking?",
+    "options": [
+      "Requirement 3.5.1 (HSM key protection) and Requirement 11.4.2 (internal penetration testing)",
+      "Requirement 6.4.3 (payment page script authorization and integrity) and Requirement 11.6.1 (tamper and change detection for payment pages)",
+      "Requirement 8.4.2 (MFA for all administrative console access) and Requirement 10.2.1 (syslog streaming)",
+      "Requirement 9.3.1 (physical badge visitor logging) and Requirement 1.3.1 (inbound border filtering)"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "PCI DSS v4.0 introduced Requirements 6.4.3 (managing all scripts loaded into the consumer browser on the checkout page) and 11.6.1 (detecting unauthorized changes or tampering to the payment page) into SAQ A, because malicious script injections on merchant pages can compromise iframe and redirect checkouts.",
+    "tip": "v4.0 SAQ A Additions: Req 6.4.3 (Script integrity) & Req 11.6.1 (Payment page tamper detection).",
+    "v4_ref": "PCI DSS v4.0.1 SAQ A & Reqs 6.4.3, 11.6.1"
+  },
+  {
+    "id": 513,
+    "question": "An e-commerce merchant generates the payment checkout form on its own web server, but uses an API / Direct Post method so that the customer's browser sends the cardholder data directly to the payment processor. Why is this merchant required to complete SAQ A-EP rather than SAQ A?",
+    "options": [
+      "Because the merchant stores cardholder data in an encrypted MySQL database",
+      "Because the merchant's website creates the payment form and controls the script destination, meaning its web server can affect the security of the payment transaction",
+      "Because SAQ A-EP is required for all merchants with more than 10,000 transactions annually",
+      "Because the merchant processes payments using international foreign currencies"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "In SAQ A-EP, the merchant's website creates or serves the payment form, or controls the redirection mechanism. If compromised, the merchant's server could be modified to hijack card data. Thus, the merchant's web servers can affect the security of the transaction, requiring the broader control set of SAQ A-EP.",
+    "tip": "Direct Post / Merchant-served checkout form = SAQ A-EP (merchant site can affect security).",
+    "v4_ref": "PCI DSS v4.0.1 SAQ A-EP Criteria"
+  },
+  {
+    "id": 514,
+    "question": "A merchant operates a retail store using only standalone, PTS-approved payment terminals that connect directly to the payment processor via an IP network (Ethernet or Wi-Fi). The terminals do not store card data electronically. Which SAQ must this merchant complete?",
+    "options": [
+      "SAQ B",
+      "SAQ B-IP",
+      "SAQ C",
+      "SAQ P2PE"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "SAQ B-IP is specifically for merchants using only standalone, PTS-approved payment terminals that connect via an IP-based network connection to the payment processor, with no electronic cardholder data storage.",
+    "tip": "Dial-up standalone terminal = SAQ B. IP-connected standalone terminal = SAQ B-IP.",
+    "v4_ref": "PCI DSS v4.0.1 SAQ B-IP Criteria"
+  },
+  {
+    "id": 515,
+    "question": "A business takes customer card details over the telephone. Customer service representatives manually type the card details one at a time via keyboard into an isolated, web-based Virtual Terminal provided by a PCI DSS compliant processor. No other card processing or electronic storage occurs. Which SAQ applies?",
+    "options": [
+      "SAQ C-VT",
+      "SAQ C",
+      "SAQ A",
+      "SAQ D"
+    ],
+    "correct": [
+      0
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "SAQ C-VT applies to merchants who manually enter a single transaction at a time via keyboard into an isolated web-based virtual terminal hosted by a PCI DSS compliant third-party processor, on dedicated computers with no electronic cardholder data storage.",
+    "tip": "Manual keyboard entry into web-based Virtual Terminal = SAQ C-VT.",
+    "v4_ref": "PCI DSS v4.0.1 SAQ C-VT Criteria"
+  },
+  {
+    "id": 516,
+    "question": "A merchant operates an integrated electronic point-of-sale (POS) software system running on networked PCs connected to the Internet. The system processes transactions in real time with a payment processor, but the merchant does not store card data electronically. Which SAQ is appropriate?",
+    "options": [
+      "SAQ C",
+      "SAQ C-VT",
+      "SAQ B",
+      "SAQ A"
+    ],
+    "correct": [
+      0
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "SAQ C is for merchants with payment application systems (such as integrated POS software) connected to the Internet, with no electronic cardholder data storage.",
+    "tip": "Integrated POS software system (no CHD storage) = SAQ C.",
+    "v4_ref": "PCI DSS v4.0.1 SAQ C Criteria"
+  },
+  {
+    "id": 517,
+    "question": "A merchant deploys retail hardware terminals that are part of an officially listed, validated PCI SSC Point-to-Point Encryption (P2PE) solution. The merchant has no electronic storage of cardholder data and no access to cleartext decryption keys. Which SAQ should they complete?",
+    "options": [
+      "SAQ P2PE",
+      "SAQ B-IP",
+      "SAQ C",
+      "SAQ D"
+    ],
+    "correct": [
+      0
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "SAQ P2PE applies specifically to merchants who process cardholder data only via hardware payment terminals that are part of an officially listed and validated PCI SSC P2PE solution, with no access to cleartext cardholder data anywhere in their environment.",
+    "tip": "Hardware terminals on official PCI SSC P2PE listed solution = SAQ P2PE.",
+    "v4_ref": "PCI DSS v4.0.1 SAQ P2PE"
+  },
+  {
+    "id": 518,
+    "question": "Which of the following entities is required to complete SAQ D for Service Providers?",
+    "options": [
+      "All merchants who accept payments via standalone dial-up credit card machines",
+      "All service providers eligible to complete a Self-Assessment Questionnaire under card brand rules",
+      "Only service providers that store more than 6 million card records per year",
+      "Merchants that process transactions exclusively through validated P2PE hardware"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "SAQ D for Service Providers is the ONLY self-assessment questionnaire available for service providers. Any service provider that is permitted by payment brands to self-assess rather than complete an on-site ROC must use SAQ D for Service Providers.",
+    "tip": "Service Providers have only ONE SAQ option: SAQ D for Service Providers.",
+    "v4_ref": "PCI DSS v4.0.1 SAQ D for Service Providers"
+  },
+  {
+    "id": 519,
+    "question": "When completing an Attestation of Compliance (AOC), what is documented in Section 2 of the document?",
+    "options": [
+      "The individual firewall rule set configuration and cryptographic key generation formulas",
+      "Executive Summary, business description, payment channels, service descriptions, and overall compliance status",
+      "The CVSS scores of all internal penetration test findings",
+      "The complete listing of all employee personal passwords"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "Section 2 of the Attestation of Compliance (AOC) is the Executive Summary. It documents the company background, scope of business, payment channels, descriptions of services assessed, and the formal summary of compliance status.",
+    "tip": "AOC Section 2 = Executive Summary & Business/Service Description.",
+    "v4_ref": "PCI DSS v4.0.1 Attestation of Compliance (AOC)"
+  },
+  {
+    "id": 520,
+    "question": "If an entity completing an SAQ determines that a required security control is currently absent and not implemented, how must they answer that item in the SAQ?",
+    "options": [
+      "Select 'Not Applicable (N/A)' because the control does not currently exist in the environment",
+      "Select 'Yes' if they plan to remediate the gap within the next 90 days",
+      "Select 'No', and document the non-compliance; the overall attestation cannot be certified as fully compliant until remediated",
+      "Select 'Not Evaluated' and submit the SAQ directly to the acquiring bank"
+    ],
+    "correct": [
+      2
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "'Not Applicable (N/A)' is reserved strictly for controls that cannot apply due to architecture (e.g., wireless controls when wireless does not exist). An absent required control must be answered 'No', resulting in a Non-Compliant status on Part 3 of the AOC until remediated.",
+    "tip": "Never choose N/A for a missing required control. Missing control = 'No' (Non-compliant).",
+    "v4_ref": "PCI DSS v4.0.1 SAQ Instructions"
+  },
+  {
+    "id": 521,
+    "question": "Can an organization completing an SAQ choose to evaluate requirements using the PCI DSS v4.0 Customized Approach?",
+    "options": [
+      "Yes, any merchant completing SAQ A or SAQ B may use the Customized Approach",
+      "No, the Customized Approach is strictly prohibited for self-assessments (SAQs); it is only permitted in formal ROC assessments",
+      "Yes, provided the merchant registers their Customized Approach Matrix with the PCI SSC portal",
+      "Yes, but only if approved in writing by the acquiring bank within 10 business days"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "PCI DSS v4.0 explicitly specifies that the Customized Approach is NOT available for Self-Assessment Questionnaires (SAQs). The Customized Approach requires detailed assessor testing procedures and documentation that can only be conducted during a formal Report on Compliance (ROC).",
+    "tip": "Customized Approach is strictly forbidden for SAQs! (Only allowed in ROC).",
+    "v4_ref": "PCI DSS v4.0.1 Customized Approach Guidance"
+  },
+  {
+    "id": 522,
+    "question": "A merchant accepts payments across three distinct channels: an e-commerce website with iframes (SAQ A), physical retail stores with integrated POS systems (SAQ C), and a mail-order back-office database that stores encrypted PANs. Which SAQ must the merchant complete?",
+    "options": [
+      "Submit SAQ A and SAQ C separately, ignoring the back-office storage",
+      "SAQ D for Merchants, because cardholder data is electronically stored and multiple disparate channels cannot be combined into a lower-tier SAQ",
+      "SAQ P2PE",
+      "SAQ B-IP"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "If a merchant stores cardholder data electronically, or has complex multi-channel environments that do not fit into the standalone criteria of SAQs A through P2PE, the merchant must complete SAQ D for Merchants, which covers the entire 12 requirements.",
+    "tip": "Electronic CHD storage or mixed non-matching channels = SAQ D.",
+    "v4_ref": "PCI DSS v4.0.1 SAQ Selection Matrix"
+  },
+  {
+    "id": 523,
+    "question": "In an Attestation of Compliance (AOC), who must sign Part 3b (Merchant / Service Provider Acknowledgment)?",
+    "options": [
+      "Any junior IT helpdesk technician on duty",
+      "An authorized executive officer of the merchant or service provider (e.g., CEO, CFO, CISO, or VP)",
+      "The external ASV scanning representative exclusively",
+      "The PCI SSC Director of Education"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "The AOC represents a formal legal attestation and must be signed by an authorized executive officer of the assessed entity who has the legal authority to bind the company and certify the accuracy of the compliance status.",
+    "tip": "AOC must be signed by an authorized executive officer (C-level / VP).",
+    "v4_ref": "PCI DSS v4.0.1 AOC Part 3"
+  },
+  {
+    "id": 524,
+    "question": "What is the primary operational difference between a Report on Compliance (ROC) and a Self-Assessment Questionnaire (SAQ)?",
+    "options": [
+      "A ROC is for internal non-commercial entities; an SAQ is for banks",
+      "A ROC is an in-depth audit executed and documented by a QSA or ISA using the full ROC Template for Level 1 entities, while an SAQ is a self-assessment tool for eligible lower-tier merchants",
+      "An SAQ is conducted by law enforcement; a ROC is conducted by software engineers",
+      "A ROC covers only Requirement 1; an SAQ covers Requirements 2 through 12"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "A Report on Compliance (ROC) is the comprehensive audit document completed and signed by a qualified QSA or corporate ISA verifying all requirements for Level 1 entities. An SAQ is a streamlined self-evaluation questionnaire for lower-volume entities.",
+    "tip": "ROC = Full on-site audit by QSA/ISA (Level 1). SAQ = Self-evaluation for eligible lower tiers.",
+    "v4_ref": "PCI DSS v4.0.1 Reporting Fundamentals"
+  },
+  {
+    "id": 525,
+    "question": "If an e-commerce merchant using SAQ A fails to implement Requirement 11.6.1 (tamper and change detection for payment pages), can their acquiring bank accept the AOC as fully compliant?",
+    "options": [
+      "Yes, acquiring banks routinely waive Requirement 11 without condition",
+      "No, the merchant must mark Requirement 11.6.1 as 'No', resulting in a Non-Compliant AOC until an effective tamper-detection mechanism or compensating control is in place",
+      "Yes, because SAQ A merchants are exempt from all monitoring requirements",
+      "No, but the merchant may self-certify compliance if they use strong encryption keys"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "SAQs & Assessment Validation",
+    "explanation": "All requirements included in an applicable SAQ are mandatory. Failing to meet Requirement 11.6.1 means the merchant must check 'No', leading to a Non-Compliant finding on the AOC until remediated or covered by an approved compensating control.",
+    "tip": "All controls in an SAQ are mandatory. Missing one = Non-compliant AOC.",
+    "v4_ref": "PCI DSS v4.0.1 Req 11.6.1 & SAQ A"
+  },
+  {
+    "id": 526,
+    "question": "Which of the following correctly defines the full scope of the Cardholder Data Environment (CDE)?",
+    "options": [
+      "Only the database server that stores Primary Account Numbers (PAN)",
+      "People, processes, and technologies that store, process, or transmit cardholder data (CHD) or sensitive authentication data (SAD), PLUS connected-to systems and security-impacting systems",
+      "All computers and mobile devices located in the company headquarters building",
+      "Only the network perimeter edge firewalls connected to the Internet"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Scope & Segmentation",
+    "explanation": "The CDE encompasses the people, processes, and technology that store, process, or transmit CHD/SAD, PLUS systems that have connectivity to the CDE ('connected-to'), PLUS systems that could impact the security of the CDE (e.g., Active Directory, jump servers, logging servers).",
+    "tip": "CDE = Store, Process, Transmit systems + Connected-To systems + Security-Impacting systems.",
+    "v4_ref": "PCI DSS v4.0.1 Scope of PCI DSS Requirements"
+  },
+  {
+    "id": 527,
+    "question": "Why is an enterprise Active Directory (AD) server located outside the CDE that provides administrative authentication into CDE database servers considered in-scope for PCI DSS?",
+    "options": [
+      "Because it contains cardholder credit card records in its database schema",
+      "Because it is a security-impacting system that could be leveraged to compromise or gain unauthorized administrative access into CDE systems",
+      "Because all Microsoft operating systems are automatically classified as Level 1 CDE components",
+      "Because it communicates with the payment brand clearinghouses"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Scope & Segmentation",
+    "explanation": "Systems that provide security services to the CDE (such as authentication, logging, patch management, anti-virus, or jump hosts) are 'security-impacting systems' and are fully in-scope for PCI DSS, even if they never touch card data directly.",
+    "tip": "Security-impacting systems (AD, jump hosts, logging, patch mgmt) are ALWAYS in scope.",
+    "v4_ref": "PCI DSS v4.0.1 Scoping Guidance"
+  },
+  {
+    "id": 528,
+    "question": "What is the official PCI DSS status of network segmentation?",
+    "options": [
+      "It is strictly mandatory under Requirement 1.1 for all entities without exception",
+      "It is not mandatory, but strongly recommended as a best practice to reduce the scope, cost, and complexity of the PCI DSS assessment",
+      "It is illegal under federal telecommunication privacy laws",
+      "It is only permitted for service providers, but forbidden for merchants"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Scope & Segmentation",
+    "explanation": "Network segmentation is NOT a mandatory requirement of PCI DSS. However, without adequate and validated segmentation, the entire corporate network is considered in scope for PCI DSS.",
+    "tip": "Segmentation is NOT mandatory, but without it, your ENTIRE network is in scope.",
+    "v4_ref": "PCI DSS v4.0.1 Scoping & Segmentation"
+  },
+  {
+    "id": 529,
+    "question": "Under PCI DSS Requirement 12.3.2, which mandatory component must an entity produce when electing to use the Customized Approach for a specific requirement?",
+    "options": [
+      "A signed legal exemption from the payment brand general counsel",
+      "A documented Targeted Risk Analysis (TRA) and a completed Customized Approach Matrix detailing how the customized objective is met",
+      "A physical hardware security module installed in every office branch",
+      "A commercial cybersecurity insurance policy covering up to $10 million"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Compensating Controls & v4.0 Customized Approach",
+    "explanation": "Requirement 12.3.2 mandates that for each requirement addressed via the Customized Approach, the entity must document a Targeted Risk Analysis (TRA), complete the Customized Approach Matrix (demonstrating how the customized objective is achieved), and have the assessor develop custom testing procedures.",
+    "tip": "Customized Approach requires: TRA (Req 12.3.2) + Customized Approach Matrix + Assessor test procedures.",
+    "v4_ref": "PCI DSS v4.0.1 Req 12.3.2 & Appendix E"
+  },
+  {
+    "id": 530,
+    "question": "When is an assessor permitted to use representative sampling across a system population during a PCI DSS compliance assessment?",
+    "options": [
+      "Whenever the assessor has limited time and needs to finish the audit quickly",
+      "Only when the population of components is standardized, homogeneous, and managed under identical security policies, configurations, and administrative processes",
+      "Assessors may sample across disparate operating systems as long as at least 3 devices are tested",
+      "Sampling is strictly prohibited across all PCI DSS requirements without exception"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "Sampling is allowed only when the population of system components is standardized and homogeneous (e.g., identical builds, configurations, and change controls). If components differ in configuration or administration, they cannot be sampled as a single pool.",
+    "tip": "Sampling rule: Only allowed across HOMOGENEOUS, standardized system populations.",
+    "v4_ref": "PCI DSS v4.0.1 Sampling Guidance"
+  },
+  {
+    "id": 531,
+    "question": "What is the fundamental difference between a Compensating Control and the v4.0 Customized Approach?",
+    "options": [
+      "Compensating controls are for Level 1 merchants; Customized Approach is for Level 4 merchants",
+      "Compensating controls require legitimate technical or business constraints that prevent meeting the defined requirement; the Customized Approach does not require constraints and is a deliberate alternative design",
+      "Compensating controls can be used on SAQs; Customized Approach cannot",
+      "Customized Approach requires no testing; Compensating controls require pentesting"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Compensating Controls & v4.0 Customized Approach",
+    "explanation": "Compensating controls (Appendix B) require documented technical or business constraints that make meeting the defined requirement impossible. The Customized Approach (Appendix D/E) requires no constraints; it is intended for mature entities implementing alternative controls to meet the customized objective.",
+    "tip": "Compensating Controls = Need constraints/hardships. Customized Approach = Strategic design (no constraints needed).",
+    "v4_ref": "PCI DSS v4.0.1 Appendices B, D & E"
+  },
+  {
+    "id": 532,
+    "question": "Under Requirement 12.5.2, how frequently must an entity conduct a formal PCI DSS scope confirmation review?",
+    "options": [
+      "Every 30 days for merchants and every 90 days for service providers",
+      "At least once every 12 months, and immediately following any significant change to the environment",
+      "Only when requested by law enforcement",
+      "Once every three years during the corporate budgeting cycle"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Scope & Segmentation",
+    "explanation": "Requirement 12.5.2 mandates that entities formally confirm and document their PCI DSS scope at least once every 12 months, as well as upon any significant architectural or infrastructure change.",
+    "tip": "Scope confirmation: At least annually (12 months) + after significant change.",
+    "v4_ref": "PCI DSS v4.0.1 Req 12.5.2"
+  },
+  {
+    "id": 533,
+    "question": "Who has the official regulatory authority to establish an entity's merchant or service provider validation level (e.g., Level 1, Level 2, Level 3)?",
+    "options": [
+      "The PCI Security Standards Council (PCI SSC)",
+      "The individual Payment Card Brands and acquiring financial institutions",
+      "The Approved Scanning Vendor (ASV)",
+      "The International Organization for Standardization (ISO)"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "PCI DSS Foundations & Roles",
+    "explanation": "Validation levels (and compliance submission deadlines) are set exclusively by the individual payment card brands (Visa, Mastercard, etc.) and acquiring banks, based on annual transaction volume and merchant risk criteria.",
+    "tip": "Validation levels are set by Payment Brands & Acquirers, NEVER by PCI SSC.",
+    "v4_ref": "PCI DSS v4.0.1 Introduction & Brand Programs"
+  },
+  {
+    "id": 534,
+    "question": "According to Requirements 11.4.5 and 11.4.6, what is the required frequency for penetration testing of network segmentation controls?",
+    "options": [
+      "At least once every 12 months for merchants; at least once every 6 months for service providers",
+      "Every 3 months for all entities",
+      "Every 2 years for merchants; annually for service providers",
+      "Only during the initial corporate setup phase"
+    ],
+    "correct": [
+      0
+    ],
+    "type": "single",
+    "category": "Scope & Segmentation",
+    "explanation": "Requirement 11.4.5 requires merchants to test segmentation controls at least once every 12 months (and after significant change). Requirement 11.4.6 requires service providers to test segmentation controls at least once every 6 months.",
+    "tip": "Segmentation pentest: 12 months for merchants; 6 MONTHS for service providers.",
+    "v4_ref": "PCI DSS v4.0.1 Reqs 11.4.5 & 11.4.6"
+  },
+  {
+    "id": 535,
+    "question": "Which of the following scenarios describes an 'Out-of-Scope' system component?",
+    "options": [
+      "A server on the corporate network that is separated from the CDE by a properly configured firewall that denies all traffic, has no shared credentials, and cannot impact CDE security",
+      "A database server that stores only truncated card numbers but shares root passwords with CDE servers",
+      "A workstation in the marketing department that can SSH directly into the payment processing cluster",
+      "A network monitoring tool that captures raw CDE packet traffic"
+    ],
+    "correct": [
+      0
+    ],
+    "type": "single",
+    "category": "Scope & Segmentation",
+    "explanation": "For a component to be out of scope, it must be completely isolated from the CDE with no communication paths, must not share security controls or administrative credentials, and must not have any ability to affect CDE security.",
+    "tip": "Out-of-scope = Complete isolation + zero access paths + no shared security/auth.",
+    "v4_ref": "PCI DSS v4.0.1 Scoping Guidance"
+  },
+  {
+    "id": 536,
+    "question": "Under Requirement 3.4.2, what is the strict rule regarding the retention of Sensitive Authentication Data (SAD) after payment authorization?",
+    "options": [
+      "SAD may be stored indefinitely if encrypted with AES-256 and stored in an offsite vault",
+      "SAD must not be retained after authorization under ANY circumstances, even if encrypted, except for issuers with a documented business need",
+      "SAD may be retained for up to 90 days for customer dispute resolution",
+      "SAD may be retained provided the CVV code is hashed using SHA-256"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Req 3 & 4: Data Protection & Encryption",
+    "explanation": "Requirement 3.4.2 states that Sensitive Authentication Data (SAD: full track data, CVV2/CVC2/CID, PIN/PIN block) must NOT be retained after authorization, even if encrypted. The only exception is for card issuers with an explicit business justification.",
+    "tip": "SAD post-authorization = NEVER RETRAINED, even if encrypted! (Issuers only exception).",
+    "v4_ref": "PCI DSS v4.0.1 Req 3.4.2"
+  },
+  {
+    "id": 537,
+    "question": "Under PCI DSS v4.0 Requirement 8.3.6, what are the baseline complexity requirements for user passwords used to access the CDE?",
+    "options": [
+      "Minimum 7 characters, changed every 30 days",
+      "Minimum 12 characters containing both numeric and alphabetic characters (or 8 characters if systems do not support 12 until March 31, 2025)",
+      "Minimum 16 characters containing at least 4 special symbols and emojis",
+      "Minimum 8 characters with no complexity restrictions"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Req 7 & 8: Access Control & Authentication",
+    "explanation": "Requirement 8.3.6 raises the password length standard to a minimum of 12 characters containing both numbers and letters. If an entity has technical systems that cannot support 12 characters, a minimum of 8 characters was permitted until March 31, 2025.",
+    "tip": "v4.0 Password rule: Min 12 characters, numeric and alphabetic. Max 10 failed attempts lockout.",
+    "v4_ref": "PCI DSS v4.0.1 Req 8.3.6"
+  },
+  {
+    "id": 538,
+    "question": "Under Requirement 10.5.1, what are the official retention timeframes for audit logs across the Cardholder Data Environment?",
+    "options": [
+      "Retained for 30 days online, then permanently purged",
+      "Retained for at least 12 months, with at least the most recent 3 months immediately available for analysis",
+      "Retained for 3 years in cold offline magnetic tape backup",
+      "Retained for 6 months on cloud object storage"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Req 9 & 10: Physical & Logging",
+    "explanation": "Requirement 10.5.1 mandates that audit log history must be retained for at least 12 months. Furthermore, at least the immediate past 3 months of logs must be immediately available for analysis (e.g., online or easily retrievable).",
+    "tip": "Audit logs: 12 months TOTAL retention; 3 months IMMEDIATELY AVAILABLE.",
+    "v4_ref": "PCI DSS v4.0.1 Req 10.5.1"
+  },
+  {
+    "id": 539,
+    "question": "Under Requirement 11.3.1.1, how quickly must critical and high-risk vulnerabilities identified during internal vulnerability scans be resolved?",
+    "options": [
+      "Within 24 hours of scan completion",
+      "In accordance with the entity's targeted risk analysis, or within 1 month for critical security patches",
+      "Within 90 days during the next quarterly scan cycle",
+      "Critical vulnerabilities do not require remediation if firewalls are operational"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Req 11 & 12: Testing, Monitoring & Policy",
+    "explanation": "Requirement 11.3.1.1 requires high-risk and critical vulnerabilities identified in internal scans to be resolved (and rescanned until clean). In addition, Requirement 6.3.3 mandates critical security patches be applied within 1 month of release.",
+    "tip": "Critical patches / high-risk vulnerabilities: Remediate within 1 month + rescan clean.",
+    "v4_ref": "PCI DSS v4.0.1 Reqs 11.3.1.1 & 6.3.3"
+  },
+  {
+    "id": 540,
+    "question": "Under Requirement 12.8, what documentation and due diligence must an entity maintain regarding its Third-Party Service Providers (TPSPs)?",
+    "options": [
+      "A copy of the TPSP's corporate incorporation charter only",
+      "An active inventory of all TPSPs, written agreements acknowledging TPSP responsibility for CHD security, and annual monitoring of their PCI DSS compliance status",
+      "A quarterly penetration test report against the TPSP's private corporate headquarters",
+      "A monthly audit of the TPSP CEO's personal expense reports"
+    ],
+    "correct": [
+      1
+    ],
+    "type": "single",
+    "category": "Req 11 & 12: Testing, Monitoring & Policy",
+    "explanation": "Requirement 12.8 requires entities to maintain an inventory of all TPSPs, have written agreements acknowledging the TPSP's responsibility for securing CHD in their possession, and establish a process to monitor each TPSP's PCI DSS compliance status at least once every 12 months.",
+    "tip": "TPSP Management: Inventory + Written Responsibility Agreement + Annual (12 mo) compliance status check.",
+    "v4_ref": "PCI DSS v4.0.1 Req 12.8"
   }
 ];
 if (typeof window !== 'undefined') window.PCIP_QUESTIONS = PCIP_QUESTIONS;
