@@ -305,26 +305,31 @@ document.addEventListener('DOMContentLoaded', () => {
         matchStatus = incorrectQids.has(q.id);
       } else if (practiceStatusFilter === 'equalize') {
         matchStatus = true;
+      } else if (practiceStatusFilter === 'retake_new') {
+        matchStatus = (q.id >= 501);
       } else if (practiceStatusFilter === 'retake') {
         const cat = q.category || '';
-        const qText = q.question.toLowerCase();
+        const qText = (q.question + ' ' + (q.explanation || '')).toLowerCase();
         const isRetakeTarget = (
+          q.id >= 501 || 
           cat.includes('SAQ') || 
           cat.includes('Scope') || 
+          cat.includes('Segmentation') ||
           cat.includes('Compensating') ||
-          cat.includes('Req') ||
-          q.id >= 501 || 
           qText.includes('pcip') || 
-          qText.includes('cpe') || 
-          qText.includes('qualification')
+          qText.includes('cpe ') || 
+          qText.includes('qualification') ||
+          incorrectQids.has(q.id)
         );
         matchStatus = isRetakeTarget;
       }
       return matchCat && matchSearch && matchStatus;
     });
 
-    if (practiceStatusFilter === 'retake') {
-      // Prioritize the 4 weak areas:
+    if (practiceStatusFilter === 'retake_new') {
+      practiceFilteredList.sort((a, b) => a.id - b.id);
+    } else if (practiceStatusFilter === 'retake') {
+      // Prioritize:
       // 1. New targeted questions (IDs >= 501)
       // 2. Uncompleted questions
       // 3. Questions currently marked incorrect
@@ -607,15 +612,19 @@ document.addEventListener('DOMContentLoaded', () => {
             </span>
             <span class="px-2.5 py-1 rounded-full text-xs font-medium ${q.type === 'multiple' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-600'}">
               ${q.type === 'multiple' ? 'Select All That Apply' : 'Single Correct Answer'}
-            </span>
             ${practiceStatusFilter === 'equalize' ? `
               <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
                 <span>⚡</span> <span>Equalizing Under-Tested Domain</span>
               </span>
             ` : ''}
+            ${practiceStatusFilter === 'retake_new' ? `
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-600 text-white shadow-xs flex items-center gap-1">
+                <span>⚡</span> <span>40 New Retake Questions (Q501-Q540)</span>
+              </span>
+            ` : ''}
             ${practiceStatusFilter === 'retake' ? `
               <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-900 border border-rose-300 flex items-center gap-1">
-                <span>🎯</span> <span>Retake Priority Weakness Target</span>
+                <span>🎯</span> <span>Retake Weakness Target (SAQs, Scope, PCIP ~120 Qs)</span>
               </span>
             ` : ''}
           </div>
@@ -2489,6 +2498,29 @@ document.addEventListener('DOMContentLoaded', () => {
       statusSelect.value = 'retake';
       practiceStatusFilter = 'retake';
       localStorage.setItem('pcip_practice_status_filter', 'retake');
+    }
+    const searchInput = document.getElementById('search-questions');
+    if (searchInput) {
+      searchInput.value = '';
+      practiceSearch = '';
+    }
+    updatePracticeList();
+    practiceIndex = 0;
+    renderPracticeQuestion();
+  };
+
+  window.activateRetakeNewMode = function() {
+    switchTab('practice');
+    const catSelect = document.getElementById('category-filter');
+    if (catSelect) {
+      catSelect.value = 'all';
+      practiceFilter = 'all';
+    }
+    const statusSelect = document.getElementById('practice-status-filter');
+    if (statusSelect) {
+      statusSelect.value = 'retake_new';
+      practiceStatusFilter = 'retake_new';
+      localStorage.setItem('pcip_practice_status_filter', 'retake_new');
     }
     const searchInput = document.getElementById('search-questions');
     if (searchInput) {
